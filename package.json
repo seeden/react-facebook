@@ -1,90 +1,32 @@
 {
-  "name": "react-facebook",
-  "version": "9.0.12",
-  "description": "Facebook components like a Login button, Like, Share, Comments, Embedded Post/Video, Messenger Chat and others",
+  "name": "react-facebook-monorepo",
+  "version": "10.0.1",
+  "description": "Facebook components like a Login button, Like, Share, Comments, Embedded Post/Video, Messenger Chat, and Facebook Pixel tracking",
+  "private": true,
+  "workspaces": [
+    "packages/react-facebook",
+    "apps/docs"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=packages/react-facebook",
+    "build:docs": "npm run build --workspace=apps/docs",
+    "dev:docs": "npm run dev --workspace=apps/docs",
+    "test": "npm run test --workspace=packages/react-facebook",
+    "test:component": "npm run test:component --workspace=packages/react-facebook",
+    "lint": "npm run lint --workspace=packages/react-facebook",
+    "typecheck": "npm run typecheck --workspace=packages/react-facebook",
+    "deploy:docs": "npm run build && npm run deploy --workspace=apps/docs"
+  },
   "author": {
-    "name": "Zlatko Fedor",
-    "email": "react-facebook@zlatkofedor.com",
-    "url": "https://www.zlatkofedor.com/"
+    "name": "Zlatko Fedor"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/seeden/react-facebook.git"
   },
-  "keywords": [
-    "react",
-    "react-component",
-    "facebook",
-    "login",
-    "login button",
-    "share",
-    "share button",
-    "like",
-    "like button",
-    "embeded post",
-    "comment",
-    "comments",
-    "feed",
-    "page",
-    "embedded",
-    "messenger",
-    "chat"
-  ],
-  "private": false,
   "license": "MIT",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/index.d.ts",
-  "engines": {
-    "node": ">= 6.0.0"
-  },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
-  "size-limit": [
-    {
-      "path": "dist/mylib.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/mylib.esm.js",
-      "limit": "10 KB"
-    }
-  ],
-  "scripts": {
-    "build": "rollup -c --bundleConfigAsCjs",
-    "test": "cypress open",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
-  },
-  "dependencies": {
-    "@babel/runtime": "^7.20.6"
-  },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^15.0.1",
-    "@rollup/plugin-commonjs": "^23.0.3",
-    "@rollup/plugin-terser": "^0.1.0",
-    "@rollup/plugin-typescript": "^10.0.1",
-    "@size-limit/preset-small-lib": "^8.1.0",
-    "@types/react": "^18.0.26",
-    "@vitejs/plugin-react": "^2.2.0",
-    "cross-env": "^7.0.3",
-    "cypress": "^11.2.0",
-    "cypress-iframe": "^1.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-test-renderer": "^18.2.0",
-    "rollup": "^3.5.1",
-    "rollup-plugin-dts": "^5.0.0",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
-    "size-limit": "^8.1.0",
-    "typescript": "~4.8.4",
-    "vite": "^3.2.4"
-  },
-  "peerDependencies": {
-    "react": ">= 16"
+    "@types/node": "^24.3.0",
+    "typescript": "^5.9.2"
   }
 }

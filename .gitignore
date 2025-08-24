@@ -6,3 +6,6 @@ yarn.lock
 dist
 lib
 module
+.next
+out
+

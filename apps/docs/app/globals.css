@@ -1,0 +1,63 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply antialiased;
+  }
+  
+  code {
+    @apply text-sm;
+  }
+  
+  pre {
+    @apply overflow-x-auto;
+  }
+}
+
+@layer components {
+  .prose {
+    @apply text-gray-700 max-w-none;
+  }
+  
+  .prose h1 {
+    @apply text-3xl font-bold mb-4 text-gray-900;
+  }
+  
+  .prose h2 {
+    @apply text-2xl font-semibold mb-3 mt-8 text-gray-900;
+  }
+  
+  .prose h3 {
+    @apply text-xl font-semibold mb-2 mt-6 text-gray-900;
+  }
+  
+  .prose p {
+    @apply mb-4 leading-relaxed;
+  }
+  
+  .prose code {
+    @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono text-pink-600;
+  }
+  
+  .prose pre code {
+    @apply bg-transparent p-0 text-gray-100;
+  }
+  
+  .prose ul {
+    @apply list-disc list-inside mb-4 space-y-2;
+  }
+  
+  .prose ol {
+    @apply list-decimal list-inside mb-4 space-y-2;
+  }
+  
+  .prose a {
+    @apply text-facebook hover:text-facebook-dark underline;
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "docs-site",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "export": "next build",
+    "deploy": "next build && touch out/.nojekyll && echo 'react-facebook.dev' > out/CNAME"
+  },
+  "keywords": [],
+  "author": "Zlatko Fedor",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@headlessui/react": "^2.2.7",
+    "@types/node": "^24.3.0",
+    "@types/react": "^19.1.11",
+    "@types/react-dom": "^19.1.7",
+    "autoprefixer": "^10.4.21",
+    "framer-motion": "^12.23.12",
+    "lucide-react": "^0.541.0",
+    "next": "^15.5.0",
+    "postcss": "^8.5.6",
+    "prism-react-renderer": "^2.4.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "react-facebook": "10.0.1",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.2"
+  }
+}
