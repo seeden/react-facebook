@@ -266,7 +266,7 @@ export default function TestimonialsPage() {
                     Submit Your Story
                   </button>
                   <p className="text-sm text-gray-500 mt-3">
-                    We respect your privacy and will only use this information for showcasing success stories.
+                    We respect your privacy and will only use this information for showcasing success stories
                   </p>
                 </div>
               </form>

@@ -2,7 +2,7 @@ name: Deploy Documentation
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main ]
     paths: [ 'apps/docs/**' ]  # Only deploy when docs change
   workflow_dispatch:
 
