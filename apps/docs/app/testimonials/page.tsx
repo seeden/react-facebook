@@ -6,7 +6,15 @@ import Navigation from '@/components/Navigation'
 export default function TestimonialsPage() {
 
   // Sample testimonials (empty for now, can be populated later)
-  const testimonials = [
+  const testimonials: Array<{
+    company: string;
+    logo?: string;
+    quote: string;
+    author: string;
+    title: string;
+    useCase: string;
+    scale: string;
+  }> = [
     // Example structure:
     // {
     //   company: "Example Corp",

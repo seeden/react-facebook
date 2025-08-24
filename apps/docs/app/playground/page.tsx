@@ -399,6 +399,7 @@ function PlaygroundPageContent({ appId, setAppId, locale, setLocale }: { appId: 
             >
               <ShareButton 
                 href={shareButtonHref}
+                display="popup"
                 hashtag={shareButtonHashtag || undefined}
                 className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center space-x-2"
               >
@@ -419,7 +420,7 @@ function PlaygroundPageContent({ appId, setAppId, locale, setLocale }: { appId: 
                   <PropControl label="Render Type" description="How to render the login component">
                     <Select
                       value={loginRenderType}
-                      onChange={setLoginRenderType}
+                      onChange={(value) => setLoginRenderType(value as 'function' | 'default' | 'custom')}
                       options={[
                         { value: 'default', label: 'Default Button' },
                         { value: 'custom', label: 'Custom Styled' },
@@ -789,8 +790,8 @@ function PlaygroundPageContent({ appId, setAppId, locale, setLocale }: { appId: 
                   
                   <PropControl label="Width" description="Plugin width in pixels">
                     <NumberInput
-                      value={postWidth}
-                      onChange={setPostWidth}
+                      value={parseInt(postWidth)}
+                      onChange={(value) => setPostWidth(value.toString())}
                       min={350}
                       max={750}
                     />

@@ -10,14 +10,14 @@ type LoginRenderProps = {
   isDisabled: boolean;
 };
 
-export type LoginProps = LoginOptions & {
+export type LoginProps = Omit<LoginOptions, 'scope'> & {
   children?: ReactNode | ((props: LoginRenderProps) => ReactElement);
   
   onSuccess?: (response: LoginResponse) => void;
   onError?: (error: Error) => void;
   onProfileSuccess?: (profile: any) => void;
   
-  scope?: string[];
+  scope?: string | string[];
   fields?: string[];
   
 
@@ -59,7 +59,7 @@ export default function Login(props: LoginProps) {
 
     try {
       const response = await login({
-        scope: scope.join(','),
+        scope: Array.isArray(scope) ? scope.join(',') : scope,
         returnScopes,
         authType,
         rerequest,

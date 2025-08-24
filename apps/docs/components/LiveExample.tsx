@@ -7,7 +7,7 @@ import { Eye, Code, RefreshCw } from 'lucide-react'
 
 interface LiveExampleProps {
   title: string
-  description: string
+  description: string | ReactNode
   code: string
   controls?: ReactNode
   children: ReactNode

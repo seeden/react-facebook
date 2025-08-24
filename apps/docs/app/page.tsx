@@ -18,7 +18,7 @@ function App() {
   return (
     <FacebookProvider appId="YOUR_APP_ID">
       <Login
-        scope="email,public_profile"
+        scope={['email', 'public_profile']}
         onSuccess={(response) => console.log('Login Success!', response)}
         onError={(error) => console.log('Login Failed!', error)}
       >
@@ -150,7 +150,7 @@ export default function HomePage() {
                 </h3>
                 <div className="mb-4">
                   <Login
-                    scope="email,public_profile"
+                    scope={['email', 'public_profile']}
                     onSuccess={(response) => {
                       console.log('Login Success!', response)
                       alert('Login successful! Check console for details.')
@@ -170,7 +170,7 @@ export default function HomePage() {
                 <div className="flex-1">
                   <CodeBlock 
                     code={`<Login
-  scope="email,public_profile"
+  scope={['email', 'public_profile']}
   onSuccess={(response) => console.log('Success!', response)}
   onError={(error) => console.log('Error!', error)}
 >
