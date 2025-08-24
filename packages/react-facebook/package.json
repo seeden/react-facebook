@@ -1,0 +1,103 @@
+{
+  "name": "react-facebook",
+  "version": "10.0.1",
+  "description": "Facebook components like a Login button, Like, Share, Comments, Embedded Post/Video, Messenger Chat, and Facebook Pixel tracking",
+  "private": false,
+  "license": "MIT",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/index.d.ts",
+  "author": {
+    "name": "Zlatko Fedor"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/seeden/react-facebook.git"
+  },
+  "keywords": [
+    "react",
+    "react-component",
+    "facebook",
+    "login",
+    "login button",
+    "pixel",
+    "facebook-pixel",
+    "analytics",
+    "tracking",
+    "share",
+    "share button",
+    "like",
+    "like button",
+    "embeded post",
+    "comment",
+    "comments",
+    "feed",
+    "page",
+    "embedded",
+    "messenger",
+    "chat",
+    "reactjs",
+    "component",
+    "facebook-login"
+  ],
+  "size-limit": [
+    {
+      "path": "dist/cjs/index.js",
+      "limit": "10 KB"
+    },
+    {
+      "path": "dist/esm/index.js",
+      "limit": "10 KB"
+    }
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c -w",
+    "test": "cypress run --component",
+    "test:component": "cypress run --component",
+    "test:component:run": "cypress run --component --spec cypress/component",
+    "test:component:open": "cypress open --component",
+    "typecheck": "tsc --noEmit",
+    "lint": "echo 'Add your linting command here'",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "react": ">=16.8.0",
+    "react-dom": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^26.0.3",
+    "@rollup/plugin-node-resolve": "^15.3.0",
+    "@rollup/plugin-replace": "^5.0.5",
+    "@rollup/plugin-typescript": "^12.1.1",
+    "@types/react": "^18.3.17",
+    "@types/react-dom": "^18.3.5",
+    "@typescript-eslint/eslint-plugin": "^8.21.0",
+    "@typescript-eslint/parser": "^8.21.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "cypress": "^13.16.1",
+    "eslint": "^8.57.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "rollup": "^4.28.0",
+    "rollup-plugin-dts": "^6.2.3",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-typescript2": "^0.36.0",
+    "terser": "^5.36.0",
+    "tslib": "^2.8.1",
+    "typescript": "^5.9.2",
+    "vite": "^6.0.7"
+  }
+}
