@@ -1,6 +1,4 @@
-import { useState } from 'react';
-import clearUndefinedProperties from '../utils/clearUndefinedProperties';
-import useFacebook from './useFacebook';
+import useDialog from './useDialog';
 
 export type ShareOptions = {
   href: string;
@@ -9,49 +7,39 @@ export type ShareOptions = {
   redirectUri?: string;
 };
 
-export default function useShare() {
-  const { init } = useFacebook();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | undefined>(undefined);
+export type UseShareReturn = {
+  loading: boolean;
+  error: Error | undefined;
+  share: (options: ShareOptions) => Promise<unknown>;
+};
 
-  async function handleShare(options: ShareOptions) {
-    try {
-      const {
-        href,
-        display,
-        hashtag,
-        redirectUri,
-        ...rest
-      } = options;
+/**
+ * Hook for sharing content via Facebook Share dialog
+ *
+ * @returns Object with share function, loading state, and error
+ *
+ * @example
+ * ```tsx
+ * function ShareComponent() {
+ *   const { share, loading, error } = useShare();
+ *
+ *   const handleShare = () => {
+ *     share({
+ *       href: 'https://example.com',
+ *       display: 'popup',
+ *       hashtag: '#example',
+ *     });
+ *   };
+ *
+ *   return <button onClick={handleShare} disabled={loading}>Share</button>;
+ * }
+ * ```
+ */
+export default function useShare(): UseShareReturn {
+  const { loading, error, invoke } = useDialog<ShareOptions>('share', (options, api) => {
+    const { href, display, hashtag, redirectUri, ...rest } = options;
+    return { href, display, app_id: api.getAppId(), hashtag, redirect_uri: redirectUri, ...rest };
+  });
 
-      setError(undefined);
-      setIsLoading(true);
-  
-      const api = await init();
-      if (!api) {
-        throw new Error('Facebook API is not initialized');
-      }
-      
-      return api.ui(clearUndefinedProperties({
-        method: 'share',
-        href,
-        display,
-        app_id: api.getAppId(),
-        hashtag,
-        redirect_uri: redirectUri,
-        ...rest,
-      }));
-    } catch (error) {
-      setError(error as Error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  return {
-    isLoading,
-    error,
-    share: handleShare,
-  };
+  return { loading, error, share: invoke };
 }

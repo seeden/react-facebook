@@ -1,37 +1,53 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import useFacebook from './useFacebook';
 
-export default function useSubscribe<T>(event: string, callback?: (data: any) => void): T | undefined {
+/**
+ * Hook for subscribing to Facebook SDK events
+ *
+ * @param event - The Facebook event name to subscribe to (e.g., 'auth.statusChange')
+ * @param callback - Optional callback invoked when the event fires
+ * @returns The last event value received, or undefined
+ *
+ * @example
+ * ```tsx
+ * function AuthListener() {
+ *   const lastStatus = useSubscribe('auth.statusChange', (response) => {
+ *     console.log('Auth status changed:', response.status);
+ *   });
+ *
+ *   return <p>Last status: {JSON.stringify(lastStatus)}</p>;
+ * }
+ * ```
+ */
+export default function useSubscribe<T>(event: string, callback?: (data: T) => void): T | undefined {
   const [lastValue, setLastValue] = useState<T | undefined>(undefined);
   const { init } = useFacebook();
+  const callbackRef = useRef(callback);
+  callbackRef.current = callback;
 
   const handleResponse = useCallback((value: T) => {
     setLastValue(value);
-    callback?.(value);
-  }, [callback]);
-
-  const handleSubscribe = useCallback(async () => {
-    const api = await init();
-    if (api) {
-      await api.subscribe(event, handleResponse);
-    }
-  }, [event, handleResponse, init]);
-
-  const handleUnsubscribe = useCallback(async () => {
-    const api = await init();
-    if (api) {
-      await api.unsubscribe(event, handleResponse);
-    }
-  }, [event, handleResponse, init]);
-
+    callbackRef.current?.(value);
+  }, []);
 
   useEffect(() => {
-    handleSubscribe();
+    let cancelled = false;
+    let unsubscribe: (() => Promise<void>) | undefined;
+
+    (async () => {
+      const api = await init();
+      if (cancelled) return;
+      if (api) {
+        unsubscribe = await api.subscribe(event, handleResponse);
+        if (cancelled) unsubscribe();
+      }
+    })();
 
     return () => {
-      handleUnsubscribe();
+      cancelled = true;
+      unsubscribe?.();
     };
-  }, [handleSubscribe, handleUnsubscribe]);
+  }, [event, handleResponse, init]);
 
   return lastValue;
 }

@@ -28,13 +28,14 @@ export * from './Comments';
 export { default as CommentsCount } from './CommentsCount';
 export * from './CommentsCount';
 
-
 export { default as Share } from './Share';
 export * from './Share';
-
 
 export { default as FacebookContext } from './FacebookContext';
 export * from './FacebookContext';
 
 export { default as FacebookPixelProvider } from './FacebookPixelProvider';
 export * from './FacebookPixelProvider';
+
+export { default as FacebookErrorBoundary } from './FacebookErrorBoundary';
+export * from './FacebookErrorBoundary';

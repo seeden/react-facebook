@@ -1,0 +1,55 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/style.css';
+
+:root {
+  --color-fd-background: #f7f9fc;
+  --color-fd-foreground: #1a2233;
+  --color-fd-muted: #eef1f6;
+  --color-fd-muted-foreground: #5a6478;
+  --color-fd-popover: #ffffff;
+  --color-fd-popover-foreground: #1f2937;
+  --color-fd-card: #f0f3f8;
+  --color-fd-card-foreground: #1a2233;
+  --color-fd-border: #d0d7e2;
+  --color-fd-primary: #1877f2;
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-secondary: #e8edf4;
+  --color-fd-secondary-foreground: #1a2233;
+  --color-fd-accent: #1877f226;
+  --color-fd-accent-foreground: #1a2233;
+  --color-fd-ring: #1877f2;
+}
+
+.dark {
+  --color-fd-background: #0c1322;
+  --color-fd-foreground: #e4e8f0;
+  --color-fd-muted: #151e30;
+  --color-fd-muted-foreground: #8d96a8;
+  --color-fd-popover: #111927;
+  --color-fd-popover-foreground: #d4d9e4;
+  --color-fd-card: #131c2e;
+  --color-fd-card-foreground: #e4e8f0;
+  --color-fd-border: #1e2d46;
+  --color-fd-primary: #4599ff;
+  --color-fd-primary-foreground: #ffffff;
+  --color-fd-secondary: #182338;
+  --color-fd-secondary-foreground: #e4e8f0;
+  --color-fd-accent: #4599ff1a;
+  --color-fd-accent-foreground: #e4e8f0;
+  --color-fd-ring: #4599ff;
+}
+
+body {
+  font-family: 'DM Sans', 'Segoe UI', sans-serif;
+}
+
+code,
+pre,
+kbd,
+samp {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+pre code {
+  display: block;
+}

@@ -52,14 +52,14 @@ npm run dev:docs
 
 ### Development Commands
 
-| Command | Description |
-|---------|-------------|
-| `npm run build` | Build the react-facebook package |
-| `npm run dev:docs` | Start documentation dev server at http://localhost:3000 |
-| `npm run test` | Run all tests |
-| `npm run test:component` | Run Cypress component tests |
-| `npm run typecheck` | Run TypeScript type checking |
-| `npm run lint` | Run code linting |
+| Command                  | Description                                             |
+| ------------------------ | ------------------------------------------------------- |
+| `npm run build`          | Build the react-facebook package                        |
+| `npm run dev:docs`       | Start documentation dev server at http://localhost:3000 |
+| `npm run test`           | Run all tests                                           |
+| `npm run test:component` | Run Cypress component tests                             |
+| `npm run typecheck`      | Run TypeScript type checking                            |
+| `npm run lint`           | Run code linting                                        |
 
 ## 📁 Project Structure
 
@@ -154,7 +154,7 @@ describe('MyComponent', () => {
         <MyComponent />
       </FacebookProvider>
     )
-    
+
     cy.get('[data-cy=my-component]').should('be.visible')
   })
 
@@ -164,7 +164,7 @@ describe('MyComponent', () => {
         <MyComponent />
       </FacebookProvider>
     )
-    
+
     // Test Facebook SDK interactions
     cy.window().should('have.property', 'FB')
   })
@@ -220,25 +220,30 @@ To add a new component to the playground:
 
 ```markdown
 ## Description
+
 Brief description of changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Testing
+
 - [ ] Added/updated tests
 - [ ] All tests pass
 - [ ] Tested with real Facebook integration
 
 ## Documentation
+
 - [ ] Updated README
 - [ ] Updated API docs
 - [ ] Added examples
 
 ## Checklist
+
 - [ ] Self-review completed
 - [ ] TypeScript types updated
 - [ ] No breaking changes (or properly documented)
@@ -296,7 +301,7 @@ export default function FacebookLogin(props: FacebookLoginProps) {
   } = props;
 
   // Hooks and logic here
-  
+
   // Children as function pattern
   if (typeof children === 'function') {
     return children({ onClick: handleLogin, isLoading, isDisabled });
@@ -352,7 +357,7 @@ export function useLogin(): LoginHookReturn {
 ### Component Checklist
 
 - [ ] **TypeScript interface** with proper prop types
-- [ ] **Default props** where appropriate  
+- [ ] **Default props** where appropriate
 - [ ] **Error handling** for Facebook SDK errors
 - [ ] **Loading states** for async operations
 - [ ] **Accessibility attributes** (ARIA labels, roles)
@@ -372,13 +377,13 @@ export function useLogin(): LoginHookReturn {
 // Example SDK integration pattern
 export default function MyFacebookComponent() {
   const { api, isLoading } = useFacebook();
-  
+
   const handleAction = useCallback(async () => {
     if (!api) {
       console.warn('Facebook SDK not available');
       return;
     }
-    
+
     try {
       const response = await api.ui({
         method: 'share',
@@ -411,29 +416,36 @@ export default function MyFacebookComponent() {
 
 ```markdown
 ## Bug Description
+
 Clear description of the bug
 
 ## Steps to Reproduce
+
 1. Step one
 2. Step two
 3. Step three
 
 ## Expected Behavior
+
 What should happen
 
 ## Actual Behavior
+
 What actually happens
 
 ## Environment
+
 - react-facebook version: x.x.x
 - React version: x.x.x
 - Browser: Chrome/Firefox/Safari
 - Facebook SDK version: (if relevant)
 
 ## Minimal Reproduction
+
 Code snippet or CodeSandbox link
 
 ## Additional Context
+
 Screenshots, console errors, etc.
 ```
 
@@ -448,29 +460,36 @@ Screenshots, console errors, etc.
 
 ### Feature Request Template
 
-```markdown
+````markdown
 ## Feature Description
+
 Clear description of the proposed feature
 
 ## Use Case
+
 Why is this feature needed? What problem does it solve?
 
 ## Proposed API
+
 How would the feature be used?
 
 ```typescript
 // Example usage
-<NewComponent 
+<NewComponent
   prop1="value"
   onAction={handleAction}
 />
 ```
+````
 
 ## Implementation Ideas
+
 Any thoughts on how to implement this?
 
 ## Alternatives Considered
+
 Other ways to solve this problem?
+
 ```
 
 ## 🤝 Community Guidelines
@@ -501,3 +520,4 @@ Thank you for contributing to React Facebook! 🚀
 ## License
 
 By contributing, you agree that your contributions will be licensed under the MIT License.
+```

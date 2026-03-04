@@ -1,0 +1,25 @@
+---
+title: Hooks
+description: React hooks for Facebook SDK integration
+---
+
+# Hooks
+
+React Facebook provides a comprehensive set of hooks for programmatic interaction with the Facebook SDK. Hooks give you fine-grained control over login flows, data fetching, sharing dialogs, event tracking, and more -- all with built-in loading and error state management.
+
+All hooks listed below must be used inside a [`<FacebookProvider>`](/docs/components/facebook-provider) (or, for pixel hooks, a `<FacebookPixelProvider>`).
+
+## Available Hooks
+
+| Hook                                             | Description                                                                                        |
+| ------------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| [`useLogin`](/docs/hooks/use-login)              | Handle Facebook login and logout with automatic loading and error state management                 |
+| [`useProfile`](/docs/hooks/use-profile)          | Fetch the logged-in user's Facebook profile with automatic data loading                            |
+| [`useLoginStatus`](/docs/hooks/use-login-status) | Monitor the user's Facebook login status in real time                                              |
+| [`useGraphAPI`](/docs/hooks/use-graph-api)       | Make Facebook Graph API calls with automatic loading, error, and data state management             |
+| [`useShare`](/docs/hooks/use-share)              | Share content via the Facebook Share dialog                                                        |
+| [`useFeed`](/docs/hooks/use-feed)                | Post to a user's feed via the Facebook Feed dialog                                                 |
+| [`useSend`](/docs/hooks/use-send)                | Send messages via the Facebook Send dialog                                                         |
+| [`useFacebook`](/docs/hooks/use-facebook)        | Access the Facebook SDK context, including the API instance, initialization, and locale management |
+| [`useLocale`](/docs/hooks/use-locale)            | Manage Facebook SDK locale dynamically with support for 40+ languages                              |
+| [`useSubscribe`](/docs/hooks/use-subscribe)      | Subscribe to Facebook SDK events with automatic cleanup                                            |

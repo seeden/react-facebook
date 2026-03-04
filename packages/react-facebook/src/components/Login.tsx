@@ -1,4 +1,12 @@
-import React, { type ReactNode, type ReactElement, type ComponentType, type ElementType, useEffect } from 'react';
+import {
+  type ReactNode,
+  type ReactElement,
+  type ComponentType,
+  type ElementType,
+  type CSSProperties,
+  useEffect,
+  useRef,
+} from 'react';
 import useLogin from '../hooks/useLogin';
 import useProfile from '../hooks/useProfile';
 import type { LoginOptions } from '../hooks/useLogin';
@@ -6,25 +14,24 @@ import type { LoginResponse } from '../utils/Facebook';
 
 type LoginRenderProps = {
   onClick: () => void;
-  isLoading: boolean;
+  loading: boolean;
   isDisabled: boolean;
 };
 
 export type LoginProps = Omit<LoginOptions, 'scope'> & {
   children?: ReactNode | ((props: LoginRenderProps) => ReactElement);
-  
+
   onSuccess?: (response: LoginResponse) => void;
   onError?: (error: Error) => void;
-  onProfileSuccess?: (profile: any) => void;
-  
+  onProfileSuccess?: (profile: Record<string, unknown>) => void;
+
   scope?: string | string[];
   fields?: string[];
-  
 
-  as?: ElementType | ComponentType<any>;
+  as?: ElementType | ComponentType<Record<string, unknown>>;
   disabled?: boolean;
-  
-  [key: string]: any;
+  className?: string;
+  style?: CSSProperties;
 };
 
 export default function Login(props: LoginProps) {
@@ -44,18 +51,21 @@ export default function Login(props: LoginProps) {
     ...rest
   } = props;
 
-  const { isLoading, login } = useLogin();
-  const { profile } = useProfile(fields);
+  const { loading, login } = useLogin();
+  const shouldFetchProfile = !!onProfileSuccess && fields.length > 0;
+  const { profile } = useProfile(fields, shouldFetchProfile);
 
+  const onProfileSuccessRef = useRef(onProfileSuccess);
+  onProfileSuccessRef.current = onProfileSuccess;
 
   useEffect(() => {
-    if (profile && onProfileSuccess) {
-      onProfileSuccess(profile);
+    if (profile && onProfileSuccessRef.current) {
+      onProfileSuccessRef.current(profile);
     }
-  }, [profile, onProfileSuccess]);
+  }, [profile]);
 
   const handleLogin = async () => {
-    if (isLoading || disabled) return;
+    if (loading || disabled) return;
 
     try {
       const response = await login({
@@ -68,17 +78,17 @@ export default function Login(props: LoginProps) {
 
       onSuccess?.(response);
     } catch (error) {
-      onError?.(error as Error);
+      onError?.(error instanceof Error ? error : new Error(String(error)));
     }
   };
 
-  const isDisabled = disabled || isLoading;
+  const isDisabled = disabled || loading;
 
   // Render props pattern
   if (typeof children === 'function') {
     return children({
       onClick: handleLogin,
-      isLoading,
+      loading,
       isDisabled,
     });
   }
@@ -88,9 +98,11 @@ export default function Login(props: LoginProps) {
     <Component
       onClick={handleLogin}
       disabled={isDisabled}
+      aria-busy={loading}
+      aria-label={loading ? 'Logging in...' : 'Login with Facebook'}
       {...rest}
     >
-      {isLoading ? 'Loading...' : (children || 'Login with Facebook')}
+      {loading ? 'Loading...' : children || 'Login with Facebook'}
     </Component>
   );
 }

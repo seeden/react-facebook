@@ -1,0 +1,129 @@
+---
+title: useShare
+description: Hook for sharing content via the Facebook Share dialog.
+---
+
+# useShare
+
+The `useShare` hook provides a function to open the Facebook Share dialog, along with loading and error state tracking.
+
+## Import
+
+```tsx
+import { useShare } from 'react-facebook';
+```
+
+## Return Value
+
+The hook returns an object with the following properties:
+
+| Property  | Type                                          | Description                                                                                                                  |
+| --------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `share`   | `(options: ShareOptions) => Promise<unknown>` | Function to open the Facebook Share dialog with the given options. Returns a promise that resolves with the dialog response. |
+| `loading` | `boolean`                                     | Whether the share request is in progress.                                                                                    |
+| `error`   | `Error \| undefined`                          | The error from the most recent share attempt, if any.                                                                        |
+
+### ShareOptions
+
+The `share` function accepts the following options:
+
+| Property      | Type                                       | Required | Description                                                                       |
+| ------------- | ------------------------------------------ | -------- | --------------------------------------------------------------------------------- |
+| `href`        | `string`                                   | Yes      | The URL to share.                                                                 |
+| `display`     | `'iframe' \| 'popup' \| 'async' \| 'page'` | Yes      | How the share dialog is rendered.                                                 |
+| `hashtag`     | `string`                                   | No       | A hashtag to include with the shared content (e.g. `'#example'`).                 |
+| `redirectUri` | `string`                                   | No       | The URL to redirect to after the share dialog closes (for `'page'` display mode). |
+
+## Usage
+
+```tsx
+function ShareComponent() {
+  const { share, loading, error } = useShare();
+
+  const handleShare = () => {
+    share({
+      href: 'https://example.com',
+      display: 'popup',
+      hashtag: '#example',
+    });
+  };
+
+  return (
+    <button onClick={handleShare} disabled={loading}>
+      Share
+    </button>
+  );
+}
+```
+
+## Share Current Page
+
+Use `window.location.href` to share the page the user is currently viewing.
+
+```tsx
+import { useShare } from 'react-facebook';
+
+function ShareCurrentPage() {
+  const { share, loading, error } = useShare();
+
+  const handleShare = async () => {
+    try {
+      await share({
+        href: window.location.href,
+        display: 'popup',
+      });
+      console.log('Page shared successfully');
+    } catch (err) {
+      console.error('Share failed:', err);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <button
+        onClick={handleShare}
+        disabled={loading}
+        className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+      >
+        {loading ? 'Sharing...' : 'Share this page'}
+      </button>
+
+      {error && <p className="text-sm text-red-600">Share failed: {error.message}</p>}
+    </div>
+  );
+}
+```
+
+## Share with Hashtag
+
+Include a hashtag with the shared content to improve discoverability. The `hashtag` option must start with `#`.
+
+```tsx
+import { useShare } from 'react-facebook';
+
+function ShareWithHashtag() {
+  const { share, loading } = useShare();
+
+  const handleShare = async () => {
+    try {
+      await share({
+        href: 'https://example.com/summer-sale',
+        display: 'popup',
+        hashtag: '#SummerSale',
+      });
+    } catch (err) {
+      console.error('Share cancelled or failed:', err);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleShare}
+      disabled={loading}
+      className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+    >
+      {loading ? 'Sharing...' : 'Share #SummerSale'}
+    </button>
+  );
+}
+```

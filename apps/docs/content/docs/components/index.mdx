@@ -1,0 +1,27 @@
+---
+title: Components
+description: React components for Facebook SDK integration
+---
+
+# Components
+
+React Facebook provides a set of declarative React components for embedding Facebook social plugins and UI elements. Components handle SDK initialization, XFBML parsing, and re-rendering automatically so you can add Facebook features with minimal boilerplate.
+
+All components must be rendered inside a [`<FacebookProvider>`](/docs/components/facebook-provider), which initializes the Facebook SDK and provides context to the component tree.
+
+## Available Components
+
+| Component                                                  | Description                                                                                                   |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| [`FacebookProvider`](/docs/components/facebook-provider)   | Initializes the Facebook SDK and provides context to all child components and hooks                           |
+| [`Login`](/docs/components/login)                          | Unified Facebook login component supporting button rendering, render props, and custom elements               |
+| [`Like`](/docs/components/like)                            | Renders a Facebook Like button via the XFBML social plugin                                                    |
+| [`Share`](/docs/components/share)                          | Renders a Facebook Share button via the XFBML social plugin                                                   |
+| [`ShareButton`](/docs/components/share-button)             | A customizable button that opens the Facebook Share dialog using the JavaScript SDK                           |
+| [`Comments`](/docs/components/comments)                    | Renders the Facebook Comments plugin for any URL                                                              |
+| [`CommentsCount`](/docs/components/comments-count)         | Displays the number of Facebook comments for a given URL                                                      |
+| [`EmbeddedPost`](/docs/components/embedded-post)           | Embeds a public Facebook post on your page                                                                    |
+| [`EmbeddedVideo`](/docs/components/embedded-video)         | Embeds a public Facebook video on your page                                                                   |
+| [`Page`](/docs/components/page)                            | Embeds a Facebook Page plugin showing timeline, events, and messages                                          |
+| [`FacebookErrorBoundary`](/docs/components/error-boundary) | Error boundary that catches Facebook SDK errors from ad blockers, network failures, and initialization issues |
+| [`FacebookPixelProvider`](/docs/components/pixel-provider) | Standalone provider for Facebook Pixel tracking without the full Facebook SDK                                 |

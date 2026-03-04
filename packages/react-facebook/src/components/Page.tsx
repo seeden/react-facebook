@@ -1,4 +1,4 @@
-import React, { memo, forwardRef, useMemo, type Ref } from 'react';
+import { memo, forwardRef, useMemo, type Ref } from 'react';
 import Parser, { type ParserProps } from './Parser';
 import getCurrentHref from '../utils/getCurrentHref';
 
@@ -47,9 +47,7 @@ function Page(props: PageProps, ref: Ref<HTMLElement>) {
     };
   }, [href, tabs, hideCover, width, height, showFacepile, hideCTA, smallHeader, adaptContainerWidth, lazy]);
 
-  return (
-    <Parser className={`fb-page ${className}`} style={style} data={data} {...rest} ref={ref} />
-  );
+  return <Parser className={`fb-page ${className}`} style={style} data={data} {...rest} ref={ref} />;
 }
 
 export default memo(forwardRef(Page));

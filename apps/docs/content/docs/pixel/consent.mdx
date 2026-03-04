@@ -1,0 +1,163 @@
+---
+title: Consent Management
+description: GDPR-compliant consent handling for Facebook Pixel tracking with grantConsent and revokeConsent.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Consent Management
+
+Facebook Pixel supports a consent mode that lets you comply with GDPR, ePrivacy, and other privacy regulations. When consent is revoked, pixel events are queued but not sent to Facebook until consent is granted.
+
+## How It Works
+
+Facebook's `fbq('consent', 'revoke')` tells the pixel to stop sending data. When you later call `fbq('consent', 'grant')`, all queued events are flushed and future events are sent immediately.
+
+`react-facebook` exposes this through the `grantConsent` and `revokeConsent` methods on the `usePixel` hook.
+
+## Basic Pattern
+
+```tsx
+import { FacebookProvider, usePixel } from 'react-facebook';
+
+function CookieBanner() {
+  const { grantConsent, revokeConsent } = usePixel();
+
+  return (
+    <div className="cookie-banner">
+      <p>We use cookies to measure advertising effectiveness.</p>
+      <button onClick={() => grantConsent()}>Accept</button>
+      <button onClick={() => revokeConsent()}>Decline</button>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID" pixelId="YOUR_PIXEL_ID">
+      <CookieBanner />
+      <MainContent />
+    </FacebookProvider>
+  );
+}
+```
+
+## Consent-First Setup
+
+To ensure no data is sent before the user consents, revoke consent immediately and only grant it after explicit user action.
+
+```tsx
+import { usePixel } from 'react-facebook';
+import { useEffect } from 'react';
+
+function ConsentGate({ children }: { children: React.ReactNode }) {
+  const { revokeConsent, grantConsent, loading } = usePixel();
+
+  useEffect(() => {
+    // Revoke consent as soon as pixel loads
+    if (!loading) {
+      const hasConsent = localStorage.getItem('fb-pixel-consent') === 'granted';
+      if (hasConsent) {
+        grantConsent();
+      } else {
+        revokeConsent();
+      }
+    }
+  }, [loading, grantConsent, revokeConsent]);
+
+  const handleAccept = async () => {
+    localStorage.setItem('fb-pixel-consent', 'granted');
+    await grantConsent();
+  };
+
+  const handleDecline = async () => {
+    localStorage.setItem('fb-pixel-consent', 'revoked');
+    await revokeConsent();
+  };
+
+  return (
+    <>
+      {children}
+      <CookieBanner onAccept={handleAccept} onDecline={handleDecline} />
+    </>
+  );
+}
+```
+
+<Callout type="warn">
+  The pixel script itself is still loaded when consent is revoked. What changes is whether event data is transmitted to
+  Facebook. If your privacy policy requires that no Facebook scripts load at all before consent, use the `lazy` prop on
+  the provider and only call `init()` after consent is granted.
+</Callout>
+
+## Fully Deferred Loading
+
+If you need to prevent any Facebook script from loading before consent:
+
+```tsx
+import { FacebookPixelProvider, usePixel } from 'react-facebook';
+
+function TrackingManager() {
+  const { init, grantConsent, track } = usePixel({ lazy: true });
+
+  const handleAccept = async () => {
+    // Load the pixel script only after consent
+    await init();
+    await grantConsent();
+
+    // Now safe to track
+    await track('PageView');
+  };
+
+  return <button onClick={handleAccept}>Accept Cookies</button>;
+}
+
+function App() {
+  return (
+    <FacebookPixelProvider pixelId="YOUR_PIXEL_ID" lazy>
+      <TrackingManager />
+    </FacebookPixelProvider>
+  );
+}
+```
+
+## Persisting Consent
+
+The library does not persist consent state for you. You are responsible for storing the user's choice (e.g., in `localStorage`, a cookie, or your backend) and restoring it on subsequent page loads.
+
+A typical pattern:
+
+1. On first visit, call `revokeConsent()` and show a cookie banner.
+2. When the user accepts, call `grantConsent()` and store `'granted'` in `localStorage`.
+3. On subsequent visits, read `localStorage` and call `grantConsent()` or `revokeConsent()` accordingly.
+
+## Integration with Cookie Consent Libraries
+
+If you use a third-party consent management platform (OneTrust, CookieBot, etc.), call `grantConsent()` or `revokeConsent()` in response to its callback.
+
+```tsx
+import { usePixel } from 'react-facebook';
+import { useEffect } from 'react';
+
+function ConsentBridge() {
+  const { grantConsent, revokeConsent } = usePixel();
+
+  useEffect(() => {
+    // Example: listen for a consent management platform callback
+    window.addEventListener('consentChanged', (e: CustomEvent<{ marketing: boolean }>) => {
+      if (e.detail.marketing) {
+        grantConsent();
+      } else {
+        revokeConsent();
+      }
+    });
+  }, [grantConsent, revokeConsent]);
+
+  return null;
+}
+```
+
+<Callout type="info">
+  All tracking methods (`track`, `trackCustom`, `pageView`) are safe to call regardless of consent state. Facebook
+  handles the queuing internally -- events made while consent is revoked are held and flushed when consent is granted.
+</Callout>

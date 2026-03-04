@@ -1,0 +1,125 @@
+---
+title: usePixel
+description: Hook for accessing Facebook Pixel tracking functionality including standard events, custom events, and consent management.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# usePixel
+
+`usePixel` provides access to all Facebook Pixel tracking methods. It must be used inside a `FacebookPixelProvider` or a `FacebookProvider` with the `pixelId` prop.
+
+```tsx
+import { usePixel } from 'react-facebook';
+```
+
+## Return Value
+
+| Property        | Type                                                                   | Description                                             |
+| --------------- | ---------------------------------------------------------------------- | ------------------------------------------------------- |
+| `loading`       | `boolean`                                                              | `true` while the pixel script is loading                |
+| `error`         | `Error \| undefined`                                                   | Error if the pixel script failed to load                |
+| `init`          | `() => Promise<void>`                                                  | Manually initialize the pixel (useful with `lazy` mode) |
+| `pixel`         | `FacebookPixelInstance \| undefined`                                   | The underlying pixel instance (for advanced use)        |
+| `pageView`      | `() => Promise<void>`                                                  | Fire a `PageView` event                                 |
+| `track`         | `(eventName: string, data?: Record<string, unknown>) => Promise<void>` | Fire a standard event                                   |
+| `trackCustom`   | `(eventName: string, data?: Record<string, unknown>) => Promise<void>` | Fire a custom event                                     |
+| `grantConsent`  | `() => Promise<void>`                                                  | Grant consent for pixel tracking                        |
+| `revokeConsent` | `() => Promise<void>`                                                  | Revoke consent for pixel tracking                       |
+| `fbq`           | `(...args: unknown[]) => Promise<void>`                                | Direct access to the underlying `fbq()` function        |
+
+## Basic Usage
+
+```tsx
+import { usePixel } from 'react-facebook';
+
+function PurchaseButton() {
+  const { track, loading } = usePixel();
+
+  return (
+    <button
+      disabled={loading}
+      onClick={() =>
+        track('Purchase', {
+          value: 9.99,
+          currency: 'USD',
+          content_ids: ['product-123'],
+          content_type: 'product',
+        })
+      }
+    >
+      Buy Now
+    </button>
+  );
+}
+```
+
+## Tracking Custom Events
+
+Use `trackCustom` for events that are not in the standard Facebook event list.
+
+```tsx
+function PromoCard() {
+  const { trackCustom } = usePixel();
+
+  return (
+    <div
+      onClick={() =>
+        trackCustom('PromoClicked', {
+          promo_id: 'summer-sale-2025',
+          discount: '20%',
+        })
+      }
+    >
+      Summer Sale -- 20% off!
+    </div>
+  );
+}
+```
+
+## Lazy Initialization
+
+By default, the pixel script loads as soon as the provider mounts. Pass `lazy` to delay initialization until you call `init()` manually.
+
+```tsx
+function CookieBanner() {
+  const { init } = usePixel({ lazy: true });
+
+  return <button onClick={() => init()}>Accept Cookies & Enable Tracking</button>;
+}
+```
+
+## Direct fbq Access
+
+For advanced use cases not covered by the convenience methods, use `fbq` to call the Facebook Pixel function directly.
+
+```tsx
+function AdvancedTracking() {
+  const { fbq } = usePixel();
+
+  const handleClick = async () => {
+    // Track a single pixel (multi-pixel setup)
+    await fbq('trackSingle', 'PIXEL_ID_2', 'Lead', { value: 50 });
+  };
+
+  return <button onClick={handleClick}>Submit Lead</button>;
+}
+```
+
+## Error Handling
+
+```tsx
+function TrackingStatus() {
+  const { loading, error } = usePixel();
+
+  if (loading) return <p>Loading pixel...</p>;
+  if (error) return <p>Pixel unavailable: {error.message}</p>;
+
+  return <p>Pixel active</p>;
+}
+```
+
+<Callout type="warn">
+  `usePixel` must be used inside a `FacebookPixelProvider` or a `FacebookProvider` with the `pixelId` prop. If called
+  outside of either, it throws an error with a descriptive message.
+</Callout>

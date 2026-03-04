@@ -1,0 +1,166 @@
+---
+title: useLoginStatus
+description: Hook for monitoring the user's Facebook login status in real time.
+---
+
+# useLoginStatus
+
+The `useLoginStatus` hook fetches the current Facebook login status on mount and subscribes to the `auth.statusChange` event so it stays up to date when the user logs in or out.
+
+## Import
+
+```tsx
+import { useLoginStatus } from 'react-facebook';
+```
+
+## Return Value
+
+The hook returns an object with the following properties:
+
+| Property  | Type                       | Description                                                                                                    |
+| --------- | -------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `status`  | `LoginStatus \| undefined` | The current login status. One of `'connected'`, `'authorization_expired'`, `'not_authorized'`, or `'unknown'`. |
+| `loading` | `boolean`                  | Whether the initial status check is in progress.                                                               |
+| `error`   | `Error \| undefined`       | The error from the status check, if any.                                                                       |
+
+### LoginStatus Values
+
+| Value                     | Description                                                                 |
+| ------------------------- | --------------------------------------------------------------------------- |
+| `'connected'`             | The user is logged into Facebook and has authorized your app.               |
+| `'authorization_expired'` | The user was previously authorized but the authorization has expired.       |
+| `'not_authorized'`        | The user is logged into Facebook but has not authorized your app.           |
+| `'unknown'`               | The user is not logged into Facebook or the status has not been determined. |
+
+## Usage
+
+```tsx
+function StatusComponent() {
+  const { status, loading } = useLoginStatus();
+
+  if (loading) return <p>Checking status...</p>;
+
+  return <p>Status: {status}</p>;
+}
+```
+
+## Auth State Machine
+
+Render different UI for each possible login status, treating the status as a state machine.
+
+```tsx
+import { useLoginStatus } from 'react-facebook';
+
+function AuthStateMachine() {
+  const { status, loading, error } = useLoginStatus();
+
+  if (loading) {
+    return (
+      <div className="flex items-center gap-2 text-gray-500">
+        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-gray-600" />
+        Checking authentication...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-md border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        Could not determine login status: {error.message}
+      </div>
+    );
+  }
+
+  switch (status) {
+    case 'connected':
+      return (
+        <div className="rounded-md bg-green-50 p-4 text-green-800">
+          <p className="font-medium">Connected</p>
+          <p className="text-sm">You are logged in and have authorized this app.</p>
+        </div>
+      );
+
+    case 'not_authorized':
+      return (
+        <div className="rounded-md bg-yellow-50 p-4 text-yellow-800">
+          <p className="font-medium">Not Authorized</p>
+          <p className="text-sm">
+            You are logged into Facebook but have not authorized this app. Please click "Login" to grant permissions.
+          </p>
+        </div>
+      );
+
+    case 'authorization_expired':
+      return (
+        <div className="rounded-md bg-orange-50 p-4 text-orange-800">
+          <p className="font-medium">Authorization Expired</p>
+          <p className="text-sm">Your previous authorization has expired. Please log in again to continue.</p>
+        </div>
+      );
+
+    case 'unknown':
+    default:
+      return (
+        <div className="rounded-md bg-gray-50 p-4 text-gray-700">
+          <p className="font-medium">Not Connected</p>
+          <p className="text-sm">You are not currently logged into Facebook.</p>
+        </div>
+      );
+  }
+}
+```
+
+## With Login/Logout
+
+Combine `useLoginStatus` with `useLogin` to conditionally render the appropriate action button based on the current session state. The `logout` function is available from `useLogin`.
+
+```tsx
+import { useLoginStatus, useLogin } from 'react-facebook';
+
+function AuthControls() {
+  const { status, loading: isCheckingStatus } = useLoginStatus();
+  const { login, logout, loading: isLoggingIn } = useLogin();
+
+  const handleLogin = async () => {
+    try {
+      await login({ scope: 'email,public_profile' });
+    } catch (err) {
+      console.error('Login failed:', err);
+    }
+  };
+
+  if (isCheckingStatus) {
+    return <p className="text-sm text-gray-400">Loading...</p>;
+  }
+
+  if (status === 'connected') {
+    return (
+      <div className="flex items-center gap-3">
+        <span className="inline-block h-2 w-2 rounded-full bg-green-500" />
+        <span className="text-sm text-gray-700">Connected</span>
+        <button
+          onClick={logout}
+          disabled={isLoggingIn}
+          className="rounded-md border px-3 py-1 text-sm hover:bg-gray-50 disabled:opacity-50"
+        >
+          {isLoggingIn ? 'Signing out...' : 'Sign out'}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-3">
+      <span className="inline-block h-2 w-2 rounded-full bg-gray-400" />
+      <span className="text-sm text-gray-500">Not connected</span>
+      <button
+        onClick={handleLogin}
+        disabled={isLoggingIn}
+        className="rounded-md bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+      >
+        {isLoggingIn ? 'Connecting...' : 'Log in'}
+      </button>
+    </div>
+  );
+}
+```

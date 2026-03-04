@@ -1,0 +1,168 @@
+---
+title: Error Handling
+description: Handling Facebook SDK errors, ad-blocker detection, script timeouts, and retry strategies with FacebookErrorBoundary.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Error Handling
+
+Network failures, ad blockers, and script injection issues can all prevent the Facebook SDK from loading. `react-facebook` provides multiple layers of error handling so your app degrades gracefully.
+
+## FacebookErrorBoundary
+
+`FacebookErrorBoundary` is an error boundary component that catches errors thrown by Facebook SDK components and hooks. It supports both static fallback UI and render-function fallbacks with a retry mechanism.
+
+### Static Fallback
+
+```tsx
+import { FacebookProvider, FacebookErrorBoundary } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookErrorBoundary fallback={<p>Facebook features are unavailable.</p>}>
+      <FacebookProvider appId="YOUR_APP_ID">
+        <MainContent />
+      </FacebookProvider>
+    </FacebookErrorBoundary>
+  );
+}
+```
+
+### Render Function Fallback with Retry
+
+The render function receives the caught `error` and a `reset` function to retry.
+
+```tsx
+import { FacebookProvider, FacebookErrorBoundary } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookErrorBoundary
+      fallback={(error, reset) => (
+        <div>
+          <p>Facebook features unavailable: {error.message}</p>
+          <button onClick={reset}>Retry</button>
+        </div>
+      )}
+      onError={(error, errorInfo) => {
+        // Send to your error tracking service
+        console.error('Facebook error:', error, errorInfo);
+      }}
+    >
+      <FacebookProvider appId="YOUR_APP_ID">
+        <MainContent />
+      </FacebookProvider>
+    </FacebookErrorBoundary>
+  );
+}
+```
+
+### Props
+
+| Prop       | Type                                                          | Description                                                                         |
+| ---------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `fallback` | `ReactNode \| (error: Error, reset: () => void) => ReactNode` | UI to render when an error is caught. Can be a static element or a render function. |
+| `onError`  | `(error: Error, errorInfo: ErrorInfo) => void`                | Callback invoked when an error is caught. Use for logging or analytics.             |
+| `children` | `ReactNode`                                                   | The component tree to protect.                                                      |
+
+## SDK Load Timeout
+
+The Facebook SDK loader includes a **10-second timeout**. If the SDK script does not initialize within 10 seconds, the promise rejects with a descriptive error:
+
+```
+[react-facebook] Facebook SDK loading timed out after 10 seconds.
+This may be caused by an ad blocker or network issue.
+```
+
+After a timeout, the `loadingPromise` is cleared, which means the next call to `init()` will attempt to load the SDK again -- providing automatic retry support.
+
+## Ad-Blocker Detection
+
+When the SDK script tag fires an `onerror` event (typically because an ad blocker blocked the request), the library rejects with:
+
+```
+[react-facebook] Failed to load Facebook SDK from https://connect.facebook.net/...
+This may be caused by an ad blocker or network issue.
+```
+
+Similarly, the pixel script reports:
+
+```
+[react-facebook] Failed to load Facebook Pixel script.
+This may be caused by an ad blocker or network issue.
+```
+
+You can detect ad blockers by checking for these errors:
+
+```tsx
+import { usePixel } from 'react-facebook';
+
+function AdBlockWarning() {
+  const { error } = usePixel();
+
+  if (error?.message.includes('ad blocker')) {
+    return <p>Please disable your ad blocker for full functionality.</p>;
+  }
+
+  return null;
+}
+```
+
+## Retry After Failure
+
+When the SDK fails to load (timeout or network error), the internal `loadingPromise` is reset. This means calling `init()` again will retry loading.
+
+```tsx
+import { useFacebook } from 'react-facebook';
+
+function RetryButton() {
+  const { init, error, loading } = useFacebook();
+
+  if (!error) return null;
+
+  return (
+    <button onClick={() => init()} disabled={loading}>
+      {loading ? 'Retrying...' : 'Retry Loading Facebook'}
+    </button>
+  );
+}
+```
+
+## Error Prefixes
+
+All errors thrown by `react-facebook` are prefixed with `[react-facebook]` for easy identification in logs and error tracking services. Common prefixes:
+
+| Error                                                                        | Cause                                   |
+| ---------------------------------------------------------------------------- | --------------------------------------- |
+| `[react-facebook] Facebook SDK loading timed out after 10 seconds...`        | SDK script did not load in time         |
+| `[react-facebook] Failed to load Facebook SDK from ...`                      | Script blocked or network failure       |
+| `[react-facebook] Failed to load Facebook Pixel script...`                   | Pixel script blocked or network failure |
+| `[react-facebook] usePixel must be used within a <FacebookPixelProvider>...` | Hook called outside provider            |
+| `[react-facebook] useFacebook must be used within a <FacebookProvider>...`   | Hook called outside provider            |
+
+## Hook-Level Error State
+
+Every hook exposes an `error` property for inline error handling without an error boundary.
+
+```tsx
+import { useLogin } from 'react-facebook';
+
+function LoginButton() {
+  const { login, error, loading } = useLogin();
+
+  return (
+    <div>
+      <button onClick={() => login({ scope: 'email' })} disabled={loading}>
+        Login
+      </button>
+      {error && <p className="error">{error.message}</p>}
+    </div>
+  );
+}
+```
+
+<Callout type="info">
+  Action hooks (`useLogin`, `useShare`, `useFeed`, `useSend`) both set the `error` state and rethrow the error so you
+  can catch it with try/catch. Data hooks (`useProfile`, `useGraphAPI`) only set the error state.
+</Callout>

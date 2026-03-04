@@ -1,0 +1,112 @@
+---
+title: Performance
+description: Performance optimization techniques for react-facebook including lazy loading, tree shaking, context memoization, and bundle size.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Performance
+
+`react-facebook` is designed to be lightweight and efficient. Here are the key performance characteristics and optimization techniques.
+
+## Bundle Size
+
+The library is under **15KB gzipped** total. Because it uses tree-shakeable ESM exports, you only ship the code you actually import.
+
+For example, if your app only uses `FacebookProvider` and `useLogin`, the unused pixel, social plugin, and embed components are excluded from your bundle by your bundler's tree shaking.
+
+## Tree Shaking
+
+Import only the components and hooks you need:
+
+```tsx
+// Good -- only imports what you use
+import { FacebookProvider, useLogin, useProfile } from 'react-facebook';
+
+// Also good -- named imports from the same entry point
+import { Login, Like } from 'react-facebook';
+```
+
+All public exports are available from the main `react-facebook` entry point as named exports. There is no need to import from deep paths.
+
+Modern bundlers (webpack 5, Vite, esbuild, Turbopack) will automatically eliminate unused exports.
+
+## Lazy Loading
+
+The `lazy` prop on `FacebookProvider` and `FacebookPixelProvider` defers loading the Facebook SDK and Pixel scripts until they are actually needed.
+
+### Default Behavior (Eager)
+
+```tsx
+// SDK script starts loading immediately on mount
+<FacebookProvider appId="YOUR_APP_ID">
+  <App />
+</FacebookProvider>
+```
+
+### Lazy Behavior
+
+```tsx
+// SDK script loads only when a hook triggers init()
+<FacebookProvider appId="YOUR_APP_ID" lazy>
+  <App />
+</FacebookProvider>
+```
+
+With `lazy`, the SDK is not loaded until the first call to a method that requires it:
+
+- `useLogin().login()` triggers SDK load
+- `useShare().share()` triggers SDK load
+- `usePixel().track()` triggers Pixel load
+- `usePageView()` triggers Pixel load
+
+This is especially useful when Facebook features are behind a user interaction (e.g., a login button below the fold) and you do not want to block the initial page load.
+
+### Impact on Core Web Vitals
+
+Deferring the Facebook SDK script removes it from the critical rendering path. This can improve:
+
+- **Largest Contentful Paint (LCP)** -- One fewer render-blocking script during initial load.
+- **Total Blocking Time (TBT)** -- The SDK initialization work is deferred to when it is needed.
+
+## Context Memoization
+
+`FacebookProvider` and `FacebookPixelProvider` memoize their context values using `useMemo` and stabilize callback references with `useCallback`. This means child components do not re-render when unrelated state in the provider changes.
+
+You do not need to add your own memoization around these providers -- it is already handled.
+
+```tsx
+// The context value is memoized internally.
+// Children only re-render when loading, error, or api actually change.
+<FacebookProvider appId="YOUR_APP_ID">
+  <App />
+</FacebookProvider>
+```
+
+## Recommendations
+
+| Technique               | When to use                                          |
+| ----------------------- | ---------------------------------------------------- |
+| `lazy` prop             | Facebook features are not needed on first render     |
+| Tree shaking            | Always -- just import what you use                   |
+| `FacebookErrorBoundary` | Prevents re-render storms from SDK failures          |
+| Single provider         | Use one `FacebookProvider` at the root, not multiple |
+
+<Callout type="info">
+  The Facebook SDK script itself (loaded from `connect.facebook.net`) is roughly 200-300KB and is loaded asynchronously.
+  The `lazy` prop controls when this external script is fetched, not the size of your JavaScript bundle.
+</Callout>
+
+## Measuring Impact
+
+Use your bundler's analysis tools to verify tree shaking:
+
+```bash
+# webpack
+npx webpack-bundle-analyzer stats.json
+
+# Vite
+npx vite-bundle-visualizer
+```
+
+Look for `react-facebook` in the output and confirm only the modules you import are included.

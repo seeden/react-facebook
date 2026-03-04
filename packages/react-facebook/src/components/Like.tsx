@@ -1,4 +1,4 @@
-import React, { memo, forwardRef, useMemo, type Ref } from 'react';
+import { memo, forwardRef, useMemo, type Ref } from 'react';
 import Parser, { type ParserProps } from './Parser';
 import getCurrentHref from '../utils/getCurrentHref';
 
@@ -49,9 +49,7 @@ function Like(props: LikeProps, ref: Ref<HTMLElement>) {
     };
   }, [referral, href, layout, colorScheme, action, showFaces, share, width, size, kidDirectedSite, lazy]);
 
-  return (
-    <Parser className={`fb-like ${className}`} data={data} {...rest} ref={ref} />
-  );
+  return <Parser className={`fb-like ${className}`} data={data} {...rest} ref={ref} />;
 }
 
 export default memo(forwardRef(Like));

@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, useMemo, type Ref } from 'react';
+import { forwardRef, memo, useMemo, type Ref } from 'react';
 import Parser, { type ParserProps } from './Parser';
 import getCurrentHref from '../utils/getCurrentHref';
 
@@ -38,9 +38,7 @@ function Comments(props: CommentsProps, ref: Ref<HTMLElement>) {
     };
   }, [colorScheme, href, numPosts, orderBy, width, mobile, lazy]);
 
-  return (
-    <Parser className={`fb-comments ${className}`} data={data} {...rest} ref={ref} />
-  );
+  return <Parser className={`fb-comments ${className}`} data={data} {...rest} ref={ref} />;
 }
 
 export default memo(forwardRef(Comments));

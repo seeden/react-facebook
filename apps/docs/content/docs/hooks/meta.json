@@ -1,0 +1,16 @@
+{
+  "title": "Hooks",
+  "pages": [
+    "index",
+    "use-login",
+    "use-profile",
+    "use-login-status",
+    "use-graph-api",
+    "use-share",
+    "use-feed",
+    "use-send",
+    "use-facebook",
+    "use-locale",
+    "use-subscribe"
+  ]
+}

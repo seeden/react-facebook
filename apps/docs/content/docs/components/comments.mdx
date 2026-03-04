@@ -1,0 +1,64 @@
+---
+title: Comments
+description: Renders the Facebook Comments plugin for any URL.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The `Comments` component embeds the Facebook Comments plugin on your page, letting visitors comment on any URL using their Facebook account.
+
+<Callout title="Try it live">
+  Adjust post count, ordering, and color scheme in the [Playground](/playground#comments).
+</Callout>
+
+<Callout type="warn" title="EU/EEA Limitations">
+  The Comments plugin is affected by Facebook's privacy changes in European regions. Users in EU/EEA countries and the
+  United Kingdom must be logged into Facebook **and** have consented to "App and Website Cookies" in their Facebook
+  settings. If these requirements are not met, the Comments plugin will not be visible. This is a Facebook platform
+  limitation. Consider alternative commenting solutions for European users.
+</Callout>
+
+## Import
+
+```tsx
+import { Comments } from 'react-facebook';
+```
+
+## Props
+
+| Prop          | Type                       | Default          | Description                                                   |
+| ------------- | -------------------------- | ---------------- | ------------------------------------------------------------- |
+| `href`        | `string`                   | Current page URL | The URL for which comments are displayed.                     |
+| `numPosts`    | `number`                   | `undefined`      | Number of comments to show by default.                        |
+| `orderBy`     | `'reverse_time' \| 'time'` | `undefined`      | Comment ordering. `'reverse_time'` shows newest first.        |
+| `width`       | `number \| string`         | `undefined`      | Width of the plugin in pixels or as a string (e.g. `'100%'`). |
+| `colorScheme` | `'light' \| 'dark'`        | `undefined`      | Color scheme for the plugin.                                  |
+| `mobile`      | `boolean`                  | `false`          | Force the mobile-optimized version.                           |
+| `lazy`        | `boolean`                  | `false`          | Lazy-load the plugin.                                         |
+| `className`   | `string`                   | `''`             | Additional CSS class names appended to the container.         |
+
+## Usage
+
+### Basic
+
+```tsx
+<Comments href="https://example.com/post" />
+```
+
+### With Options
+
+```tsx
+<Comments href="https://example.com/post" numPosts={5} orderBy="reverse_time" width="100%" />
+```
+
+### Dark Theme
+
+```tsx
+<Comments href="https://example.com/post" colorScheme="dark" numPosts={10} width={600} />
+```
+
+### Mobile Optimized
+
+```tsx
+<Comments href="https://example.com/post" mobile numPosts={3} />
+```

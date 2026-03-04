@@ -1,0 +1,144 @@
+---
+title: useSend
+description: Hook for sending messages via the Facebook Send dialog.
+---
+
+# useSend
+
+The `useSend` hook provides a function to open the Facebook Send dialog, which allows users to send a private message with a link. It tracks loading and error states automatically.
+
+## Import
+
+```tsx
+import { useSend } from 'react-facebook';
+```
+
+## Return Value
+
+The hook returns an object with the following properties:
+
+| Property  | Type                                         | Description                                                                                                                 |
+| --------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `send`    | `(options: SendOptions) => Promise<unknown>` | Function to open the Facebook Send dialog with the given options. Returns a promise that resolves with the dialog response. |
+| `loading` | `boolean`                                    | Whether the send request is in progress.                                                                                    |
+| `error`   | `Error \| undefined`                         | The error from the most recent send attempt, if any.                                                                        |
+
+### SendOptions
+
+The `send` function accepts the following options:
+
+| Property      | Type     | Required | Description                                                    |
+| ------------- | -------- | -------- | -------------------------------------------------------------- |
+| `to`          | `string` | Yes      | The ID of the recipient.                                       |
+| `link`        | `string` | No       | The URL to send. Defaults to the current page URL.             |
+| `appId`       | `string` | No       | The Facebook App ID. Defaults to the app ID from the provider. |
+| `display`     | `string` | No       | How the send dialog is rendered (e.g. `'popup'`, `'page'`).    |
+| `redirectURI` | `string` | No       | The URL to redirect to after the dialog closes.                |
+
+## Usage
+
+```tsx
+function SendComponent() {
+  const { send, loading } = useSend();
+
+  const handleSend = () => {
+    send({
+      to: 'friend_id',
+      link: 'https://example.com',
+    });
+  };
+
+  return (
+    <button onClick={handleSend} disabled={loading}>
+      Send
+    </button>
+  );
+}
+```
+
+## Send to Specific User
+
+Use the `to` parameter to pre-fill the recipient in the Send dialog. You can pass any valid Facebook user ID.
+
+```tsx
+import { useSend } from 'react-facebook';
+
+interface SendToUserProps {
+  recipientId: string;
+  recipientName: string;
+}
+
+function SendToUser({ recipientId, recipientName }: SendToUserProps) {
+  const { send, loading, error } = useSend();
+
+  const handleSend = async () => {
+    try {
+      await send({
+        to: recipientId,
+        link: 'https://example.com/invite',
+        display: 'popup',
+      });
+      console.log('Message sent successfully');
+    } catch (err) {
+      console.error('Send failed:', err);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-start gap-2">
+      <button
+        onClick={handleSend}
+        disabled={loading}
+        className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+      >
+        {loading ? 'Opening...' : `Send to ${recipientName}`}
+      </button>
+
+      {error && <p className="text-sm text-red-600">{error.message}</p>}
+    </div>
+  );
+}
+```
+
+## With Loading State
+
+Disable the send button and show a spinner while the Send dialog is opening to prevent duplicate actions.
+
+```tsx
+import { useSend } from 'react-facebook';
+import { useState } from 'react';
+
+function SendWithLoadingState() {
+  const { send, loading } = useSend();
+  const [sent, setSent] = useState(false);
+
+  const handleSend = async () => {
+    try {
+      await send({
+        to: 'friend_id',
+        link: 'https://example.com/promotion',
+      });
+      setSent(true);
+    } catch (err) {
+      console.error('Send failed:', err);
+    }
+  };
+
+  if (sent) {
+    return <p className="text-sm text-green-600 font-medium">Message sent! Thanks for sharing.</p>;
+  }
+
+  return (
+    <button
+      onClick={handleSend}
+      disabled={loading}
+      className="inline-flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+    >
+      {loading && (
+        <span className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+      )}
+      {loading ? 'Sending...' : 'Send to a Friend'}
+    </button>
+  );
+}
+```

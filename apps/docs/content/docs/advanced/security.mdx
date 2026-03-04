@@ -1,0 +1,127 @@
+---
+title: Security & GDPR
+description: Security best practices and GDPR compliance guidance for react-facebook including app secrets, token handling, and EU/EEA limitations.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Security & GDPR
+
+This guide covers security best practices and privacy compliance when using `react-facebook`.
+
+## Never Expose Your App Secret
+
+Your Facebook **App Secret** must never appear in client-side code. The App Secret is used for server-to-server communication (e.g., verifying webhook signatures, exchanging tokens). If exposed in the browser, an attacker could impersonate your application.
+
+<Callout type="error">
+  The `appId` passed to `FacebookProvider` is safe to include in client-side code -- it is a public identifier. The
+  **App Secret** is a completely separate credential and must only be used on your server.
+</Callout>
+
+```tsx
+// SAFE -- appId is public
+<FacebookProvider appId="123456789">
+  <App />
+</FacebookProvider>
+```
+
+```tsx
+// NEVER do this -- app secret must stay on the server
+const appSecret = 'abc123secret'; // DO NOT put this in client code
+```
+
+## Token Handling Best Practices
+
+When a user logs in via `useLogin` or the `Login` component, you receive a short-lived **access token**. Follow these guidelines:
+
+1. **Send the token to your server immediately.** Exchange the short-lived token for a long-lived token on the server using the Facebook Graph API.
+
+2. **Do not store access tokens in localStorage.** LocalStorage is accessible to any JavaScript on the page, including third-party scripts and XSS payloads. If you need to persist a session, use HTTP-only cookies set by your server.
+
+3. **Validate tokens server-side.** Before trusting any data from a client-provided token, verify it with the Facebook debug_token endpoint.
+
+```tsx
+function LoginButton() {
+  const { login } = useLogin();
+
+  const handleLogin = async () => {
+    const response = await login({ scope: 'email' });
+
+    // Send the token to your server for validation and exchange
+    await fetch('/api/auth/facebook', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        accessToken: response.authResponse.accessToken,
+      }),
+    });
+  };
+
+  return <button onClick={handleLogin}>Login with Facebook</button>;
+}
+```
+
+## GDPR and Pixel Consent
+
+Under the General Data Protection Regulation (GDPR) and ePrivacy Directive, you must obtain user consent before tracking activity with Facebook Pixel in the EU/EEA.
+
+`react-facebook` provides built-in consent management through the `usePixel` hook:
+
+- **`revokeConsent()`** -- Tells the pixel to stop transmitting data. Events are queued locally.
+- **`grantConsent()`** -- Resumes transmission and flushes queued events.
+
+See the [Consent Management](/docs/pixel/consent) page for detailed implementation patterns.
+
+### Recommended Flow
+
+1. Load the pixel with consent revoked by default for EU/EEA visitors.
+2. Show a cookie consent banner.
+3. Call `grantConsent()` only after the user explicitly opts in.
+4. Persist the choice and restore it on subsequent visits.
+
+### Fully Deferred Loading
+
+If your legal interpretation requires that no Facebook scripts load before consent, use the `lazy` prop and only call `init()` after consent is granted.
+
+```tsx
+<FacebookPixelProvider pixelId="YOUR_PIXEL_ID" lazy>
+  <ConsentGate />
+</FacebookPixelProvider>
+```
+
+## EU/EEA Limitations for Social Plugins
+
+Due to EU data protection regulations, Facebook has imposed restrictions on certain social plugins for users in the EU and EEA:
+
+- **Like Button** -- Facebook may limit or disable the Like button for EU/EEA visitors. The component will render but may not function.
+- **Comments Plugin** -- Similar restrictions may apply. Facebook can block the comments widget from loading for EU/EEA IP addresses.
+
+These restrictions are enforced by Facebook's servers, not by `react-facebook`. There is no client-side workaround. If your audience is primarily in the EU/EEA, consider:
+
+- Providing fallback UI for social plugins using `FacebookErrorBoundary`.
+- Using native share links (`https://www.facebook.com/sharer/sharer.php?u=...`) as an alternative to the Like/Share widgets.
+
+<Callout type="warn">
+  Facebook's EU/EEA restrictions can change without notice as regulatory requirements evolve. Monitor the [Facebook
+  Platform Changelog](https://developers.facebook.com/docs/graph-api/changelog) for updates.
+</Callout>
+
+## Content Security Policy (CSP)
+
+If your site uses a Content Security Policy, you need to allow the Facebook SDK and Pixel domains:
+
+```
+script-src 'self' https://connect.facebook.net;
+img-src 'self' https://www.facebook.com;
+frame-src 'self' https://www.facebook.com https://web.facebook.com;
+connect-src 'self' https://www.facebook.com https://graph.facebook.com;
+```
+
+## Checklist
+
+- [ ] App Secret is only used server-side, never in client code.
+- [ ] Access tokens are sent to your server and exchanged for long-lived tokens.
+- [ ] Tokens are not stored in localStorage.
+- [ ] Pixel consent is revoked by default for EU/EEA visitors.
+- [ ] Cookie consent banner is shown before enabling tracking.
+- [ ] Fallback UI is provided for social plugins that may be blocked.

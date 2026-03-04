@@ -8,4 +8,4 @@ export { default as MessengerSize } from './MessengerSize';
 export { default as MessengerColor } from './MessengerColor';
 
 export { default as LoginStatus } from './LoginStatus';
-export { default as Fields }  from './Fields';
+export { default as Fields } from './Fields';

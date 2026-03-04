@@ -3,13 +3,31 @@ import useFacebook from './useFacebook';
 import useSubscribe from './useSubscribe';
 import LoginStatus from '../constants/LoginStatus';
 
-export default function useLoginStatus(): {
-  isLoading: boolean;
+export type UseLoginStatusReturn = {
+  loading: boolean;
   error?: Error;
   status?: LoginStatus;
-} {
+};
+
+/**
+ * Hook for monitoring the user's Facebook login status
+ *
+ * @returns Object with current login status, loading state, and error
+ *
+ * @example
+ * ```tsx
+ * function StatusComponent() {
+ *   const { status, loading } = useLoginStatus();
+ *
+ *   if (loading) return <p>Checking status...</p>;
+ *
+ *   return <p>Status: {status}</p>;
+ * }
+ * ```
+ */
+export default function useLoginStatus(): UseLoginStatusReturn {
   const { init } = useFacebook();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<Error | undefined>(undefined);
   const [status, setStatus] = useState<LoginStatus>(LoginStatus.UNKNOWN);
 
@@ -19,29 +37,38 @@ export default function useLoginStatus(): {
 
   useSubscribe('auth.statusChange', handleStatusChanges);
 
-  async function handleGetInitState() {
-    try {
-      setIsLoading(true);
-      const api = await init();
-      if (!api) {
-        throw new Error('Facebook API is not initialized');
-      }
-
-      const { status } = await api.getLoginStatus();
-      setStatus(status);
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
   useEffect(() => {
-    handleGetInitState();
-  }, []);
-  
+    let cancelled = false;
+
+    async function fetchStatus() {
+      try {
+        setLoading(true);
+        const api = await init();
+        if (cancelled) return;
+        if (!api) {
+          throw new Error('Facebook API is not initialized');
+        }
+
+        const { status } = await api.getLoginStatus();
+        if (!cancelled) setStatus(status);
+      } catch (error) {
+        if (!cancelled) {
+          setError(error instanceof Error ? error : new Error(String(error)));
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    fetchStatus();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [init]);
+
   return {
-    isLoading,
+    loading,
     error,
     status,
   };

@@ -1,4 +1,16 @@
-import React, { useState, memo, forwardRef, ReactNode, useEffect, useCallback, useMemo, type ElementType, type CSSProperties, type Ref } from 'react';
+import {
+  useState,
+  memo,
+  forwardRef,
+  type ReactNode,
+  useEffect,
+  useCallback,
+  useMemo,
+  type ElementType,
+  type CSSProperties,
+  type MutableRefObject,
+  type Ref,
+} from 'react';
 import useFacebook from '../hooks/useFacebook';
 
 export type ParserProps = {
@@ -15,17 +27,20 @@ function Parser(props: ParserProps, forwardedRef: Ref<HTMLElement>) {
   const { parse } = useFacebook();
   const [element, setElement] = useState<HTMLElement | null>(null);
 
-  const handleRef = useCallback((element: HTMLElement | null) => {
-    setElement(element);
+  const handleRef = useCallback(
+    (element: HTMLElement | null) => {
+      setElement(element);
 
-    if (forwardedRef) {
-      if (typeof forwardedRef === 'function') {
-        forwardedRef(element);
-      } else if (forwardedRef) {
-        (forwardedRef as React.MutableRefObject<HTMLElement | null>).current = element;
+      if (forwardedRef) {
+        if (typeof forwardedRef === 'function') {
+          forwardedRef(element);
+        } else if (forwardedRef) {
+          (forwardedRef as MutableRefObject<HTMLElement | null>).current = element;
+        }
       }
-    }
-  }, [forwardedRef]);
+    },
+    [forwardedRef],
+  );
 
   const key = useMemo(() => {
     let uniqueKey = `fb-parser-${As}-${className}`;
@@ -41,7 +56,7 @@ function Parser(props: ParserProps, forwardedRef: Ref<HTMLElement>) {
     }
 
     return uniqueKey;
-  }, [data, children, As, className]);
+  }, [data, As, className]);
 
   useEffect(() => {
     if (element) {
@@ -49,7 +64,11 @@ function Parser(props: ParserProps, forwardedRef: Ref<HTMLElement>) {
     }
   }, [element, parse, key]);
 
-  return <As key={key} style={style} ref={handleRef}><As className={className} {...data}>{children}</As></As>;
+  return (
+    <As className={className} style={style} ref={handleRef} {...data}>
+      {children}
+    </As>
+  );
 }
 
 export default memo(forwardRef(Parser));

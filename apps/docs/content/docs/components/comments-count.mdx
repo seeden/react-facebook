@@ -1,0 +1,35 @@
+---
+title: CommentsCount
+description: Displays the number of Facebook comments for a given URL.
+---
+
+The `CommentsCount` component renders a `<span>` that the Facebook SDK populates with the comment count for the specified URL. It uses the `fb-comments-count` XFBML class.
+
+## Import
+
+```tsx
+import { CommentsCount } from 'react-facebook';
+```
+
+## Props
+
+| Prop        | Type     | Default          | Description                                          |
+| ----------- | -------- | ---------------- | ---------------------------------------------------- |
+| `href`      | `string` | Current page URL | The URL whose comment count should be displayed.     |
+| `className` | `string` | `''`             | Additional CSS class names appended to the `<span>`. |
+
+## Usage
+
+### Basic
+
+```tsx
+<CommentsCount href="https://example.com/post" /> comments
+```
+
+### Styled
+
+```tsx
+<p>
+  This post has <CommentsCount href="https://example.com/post" className="font-bold text-blue-600" /> comments.
+</p>
+```

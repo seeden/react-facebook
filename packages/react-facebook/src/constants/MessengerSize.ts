@@ -4,6 +4,6 @@ enum MessengerSize {
   STANDARD = 'standard',
   LARGE = 'large',
   XLARGE = 'xlarge',
-};
+}
 
 export default MessengerSize;

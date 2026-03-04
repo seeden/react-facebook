@@ -1,0 +1,136 @@
+---
+title: useSubscribe
+description: Hook for subscribing to Facebook SDK events with automatic cleanup.
+---
+
+# useSubscribe
+
+The `useSubscribe` hook subscribes to a Facebook SDK event and automatically unsubscribes when the component unmounts. It stores the last received event value and optionally calls a callback each time the event fires.
+
+## Import
+
+```tsx
+import { useSubscribe } from 'react-facebook';
+```
+
+## Parameters
+
+| Parameter  | Type                | Description                                                                             |
+| ---------- | ------------------- | --------------------------------------------------------------------------------------- |
+| `event`    | `string`            | The Facebook event name to subscribe to (e.g. `'auth.statusChange'`, `'xfbml.render'`). |
+| `callback` | `(data: T) => void` | Optional callback invoked each time the event fires.                                    |
+
+## Return Value
+
+| Type             | Description                                                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `T \| undefined` | The last event value received, or `undefined` if the event has not fired yet. The generic type `T` can be specified when calling the hook. |
+
+## Usage
+
+```tsx
+function AuthListener() {
+  const lastStatus = useSubscribe('auth.statusChange', (response) => {
+    console.log('Auth status changed:', response.status);
+  });
+
+  return <p>Last status: {JSON.stringify(lastStatus)}</p>;
+}
+```
+
+## Type-Safe Subscription
+
+Use the generic type parameter on `useSubscribe<T>()` to get proper typing for the event data.
+
+```tsx
+import { useSubscribe } from 'react-facebook';
+
+interface LoginResponse {
+  status: 'connected' | 'not_authorized' | 'unknown' | 'authorization_expired';
+  authResponse?: {
+    accessToken: string;
+    userID: string;
+    expiresIn: number;
+    signedRequest: string;
+  };
+}
+
+function TypedAuthListener() {
+  const lastLogin = useSubscribe<LoginResponse>('auth.statusChange', (response) => {
+    if (response.status === 'connected' && response.authResponse) {
+      console.log('User connected. Token:', response.authResponse.accessToken);
+    } else {
+      console.log('User status:', response.status);
+    }
+  });
+
+  return (
+    <div className="rounded-md border p-4">
+      <h3 className="text-sm font-medium text-gray-700">Auth Status Monitor</h3>
+      {lastLogin ? (
+        <div className="mt-2">
+          <p className="text-sm">
+            Status:{' '}
+            <span
+              className={lastLogin.status === 'connected' ? 'font-medium text-green-600' : 'font-medium text-gray-500'}
+            >
+              {lastLogin.status}
+            </span>
+          </p>
+          {lastLogin.authResponse && (
+            <p className="mt-1 text-xs text-gray-400">User ID: {lastLogin.authResponse.userID}</p>
+          )}
+        </div>
+      ) : (
+        <p className="mt-2 text-sm text-gray-400">Waiting for auth event...</p>
+      )}
+    </div>
+  );
+}
+```
+
+## Available Events
+
+The Facebook SDK emits the following events that you can subscribe to with `useSubscribe`:
+
+| Event Name                | Description                                                                      |
+| ------------------------- | -------------------------------------------------------------------------------- |
+| `auth.statusChange`       | Fired when the user's login status changes (e.g., login, logout, token refresh). |
+| `auth.authResponseChange` | Fired when the auth response object changes, including token updates.            |
+| `auth.login`              | Fired when the user successfully logs in via `FB.login()`.                       |
+| `auth.logout`             | Fired when the user logs out via `FB.logout()`.                                  |
+| `xfbml.render`            | Fired when all XFBML plugins on the page have finished rendering.                |
+| `edge.create`             | Fired when a user clicks a Like button on the page.                              |
+| `edge.remove`             | Fired when a user unlikes something they previously liked.                       |
+| `comment.create`          | Fired when a user posts a comment through a Comments plugin.                     |
+| `comment.remove`          | Fired when a user removes a comment from a Comments plugin.                      |
+
+Example subscribing to multiple events:
+
+```tsx
+import { useSubscribe } from 'react-facebook';
+
+function FacebookEventLogger() {
+  useSubscribe('auth.login', (data) => {
+    console.log('User logged in:', data);
+  });
+
+  useSubscribe('auth.logout', (data) => {
+    console.log('User logged out:', data);
+  });
+
+  useSubscribe('xfbml.render', () => {
+    console.log('All XFBML plugins have been rendered');
+  });
+
+  useSubscribe('edge.create', (url) => {
+    console.log('User liked:', url);
+  });
+
+  useSubscribe('comment.create', (response) => {
+    console.log('New comment on:', response.href);
+  });
+
+  return <p className="text-sm text-gray-500">Listening for Facebook events...</p>;
+}
+```

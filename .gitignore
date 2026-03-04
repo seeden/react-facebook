@@ -7,4 +7,6 @@ lib
 module
 .next
 out
+.source
+test-results
 

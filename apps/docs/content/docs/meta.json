@@ -1,0 +1,17 @@
+{
+  "title": "Documentation",
+  "pages": [
+    "index",
+    "getting-started",
+    "---Components---",
+    "...components",
+    "---Hooks---",
+    "...hooks",
+    "---Facebook Pixel---",
+    "...pixel",
+    "---Advanced---",
+    "...advanced",
+    "---Guides---",
+    "...migration"
+  ]
+}

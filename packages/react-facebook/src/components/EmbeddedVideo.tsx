@@ -1,4 +1,4 @@
-import React, { memo, forwardRef, useMemo, type Ref } from 'react';
+import { memo, forwardRef, useMemo, type Ref } from 'react';
 import Parser, { type ParserProps } from './Parser';
 
 export type EmbeddedVideoProps = Partial<ParserProps> & {
@@ -12,17 +12,7 @@ export type EmbeddedVideoProps = Partial<ParserProps> & {
 };
 
 function EmbeddedVideo(props: EmbeddedVideoProps, ref: Ref<HTMLElement>) {
-  const {
-    className = '',
-    href,
-    width,
-    showText,
-    allowFullScreen,
-    autoPlay,
-    lazy,
-    showCaptions,
-    ...rest
-  } = props;
+  const { className = '', href, width, showText, allowFullScreen, autoPlay, lazy, showCaptions, ...rest } = props;
 
   const data = useMemo(() => {
     return {
@@ -36,9 +26,7 @@ function EmbeddedVideo(props: EmbeddedVideoProps, ref: Ref<HTMLElement>) {
     };
   }, [href, width, showText, showCaptions, autoPlay, lazy, allowFullScreen]);
 
-  return (
-    <Parser className={`fb-video ${className}`} data={data} {...rest} ref={ref} />
-  );
+  return <Parser className={`fb-video ${className}`} data={data} {...rest} ref={ref} />;
 }
 
 export default memo(forwardRef(EmbeddedVideo));

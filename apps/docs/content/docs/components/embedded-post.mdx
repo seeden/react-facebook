@@ -1,0 +1,46 @@
+---
+title: EmbeddedPost
+description: Embeds a public Facebook post on your page.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The `EmbeddedPost` component renders an embedded Facebook post using the `fb-post` XFBML class. The post must be public to be embeddable.
+
+<Callout title="Try it live">Adjust width and text visibility in the [Playground](/playground#embeddedpost).</Callout>
+
+## Import
+
+```tsx
+import { EmbeddedPost } from 'react-facebook';
+```
+
+## Props
+
+| Prop        | Type               | Default      | Description                                           |
+| ----------- | ------------------ | ------------ | ----------------------------------------------------- |
+| `href`      | `string`           | **required** | The URL of the Facebook post to embed.                |
+| `width`     | `string \| number` | `undefined`  | Width of the embedded post in pixels.                 |
+| `showText`  | `boolean`          | `false`      | Show the text content of the post.                    |
+| `lazy`      | `boolean`          | `false`      | Lazy-load the embedded post.                          |
+| `className` | `string`           | `''`         | Additional CSS class names appended to the container. |
+
+## Usage
+
+### Basic
+
+```tsx
+<EmbeddedPost href="https://www.facebook.com/FacebookDevelopers/posts/10151471074398553" />
+```
+
+### With Width and Text
+
+```tsx
+<EmbeddedPost href="https://www.facebook.com/FacebookDevelopers/posts/10151471074398553" width={500} showText />
+```
+
+### Lazy Loaded
+
+```tsx
+<EmbeddedPost href="https://www.facebook.com/FacebookDevelopers/posts/10151471074398553" width="100%" lazy />
+```
