@@ -1,6 +1,6 @@
 {
   "name": "react-facebook",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "description": "The Facebook SDK for React — Login, Pixel tracking, Share, Like, Comments, Graph API, and more. TypeScript-first, SSR-safe, works with Next.js App Router.",
   "private": false,
   "license": "MIT",
