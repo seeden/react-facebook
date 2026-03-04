@@ -1,6 +1,6 @@
 {
   "name": "react-facebook-monorepo",
-  "version": "11.0.0",
+  "version": "11.0.1",
   "description": "The Facebook SDK for React — Login, Pixel tracking, Share, Like, Comments, Graph API, and more. TypeScript-first, SSR-safe, works with Next.js App Router.",
   "private": true,
   "workspaces": [
@@ -18,6 +18,9 @@
     "typecheck": "pnpm --filter react-facebook run typecheck",
     "deploy:docs": "pnpm run build && pnpm --filter docs-site run deploy",
     "publish:lib": "pnpm --filter react-facebook publish",
+    "version:patch": "node scripts/bump-version.mjs patch",
+    "version:minor": "node scripts/bump-version.mjs minor",
+    "version:major": "node scripts/bump-version.mjs major",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
