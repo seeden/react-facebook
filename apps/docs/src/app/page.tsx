@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { highlight } from 'sugar-high';
 import LiveDemos from './LiveDemos';
 import Testimonials from './Testimonials';
+import ThemeToggle from './ThemeToggle';
 
 export const metadata = {
   title: 'React Facebook - The Facebook SDK for React',
@@ -213,6 +214,7 @@ export default function HomePage() {
           >
             GitHub
           </a>
+          <ThemeToggle />
         </div>
       </nav>
 
@@ -292,13 +294,6 @@ export default function HomePage() {
         <div className="h-px bg-[var(--color-fd-border)] opacity-50" />
 
         <section className="py-20 md:py-24">
-          <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-fd-primary)]">Live</p>
-          <h2 className="mb-4 max-w-md text-2xl font-extrabold tracking-tight text-[var(--color-fd-foreground)] md:text-3xl">
-            Real widgets. Real SDK.
-          </h2>
-          <p className="mb-10 max-w-lg text-sm leading-relaxed text-[var(--color-fd-muted-foreground)]">
-            These are actual Facebook widgets rendered by react-facebook on this page. No screenshots, no mocks.
-          </p>
           <LiveDemos />
         </section>
 
