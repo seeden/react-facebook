@@ -57,7 +57,7 @@
 
 ### Documentation
 
-- **Migration guides** — Step-by-step migration docs for users coming from other packages (see [seeden.github.io/react-facebook/docs/migration](https://seeden.github.io/react-facebook/docs/migration))
+- **Migration guides** — Step-by-step migration docs for users coming from other packages (see [seeden.github.io/react-facebook/docs/migration](https://seeden.github.io/react-facebook/docs/migration/v10-to-v11))
 - **README** — Rewritten with value-first positioning, comprehensive API overview, and links to documentation site
 
 ## 10.0.1

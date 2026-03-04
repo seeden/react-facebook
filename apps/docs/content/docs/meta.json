@@ -3,6 +3,9 @@
   "pages": [
     "index",
     "getting-started",
+    "---Setup Guides---",
+    "migration/facebook-login-setup",
+    "migration/facebook-pixel-setup",
     "---Components---",
     "...components",
     "---Hooks---",
@@ -11,7 +14,7 @@
     "...pixel",
     "---Advanced---",
     "...advanced",
-    "---Guides---",
-    "...migration"
+    "---Migration---",
+    "migration/v10-to-v11"
   ]
 }
