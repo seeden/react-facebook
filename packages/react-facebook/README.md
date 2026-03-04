@@ -11,7 +11,7 @@
 [![NPM downloads](https://img.shields.io/npm/dm/react-facebook.svg?style=flat-square)](https://www.npmjs.com/package/react-facebook)
 [![GitHub stars](https://img.shields.io/github/stars/seeden/react-facebook.svg?style=flat-square)](https://github.com/seeden/react-facebook)
 [![Last commit](https://img.shields.io/github/last-commit/seeden/react-facebook.svg?style=flat-square)](https://github.com/seeden/react-facebook/commits/main)
-[![Documentation](https://img.shields.io/badge/docs-react--facebook.dev-blue.svg)](https://react-facebook.dev)
+[![Documentation](https://img.shields.io/badge/docs-react--facebook.dev-blue.svg)](https://seeden.github.io/react-facebook)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/npm/l/react-facebook.svg)](https://github.com/seeden/react-facebook/blob/master/LICENSE)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/react-facebook)](https://bundlephobia.com/package/react-facebook)
@@ -60,13 +60,13 @@ function App() {
 
 ## Documentation
 
-**[react-facebook.dev](https://react-facebook.dev)** — Full docs with examples, API reference, and guides.
+**[seeden.github.io/react-facebook](https://seeden.github.io/react-facebook)** — Full docs with examples, API reference, and guides.
 
-- [Getting Started](https://react-facebook.dev/docs/getting-started) — Installation, provider setup, first component
-- [Components](https://react-facebook.dev/docs/components) — Login, Like, Share, Comments, Embeds, Page
-- [Hooks](https://react-facebook.dev/docs/hooks) — useLogin, useGraphAPI, useShare, useLocale, and more
-- [Facebook Pixel](https://react-facebook.dev/docs/pixel) — Tracking, page views, custom events, GDPR consent
-- [Guides](https://react-facebook.dev/docs/migration) — Facebook Login setup, Pixel setup, version upgrades
+- [Getting Started](https://seeden.github.io/react-facebook/docs/getting-started) — Installation, provider setup, first component
+- [Components](https://seeden.github.io/react-facebook/docs/components) — Login, Like, Share, Comments, Embeds, Page
+- [Hooks](https://seeden.github.io/react-facebook/docs/hooks) — useLogin, useGraphAPI, useShare, useLocale, and more
+- [Facebook Pixel](https://seeden.github.io/react-facebook/docs/pixel) — Tracking, page views, custom events, GDPR consent
+- [Guides](https://seeden.github.io/react-facebook/docs/migration) — Facebook Login setup, Pixel setup, version upgrades
 
 ## What's Included
 
