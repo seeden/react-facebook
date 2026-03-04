@@ -9,9 +9,7 @@
 
 [![NPM version][npm-image]][npm-url]
 [![NPM downloads](https://img.shields.io/npm/dm/react-facebook.svg?style=flat-square)](https://www.npmjs.com/package/react-facebook)
-[![GitHub stars](https://img.shields.io/github/stars/seeden/react-facebook.svg?style=flat-square)](https://github.com/seeden/react-facebook)
-[![Last commit](https://img.shields.io/github/last-commit/seeden/react-facebook.svg?style=flat-square)](https://github.com/seeden/react-facebook/commits/main)
-[![Documentation](https://img.shields.io/badge/docs-react--facebook.dev-blue.svg)](https://seeden.github.io/react-facebook)
+[![Documentation](https://img.shields.io/badge/docs-seeden.github.io-blue.svg)](https://seeden.github.io/react-facebook)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/npm/l/react-facebook.svg)](https://github.com/seeden/react-facebook/blob/master/LICENSE)
 [![Bundle Size](https://img.shields.io/bundlephobia/minzip/react-facebook)](https://bundlephobia.com/package/react-facebook)
