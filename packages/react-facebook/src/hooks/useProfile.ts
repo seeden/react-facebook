@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import LoginStatus from '../constants/LoginStatus';
 import useFacebook from './useFacebook';
-import useLoginStatus from "./useLoginStatus";
+import useLoginStatus from './useLoginStatus';
 
 export type UseProfileReturn = {
   loading: boolean;

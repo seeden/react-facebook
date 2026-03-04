@@ -47,9 +47,7 @@ function Page(props: PageProps, ref: Ref<HTMLElement>) {
     };
   }, [href, tabs, hideCover, width, height, showFacepile, hideCTA, smallHeader, adaptContainerWidth, lazy]);
 
-  return (
-    <Parser className={`fb-page ${className}`} style={style} data={data} {...rest} ref={ref} />
-  );
+  return <Parser className={`fb-page ${className}`} style={style} data={data} {...rest} ref={ref} />;
 }
 
 export default memo(forwardRef(Page));

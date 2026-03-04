@@ -49,9 +49,7 @@ function Like(props: LikeProps, ref: Ref<HTMLElement>) {
     };
   }, [referral, href, layout, colorScheme, action, showFaces, share, width, size, kidDirectedSite, lazy]);
 
-  return (
-    <Parser className={`fb-like ${className}`} data={data} {...rest} ref={ref} />
-  );
+  return <Parser className={`fb-like ${className}`} data={data} {...rest} ref={ref} />;
 }
 
 export default memo(forwardRef(Like));

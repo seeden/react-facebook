@@ -17,30 +17,30 @@ import { useFeed } from 'react-facebook';
 
 The hook returns an object with the following properties:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `feed` | `(options: FeedOptions) => Promise<unknown>` | Function to open the Facebook Feed dialog with the given options. Returns a promise that resolves with the dialog response. |
-| `loading` | `boolean` | Whether the feed request is in progress. |
-| `error` | `Error \| undefined` | The error from the most recent feed attempt, if any. |
+| Property  | Type                                         | Description                                                                                                                 |
+| --------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `feed`    | `(options: FeedOptions) => Promise<unknown>` | Function to open the Facebook Feed dialog with the given options. Returns a promise that resolves with the dialog response. |
+| `loading` | `boolean`                                    | Whether the feed request is in progress.                                                                                    |
+| `error`   | `Error \| undefined`                         | The error from the most recent feed attempt, if any.                                                                        |
 
 ### FeedOptions
 
 The `feed` function accepts the following options:
 
-| Property | Type | Required | Description |
-| --- | --- | --- | --- |
-| `from` | `string` | Yes | The ID of the person posting. |
-| `to` | `string` | Yes | The ID of the profile the post is directed at. |
-| `link` | `string` | No | The link to include in the post. Defaults to the current page URL. |
-| `appId` | `string` | No | The Facebook App ID. Defaults to the app ID from the provider. |
-| `picture` | `string` | No | URL of a picture to include with the post. |
-| `source` | `string` | No | URL of a media source (e.g. video) to include. |
-| `display` | `string` | No | How the feed dialog is rendered (e.g. `'popup'`, `'page'`). |
-| `name` | `string` | No | The name of the link attachment. |
-| `caption` | `string` | No | The caption of the link attachment. |
-| `description` | `string` | No | The description of the link attachment. |
-| `dataRef` | `string` | No | A reference string passed through the `ref` parameter for tracking. |
-| `redirectURI` | `string` | No | The URL to redirect to after the dialog closes. |
+| Property      | Type     | Required | Description                                                         |
+| ------------- | -------- | -------- | ------------------------------------------------------------------- |
+| `from`        | `string` | Yes      | The ID of the person posting.                                       |
+| `to`          | `string` | Yes      | The ID of the profile the post is directed at.                      |
+| `link`        | `string` | No       | The link to include in the post. Defaults to the current page URL.  |
+| `appId`       | `string` | No       | The Facebook App ID. Defaults to the app ID from the provider.      |
+| `picture`     | `string` | No       | URL of a picture to include with the post.                          |
+| `source`      | `string` | No       | URL of a media source (e.g. video) to include.                      |
+| `display`     | `string` | No       | How the feed dialog is rendered (e.g. `'popup'`, `'page'`).         |
+| `name`        | `string` | No       | The name of the link attachment.                                    |
+| `caption`     | `string` | No       | The caption of the link attachment.                                 |
+| `description` | `string` | No       | The description of the link attachment.                             |
+| `dataRef`     | `string` | No       | A reference string passed through the `ref` parameter for tracking. |
+| `redirectURI` | `string` | No       | The URL to redirect to after the dialog closes.                     |
 
 ## Usage
 
@@ -57,7 +57,11 @@ function FeedComponent() {
     });
   };
 
-  return <button onClick={handlePost} disabled={loading}>Post</button>;
+  return (
+    <button onClick={handlePost} disabled={loading}>
+      Post
+    </button>
+  );
 }
 ```
 
@@ -98,9 +102,7 @@ function ShareLinkToFeed() {
         {loading ? 'Posting...' : 'Share to your Feed'}
       </button>
 
-      {error && (
-        <p className="text-sm text-red-600">Error: {error.message}</p>
-      )}
+      {error && <p className="text-sm text-red-600">Error: {error.message}</p>}
     </div>
   );
 }

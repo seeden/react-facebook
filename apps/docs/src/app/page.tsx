@@ -199,14 +199,24 @@ export default function HomePage() {
           react-facebook
         </Link>
         <div className="flex items-center gap-6 text-[13px] text-[var(--color-fd-muted-foreground)]">
-          <Link href="/docs" className="transition-colors hover:text-[var(--color-fd-foreground)]">Docs</Link>
-          <Link href="/playground" className="transition-colors hover:text-[var(--color-fd-foreground)]">Playground</Link>
-          <a href="https://github.com/seeden/react-facebook" target="_blank" rel="noopener noreferrer" className="transition-colors hover:text-[var(--color-fd-foreground)]">GitHub</a>
+          <Link href="/docs" className="transition-colors hover:text-[var(--color-fd-foreground)]">
+            Docs
+          </Link>
+          <Link href="/playground" className="transition-colors hover:text-[var(--color-fd-foreground)]">
+            Playground
+          </Link>
+          <a
+            href="https://github.com/seeden/react-facebook"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="transition-colors hover:text-[var(--color-fd-foreground)]"
+          >
+            GitHub
+          </a>
         </div>
       </nav>
 
       <main className="mx-auto max-w-6xl px-6">
-
         {/* Hero */}
         <section className="pt-16 pb-20 md:pt-24 md:pb-28">
           <p className="text-[13px] font-medium uppercase tracking-[0.2em] text-[var(--color-fd-primary)]">
@@ -224,7 +234,8 @@ export default function HomePage() {
             </span>
           </h1>
           <p className="mt-6 max-w-xl text-base leading-relaxed text-[var(--color-fd-muted-foreground)] md:text-[17px]">
-            Login, Pixel, Share, Like, Comments, Graph API. One package. Fully typed. SSR-safe. Works with Next.js out of the box.
+            Login, Pixel, Share, Like, Comments, Graph API. One package. Fully typed. SSR-safe. Works with Next.js out
+            of the box.
           </p>
 
           <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -265,9 +276,7 @@ export default function HomePage() {
         <div className="h-px bg-[var(--color-fd-border)] opacity-50" />
 
         <section className="py-20 md:py-24">
-          <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-fd-primary)]">
-            The API
-          </p>
+          <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-fd-primary)]">The API</p>
           <h2 className="mb-10 max-w-md text-2xl font-extrabold tracking-tight text-[var(--color-fd-foreground)] md:text-3xl">
             Four hooks. Four patterns.
           </h2>
@@ -283,9 +292,7 @@ export default function HomePage() {
         <div className="h-px bg-[var(--color-fd-border)] opacity-50" />
 
         <section className="py-20 md:py-24">
-          <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-fd-primary)]">
-            Live
-          </p>
+          <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-fd-primary)]">Live</p>
           <h2 className="mb-4 max-w-md text-2xl font-extrabold tracking-tight text-[var(--color-fd-foreground)] md:text-3xl">
             Real widgets. Real SDK.
           </h2>
@@ -299,14 +306,13 @@ export default function HomePage() {
         <div className="h-px bg-[var(--color-fd-border)] opacity-50" />
 
         <section className="py-20 md:py-24">
-          <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-fd-primary)]">
-            Next.js
-          </p>
+          <p className="mb-2 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-fd-primary)]">Next.js</p>
           <h2 className="mb-4 max-w-md text-2xl font-extrabold tracking-tight text-[var(--color-fd-foreground)] md:text-3xl">
             Works with App Router
           </h2>
           <p className="mb-10 max-w-lg text-sm leading-relaxed text-[var(--color-fd-muted-foreground)]">
-            Wrap your layout with FacebookProvider. Use components and hooks anywhere. SSR-safe with built-in &apos;use client&apos; directives.
+            Wrap your layout with FacebookProvider. Use components and hooks anywhere. SSR-safe with built-in &apos;use
+            client&apos; directives.
           </p>
           <div className="max-w-3xl">
             <Code code={NEXTJS_EXAMPLE} />
@@ -324,7 +330,8 @@ export default function HomePage() {
             Built with react-facebook
           </h2>
           <p className="mb-10 max-w-lg text-sm leading-relaxed text-[var(--color-fd-muted-foreground)]">
-            Companies and developers shipping with react-facebook in production. Get your logo and a dofollow backlink on this page.
+            Companies and developers shipping with react-facebook in production. Get your logo and a dofollow backlink
+            on this page.
           </p>
 
           {/* Trusted by */}
@@ -365,9 +372,25 @@ export default function HomePage() {
             <span>&lt;15 KB gzipped</span>
           </div>
           <div className="flex gap-5 text-[13px] font-medium">
-            <Link href="/docs" className="text-[var(--color-fd-primary)] hover:underline">Docs</Link>
-            <a href="https://github.com/seeden/react-facebook" target="_blank" rel="noopener noreferrer" className="text-[var(--color-fd-primary)] hover:underline">GitHub</a>
-            <a href="https://www.npmjs.com/package/react-facebook" target="_blank" rel="noopener noreferrer" className="text-[var(--color-fd-primary)] hover:underline">npm</a>
+            <Link href="/docs" className="text-[var(--color-fd-primary)] hover:underline">
+              Docs
+            </Link>
+            <a
+              href="https://github.com/seeden/react-facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--color-fd-primary)] hover:underline"
+            >
+              GitHub
+            </a>
+            <a
+              href="https://www.npmjs.com/package/react-facebook"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--color-fd-primary)] hover:underline"
+            >
+              npm
+            </a>
           </div>
         </section>
       </main>

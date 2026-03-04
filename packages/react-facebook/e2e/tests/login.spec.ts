@@ -48,14 +48,10 @@ test.describe('Login Component', () => {
     const styledButton = page.locator('[data-testid="styled-login"]');
     await expect(styledButton).toBeVisible();
 
-    const backgroundColor = await styledButton.evaluate(
-      (el) => getComputedStyle(el).backgroundColor,
-    );
+    const backgroundColor = await styledButton.evaluate((el) => getComputedStyle(el).backgroundColor);
     expect(backgroundColor).toBe('rgb(255, 0, 0)');
 
-    const borderRadius = await styledButton.evaluate(
-      (el) => getComputedStyle(el).borderRadius,
-    );
+    const borderRadius = await styledButton.evaluate((el) => getComputedStyle(el).borderRadius);
     expect(borderRadius).toBe('10px');
   });
 

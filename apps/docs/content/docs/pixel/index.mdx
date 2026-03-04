@@ -18,10 +18,7 @@ import { FacebookProvider } from 'react-facebook';
 
 function App() {
   return (
-    <FacebookProvider
-      appId="YOUR_APP_ID"
-      pixelId="YOUR_PIXEL_ID"
-    >
+    <FacebookProvider appId="YOUR_APP_ID" pixelId="YOUR_PIXEL_ID">
       <YourApp />
     </FacebookProvider>
   );
@@ -48,13 +45,13 @@ function App() {
 
 ### Provider Props
 
-| Prop | Type | Default | Description |
-|---|---|---|---|
-| `pixelId` | `string` | **(required)** | Your Facebook Pixel ID |
-| `autoConfig` | `boolean` | `true` | Enable automatic configuration of page-level events |
-| `debug` | `boolean` | `false` | Log pixel calls to the console |
-| `advancedMatching` | `Record<string, unknown>` | `{}` | Advanced matching parameters (e.g. `{ em: 'user@example.com' }`) |
-| `lazy` | `boolean` | `false` | Delay loading the pixel script until `init()` is called manually |
+| Prop               | Type                      | Default        | Description                                                      |
+| ------------------ | ------------------------- | -------------- | ---------------------------------------------------------------- |
+| `pixelId`          | `string`                  | **(required)** | Your Facebook Pixel ID                                           |
+| `autoConfig`       | `boolean`                 | `true`         | Enable automatic configuration of page-level events              |
+| `debug`            | `boolean`                 | `false`        | Log pixel calls to the console                                   |
+| `advancedMatching` | `Record<string, unknown>` | `{}`           | Advanced matching parameters (e.g. `{ em: 'user@example.com' }`) |
+| `lazy`             | `boolean`                 | `false`        | Delay loading the pixel script until `init()` is called manually |
 
 ## Tracking Events
 
@@ -66,15 +63,7 @@ import { usePixel } from 'react-facebook';
 function CheckoutButton() {
   const { track } = usePixel();
 
-  return (
-    <button
-      onClick={() =>
-        track('Purchase', { value: 29.99, currency: 'USD' })
-      }
-    >
-      Complete Purchase
-    </button>
-  );
+  return <button onClick={() => track('Purchase', { value: 29.99, currency: 'USD' })}>Complete Purchase</button>;
 }
 ```
 
@@ -82,25 +71,26 @@ function CheckoutButton() {
 
 These are the standard pixel events recognized by Facebook. Pass the event name as the first argument to `track()`.
 
-| Event Name | When to use |
-|---|---|
-| `PageView` | A page is loaded (use `usePageView` for automatic tracking) |
-| `ViewContent` | A key page is viewed (product page, article, etc.) |
-| `Search` | A search is performed |
-| `AddToCart` | An item is added to a shopping cart |
-| `AddToWishlist` | An item is added to a wishlist |
-| `InitiateCheckout` | Checkout flow is started |
-| `AddPaymentInfo` | Payment information is entered |
-| `Purchase` | A purchase is completed |
-| `Lead` | A lead form is submitted |
-| `CompleteRegistration` | A registration form is completed |
+| Event Name             | When to use                                                 |
+| ---------------------- | ----------------------------------------------------------- |
+| `PageView`             | A page is loaded (use `usePageView` for automatic tracking) |
+| `ViewContent`          | A key page is viewed (product page, article, etc.)          |
+| `Search`               | A search is performed                                       |
+| `AddToCart`            | An item is added to a shopping cart                         |
+| `AddToWishlist`        | An item is added to a wishlist                              |
+| `InitiateCheckout`     | Checkout flow is started                                    |
+| `AddPaymentInfo`       | Payment information is entered                              |
+| `Purchase`             | A purchase is completed                                     |
+| `Lead`                 | A lead form is submitted                                    |
+| `CompleteRegistration` | A registration form is completed                            |
 
 Additional standard events are also supported: `Contact`, `CustomizeProduct`, `Donate`, `FindLocation`, `Schedule`, `StartTrial`, `SubmitApplication`, and `Subscribe`.
 
 For events not in this list, use `trackCustom()` instead.
 
 <Callout type="info">
-  The pixel script is loaded asynchronously. All tracking calls are safe to make immediately -- they will wait for the script to finish loading before firing.
+  The pixel script is loaded asynchronously. All tracking calls are safe to make immediately -- they will wait for the
+  script to finish loading before firing.
 </Callout>
 
 ## Next Steps

@@ -27,11 +27,7 @@ Wrap your application (or the subtree that needs Facebook features) with `Facebo
 import { FacebookProvider } from 'react-facebook';
 
 export default function App({ children }) {
-  return (
-    <FacebookProvider appId="YOUR_APP_ID">
-      {children}
-    </FacebookProvider>
-  );
+  return <FacebookProvider appId="YOUR_APP_ID">{children}</FacebookProvider>;
 }
 ```
 
@@ -39,29 +35,24 @@ export default function App({ children }) {
 
 `FacebookProvider` accepts every property from the `FacebookOptions` type plus an optional `pixelId`.
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `appId` | `string` | **required** | Your Facebook App ID. |
-| `version` | `string` | `'v23.0'` | Graph API version. |
-| `language` | `string` | `'en_US'` | SDK locale (e.g. `'fr_FR'`, `'de_DE'`). |
-| `lazy` | `boolean` | `false` | When `true`, the SDK is not loaded until a component or hook calls `init()`. |
-| `cookie` | `boolean` | `false` | Enable cookie support for server access tokens. |
-| `status` | `boolean` | `false` | Check login status on SDK init. |
-| `xfbml` | `boolean` | `false` | Parse XFBML tags on init. |
-| `frictionlessRequests` | `boolean` | `false` | Enable frictionless requests. |
-| `debug` | `boolean` | `false` | Load the debug version of the SDK. |
-| `chatSupport` | `boolean` | `false` | Load the Customer Chat SDK variant. |
-| `autoLogAppEvents` | `boolean` | `true` | Automatically log app events. |
-| `domain` | `string` | `'connect.facebook.net'` | SDK domain. |
-| `pixelId` | `string` | `undefined` | When provided, wraps children with `FacebookPixelProvider` automatically. For advanced pixel options, use `FacebookPixelProvider` directly. |
+| Prop                   | Type      | Default                  | Description                                                                                                                                 |
+| ---------------------- | --------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `appId`                | `string`  | **required**             | Your Facebook App ID.                                                                                                                       |
+| `version`              | `string`  | `'v23.0'`                | Graph API version.                                                                                                                          |
+| `language`             | `string`  | `'en_US'`                | SDK locale (e.g. `'fr_FR'`, `'de_DE'`).                                                                                                     |
+| `lazy`                 | `boolean` | `false`                  | When `true`, the SDK is not loaded until a component or hook calls `init()`.                                                                |
+| `cookie`               | `boolean` | `false`                  | Enable cookie support for server access tokens.                                                                                             |
+| `status`               | `boolean` | `false`                  | Check login status on SDK init.                                                                                                             |
+| `xfbml`                | `boolean` | `false`                  | Parse XFBML tags on init.                                                                                                                   |
+| `frictionlessRequests` | `boolean` | `false`                  | Enable frictionless requests.                                                                                                               |
+| `debug`                | `boolean` | `false`                  | Load the debug version of the SDK.                                                                                                          |
+| `chatSupport`          | `boolean` | `false`                  | Load the Customer Chat SDK variant.                                                                                                         |
+| `autoLogAppEvents`     | `boolean` | `true`                   | Automatically log app events.                                                                                                               |
+| `domain`               | `string`  | `'connect.facebook.net'` | SDK domain.                                                                                                                                 |
+| `pixelId`              | `string`  | `undefined`              | When provided, wraps children with `FacebookPixelProvider` automatically. For advanced pixel options, use `FacebookPixelProvider` directly. |
 
 ```tsx
-<FacebookProvider
-  appId="YOUR_APP_ID"
-  language="en_US"
-  lazy={false}
-  pixelId="YOUR_PIXEL_ID"
->
+<FacebookProvider appId="YOUR_APP_ID" language="en_US" lazy={false} pixelId="YOUR_PIXEL_ID">
   {children}
 </FacebookProvider>
 ```
@@ -107,11 +98,7 @@ function AuthFlow() {
   if (status === 'connected' && profile) {
     return (
       <div className="flex items-center gap-4">
-        <img
-          src={profile.picture?.data?.url}
-          alt={profile.name}
-          className="w-10 h-10 rounded-full"
-        />
+        <img src={profile.picture?.data?.url} alt={profile.name} className="w-10 h-10 rounded-full" />
         <div>
           <p className="font-semibold">{profile.name}</p>
           <p className="text-sm text-gray-500">{profile.email}</p>
@@ -166,20 +153,20 @@ function App() {
 
 Every component in this library has a corresponding hook for programmatic control. Hooks must be called inside a `FacebookProvider`.
 
-| Hook | Purpose |
-|------|---------|
-| `useLogin` | Trigger the login dialog, log out, and receive a `LoginResponse`. |
-| `useProfile` | Fetch profile fields for the logged-in user. |
-| `useLoginStatus` | Check the current authentication status. |
-| `useGraphAPI` | Make typed Graph API calls with loading/error states. |
-| `useShare` | Open the Share dialog programmatically. |
-| `useFeed` | Post to a user's feed via the Feed dialog. |
-| `useSend` | Send a private message with a link via the Send dialog. |
-| `useFacebook` | Direct access to the low-level `FacebookInstance` and `parse` function. |
-| `useLocale` | Read and change the SDK locale at runtime. |
-| `useSubscribe` | Subscribe to Facebook SDK events with automatic cleanup. |
-| `usePixel` | Track standard and custom Pixel events. |
-| `usePageView` | Automatically fire a `PageView` event on mount or route change. |
+| Hook             | Purpose                                                                 |
+| ---------------- | ----------------------------------------------------------------------- |
+| `useLogin`       | Trigger the login dialog, log out, and receive a `LoginResponse`.       |
+| `useProfile`     | Fetch profile fields for the logged-in user.                            |
+| `useLoginStatus` | Check the current authentication status.                                |
+| `useGraphAPI`    | Make typed Graph API calls with loading/error states.                   |
+| `useShare`       | Open the Share dialog programmatically.                                 |
+| `useFeed`        | Post to a user's feed via the Feed dialog.                              |
+| `useSend`        | Send a private message with a link via the Send dialog.                 |
+| `useFacebook`    | Direct access to the low-level `FacebookInstance` and `parse` function. |
+| `useLocale`      | Read and change the SDK locale at runtime.                              |
+| `useSubscribe`   | Subscribe to Facebook SDK events with automatic cleanup.                |
+| `usePixel`       | Track standard and custom Pixel events.                                 |
+| `usePageView`    | Automatically fire a `PageView` event on mount or route change.         |
 
 ## Pixel Quick Setup
 
@@ -190,10 +177,7 @@ import { FacebookProvider, usePixel } from 'react-facebook';
 
 function App() {
   return (
-    <FacebookProvider
-      appId="YOUR_APP_ID"
-      pixelId="YOUR_PIXEL_ID"
-    >
+    <FacebookProvider appId="YOUR_APP_ID" pixelId="YOUR_PIXEL_ID">
       <TrackingExample />
     </FacebookProvider>
   );
@@ -205,9 +189,7 @@ function TrackingExample() {
   return (
     <div>
       <button onClick={() => pageView()}>Track Page View</button>
-      <button onClick={() => track('Purchase', { value: 29.99, currency: 'USD' })}>
-        Track Purchase
-      </button>
+      <button onClick={() => track('Purchase', { value: 29.99, currency: 'USD' })}>Track Purchase</button>
     </div>
   );
 }

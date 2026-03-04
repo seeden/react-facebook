@@ -129,10 +129,12 @@ export default function createFacebookPixel(options: PixelOptions): FacebookPixe
 
       script.onerror = () => {
         warn('Failed to load Facebook Pixel script');
-        reject(new Error(
-          '[react-facebook] Failed to load Facebook Pixel script. ' +
-          'This may be caused by an ad blocker or network issue.'
-        ));
+        reject(
+          new Error(
+            '[react-facebook] Failed to load Facebook Pixel script. ' +
+              'This may be caused by an ad blocker or network issue.',
+          ),
+        );
       };
 
       document.head.appendChild(script);
@@ -144,23 +146,25 @@ export default function createFacebookPixel(options: PixelOptions): FacebookPixe
       return loadingPromise;
     }
 
-    loadingPromise = loadPixelScript().then(() => {
-      if (typeof window === 'undefined' || !window.fbq) return instance;
+    loadingPromise = loadPixelScript()
+      .then(() => {
+        if (typeof window === 'undefined' || !window.fbq) return instance;
 
-      const { pixelId, autoConfig, advancedMatching } = opts;
+        const { pixelId, autoConfig, advancedMatching } = opts;
 
-      if (autoConfig === false) {
-        window.fbq('set', 'autoConfig', false, pixelId);
-      }
+        if (autoConfig === false) {
+          window.fbq('set', 'autoConfig', false, pixelId);
+        }
 
-      window.fbq('init', pixelId, advancedMatching);
+        window.fbq('init', pixelId, advancedMatching);
 
-      log('Pixel initialized successfully');
-      return instance;
-    }).catch((error) => {
-      loadingPromise = undefined;
-      throw error;
-    });
+        log('Pixel initialized successfully');
+        return instance;
+      })
+      .catch((error) => {
+        loadingPromise = undefined;
+        throw error;
+      });
 
     return loadingPromise;
   }

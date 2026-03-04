@@ -20,9 +20,7 @@ let instance: FacebookPixelInstance | undefined;
 
 function getInstance(): FacebookPixelInstance {
   if (!instance) {
-    throw new Error(
-      '[react-facebook] ReactPixel.init() must be called before using any tracking methods.',
-    );
+    throw new Error('[react-facebook] ReactPixel.init() must be called before using any tracking methods.');
   }
   return instance;
 }

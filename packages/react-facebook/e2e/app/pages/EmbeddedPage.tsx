@@ -36,9 +36,7 @@ export default function EmbeddedPage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Minimal Post</h2>
           <div data-testid="minimal-post">
-            <EmbeddedPost
-              href="https://www.facebook.com/20531316728/posts/10154009990506729/"
-            />
+            <EmbeddedPost href="https://www.facebook.com/20531316728/posts/10154009990506729/" />
           </div>
         </section>
 
@@ -46,16 +44,10 @@ export default function EmbeddedPage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Multiple Embeds</h2>
           <div data-testid="multi-embed-post">
-            <EmbeddedPost
-              href="https://www.facebook.com/20531316728/posts/10154009990506729/"
-              width={400}
-            />
+            <EmbeddedPost href="https://www.facebook.com/20531316728/posts/10154009990506729/" width={400} />
           </div>
           <div data-testid="multi-embed-video">
-            <EmbeddedVideo
-              href="https://www.facebook.com/facebook/videos/10153231379946729/"
-              width={400}
-            />
+            <EmbeddedVideo href="https://www.facebook.com/facebook/videos/10153231379946729/" width={400} />
           </div>
         </section>
       </div>

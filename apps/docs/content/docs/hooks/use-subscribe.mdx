@@ -15,15 +15,15 @@ import { useSubscribe } from 'react-facebook';
 
 ## Parameters
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `event` | `string` | The Facebook event name to subscribe to (e.g. `'auth.statusChange'`, `'xfbml.render'`). |
-| `callback` | `(data: T) => void` | Optional callback invoked each time the event fires. |
+| Parameter  | Type                | Description                                                                             |
+| ---------- | ------------------- | --------------------------------------------------------------------------------------- |
+| `event`    | `string`            | The Facebook event name to subscribe to (e.g. `'auth.statusChange'`, `'xfbml.render'`). |
+| `callback` | `(data: T) => void` | Optional callback invoked each time the event fires.                                    |
 
 ## Return Value
 
-| Type | Description |
-| --- | --- |
+| Type             | Description                                                                                                                                |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `T \| undefined` | The last event value received, or `undefined` if the event has not fired yet. The generic type `T` can be specified when calling the hook. |
 
 ## Usage
@@ -71,18 +71,14 @@ function TypedAuthListener() {
         <div className="mt-2">
           <p className="text-sm">
             Status:{' '}
-            <span className={
-              lastLogin.status === 'connected'
-                ? 'font-medium text-green-600'
-                : 'font-medium text-gray-500'
-            }>
+            <span
+              className={lastLogin.status === 'connected' ? 'font-medium text-green-600' : 'font-medium text-gray-500'}
+            >
               {lastLogin.status}
             </span>
           </p>
           {lastLogin.authResponse && (
-            <p className="mt-1 text-xs text-gray-400">
-              User ID: {lastLogin.authResponse.userID}
-            </p>
+            <p className="mt-1 text-xs text-gray-400">User ID: {lastLogin.authResponse.userID}</p>
           )}
         </div>
       ) : (
@@ -97,17 +93,17 @@ function TypedAuthListener() {
 
 The Facebook SDK emits the following events that you can subscribe to with `useSubscribe`:
 
-| Event Name | Description |
-| --- | --- |
-| `auth.statusChange` | Fired when the user's login status changes (e.g., login, logout, token refresh). |
-| `auth.authResponseChange` | Fired when the auth response object changes, including token updates. |
-| `auth.login` | Fired when the user successfully logs in via `FB.login()`. |
-| `auth.logout` | Fired when the user logs out via `FB.logout()`. |
-| `xfbml.render` | Fired when all XFBML plugins on the page have finished rendering. |
-| `edge.create` | Fired when a user clicks a Like button on the page. |
-| `edge.remove` | Fired when a user unlikes something they previously liked. |
-| `comment.create` | Fired when a user posts a comment through a Comments plugin. |
-| `comment.remove` | Fired when a user removes a comment from a Comments plugin. |
+| Event Name                | Description                                                                      |
+| ------------------------- | -------------------------------------------------------------------------------- |
+| `auth.statusChange`       | Fired when the user's login status changes (e.g., login, logout, token refresh). |
+| `auth.authResponseChange` | Fired when the auth response object changes, including token updates.            |
+| `auth.login`              | Fired when the user successfully logs in via `FB.login()`.                       |
+| `auth.logout`             | Fired when the user logs out via `FB.logout()`.                                  |
+| `xfbml.render`            | Fired when all XFBML plugins on the page have finished rendering.                |
+| `edge.create`             | Fired when a user clicks a Like button on the page.                              |
+| `edge.remove`             | Fired when a user unlikes something they previously liked.                       |
+| `comment.create`          | Fired when a user posts a comment through a Comments plugin.                     |
+| `comment.remove`          | Fired when a user removes a comment from a Comments plugin.                      |
 
 Example subscribing to multiple events:
 

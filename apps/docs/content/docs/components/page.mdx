@@ -7,9 +7,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 The `Page` component renders the Facebook Page plugin using the `fb-page` XFBML class. It can display a page's timeline, upcoming events, and a messaging interface.
 
-<Callout title="Try it live">
-Toggle tabs, headers, and facepile in the [Playground](/playground#page).
-</Callout>
+<Callout title="Try it live">Toggle tabs, headers, and facepile in the [Playground](/playground#page).</Callout>
 
 ## Import
 
@@ -19,19 +17,19 @@ import { Page } from 'react-facebook';
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `href` | `string` | Current page URL | The URL of the Facebook Page. |
-| `tabs` | `string` | `undefined` | Comma-separated list of tabs to render. Options: `'timeline'`, `'events'`, `'messages'`. |
-| `width` | `number \| string` | `undefined` | Width of the plugin in pixels (min `180`, max `500`). |
-| `height` | `number \| string` | `undefined` | Height of the plugin in pixels (min `70`). |
-| `hideCover` | `boolean` | `false` | Hide the cover photo in the header. |
-| `showFacepile` | `boolean` | `false` | Show profile photos of friends who like the page. |
-| `hideCTA` | `boolean` | `false` | Hide the custom call-to-action button (if available). |
-| `smallHeader` | `boolean` | `false` | Use a smaller header. |
-| `adaptContainerWidth` | `boolean` | `false` | Adapt the plugin width to its parent container. |
-| `lazy` | `boolean` | `false` | Lazy-load the plugin. |
-| `className` | `string` | `''` | Additional CSS class names appended to the container. |
+| Prop                  | Type               | Default          | Description                                                                              |
+| --------------------- | ------------------ | ---------------- | ---------------------------------------------------------------------------------------- |
+| `href`                | `string`           | Current page URL | The URL of the Facebook Page.                                                            |
+| `tabs`                | `string`           | `undefined`      | Comma-separated list of tabs to render. Options: `'timeline'`, `'events'`, `'messages'`. |
+| `width`               | `number \| string` | `undefined`      | Width of the plugin in pixels (min `180`, max `500`).                                    |
+| `height`              | `number \| string` | `undefined`      | Height of the plugin in pixels (min `70`).                                               |
+| `hideCover`           | `boolean`          | `false`          | Hide the cover photo in the header.                                                      |
+| `showFacepile`        | `boolean`          | `false`          | Show profile photos of friends who like the page.                                        |
+| `hideCTA`             | `boolean`          | `false`          | Hide the custom call-to-action button (if available).                                    |
+| `smallHeader`         | `boolean`          | `false`          | Use a smaller header.                                                                    |
+| `adaptContainerWidth` | `boolean`          | `false`          | Adapt the plugin width to its parent container.                                          |
+| `lazy`                | `boolean`          | `false`          | Lazy-load the plugin.                                                                    |
+| `className`           | `string`           | `''`             | Additional CSS class names appended to the container.                                    |
 
 ## Usage
 
@@ -44,13 +42,7 @@ import { Page } from 'react-facebook';
 ### Timeline with Facepile
 
 ```tsx
-<Page
-  href="https://www.facebook.com/YourPage"
-  tabs="timeline"
-  width={500}
-  height={600}
-  showFacepile
-/>
+<Page href="https://www.facebook.com/YourPage" tabs="timeline" width={500} height={600} showFacepile />
 ```
 
 ### Multiple Tabs
@@ -69,12 +61,5 @@ import { Page } from 'react-facebook';
 ### Minimal
 
 ```tsx
-<Page
-  href="https://www.facebook.com/YourPage"
-  hideCover
-  hideCTA
-  smallHeader
-  width={340}
-  height={130}
-/>
+<Page href="https://www.facebook.com/YourPage" hideCover hideCTA smallHeader width={340} height={130} />
 ```

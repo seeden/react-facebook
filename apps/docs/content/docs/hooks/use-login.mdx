@@ -17,33 +17,33 @@ import { useLogin } from 'react-facebook';
 
 The hook returns an object with the following properties:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `login` | `(options: LoginOptions, callback?: (response: LoginResponse) => void) => Promise<LoginResponse>` | Function to trigger the Facebook login dialog. Returns a promise that resolves with the login response. |
-| `logout` | `() => Promise<void>` | Function to log the current user out of Facebook. Initializes the SDK if needed, then calls `FB.logout()`. |
-| `loading` | `boolean` | Whether the Facebook SDK is initializing or a login/logout request is in progress. |
-| `error` | `Error \| undefined` | The error from the most recent login or logout attempt, if any. |
-| `status` | `LoginStatus \| undefined` | The login status from the most recent successful response. One of `'connected'`, `'authorization_expired'`, `'not_authorized'`, or `'unknown'`. |
+| Property  | Type                                                                                              | Description                                                                                                                                     |
+| --------- | ------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `login`   | `(options: LoginOptions, callback?: (response: LoginResponse) => void) => Promise<LoginResponse>` | Function to trigger the Facebook login dialog. Returns a promise that resolves with the login response.                                         |
+| `logout`  | `() => Promise<void>`                                                                             | Function to log the current user out of Facebook. Initializes the SDK if needed, then calls `FB.logout()`.                                      |
+| `loading` | `boolean`                                                                                         | Whether the Facebook SDK is initializing or a login/logout request is in progress.                                                              |
+| `error`   | `Error \| undefined`                                                                              | The error from the most recent login or logout attempt, if any.                                                                                 |
+| `status`  | `LoginStatus \| undefined`                                                                        | The login status from the most recent successful response. One of `'connected'`, `'authorization_expired'`, `'not_authorized'`, or `'unknown'`. |
 
 ### LoginOptions
 
 The `login` function accepts the following options:
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `scope` | `string` | `undefined` | Comma-separated list of permissions to request (e.g. `'email,public_profile'`). |
-| `returnScopes` | `boolean` | `undefined` | When `true`, the response includes the scopes that were granted. |
-| `authType` | `string[]` | `undefined` | Array of auth types to include in the request. |
-| `rerequest` | `boolean` | `undefined` | When `true`, asks the user again for previously declined permissions. |
-| `reauthorize` | `boolean` | `undefined` | When `true`, forces re-authentication of the user. |
+| Property       | Type       | Default     | Description                                                                     |
+| -------------- | ---------- | ----------- | ------------------------------------------------------------------------------- |
+| `scope`        | `string`   | `undefined` | Comma-separated list of permissions to request (e.g. `'email,public_profile'`). |
+| `returnScopes` | `boolean`  | `undefined` | When `true`, the response includes the scopes that were granted.                |
+| `authType`     | `string[]` | `undefined` | Array of auth types to include in the request.                                  |
+| `rerequest`    | `boolean`  | `undefined` | When `true`, asks the user again for previously declined permissions.           |
+| `reauthorize`  | `boolean`  | `undefined` | When `true`, forces re-authentication of the user.                              |
 
 ### LoginResponse
 
 When the status is `'connected'`, the response includes an `authResponse` object with:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `userID` | `string` | The Facebook user ID. |
+| Property      | Type     | Description                     |
+| ------------- | -------- | ------------------------------- |
+| `userID`      | `string` | The Facebook user ID.           |
 | `accessToken` | `string` | The access token for API calls. |
 
 ## Usage
@@ -61,7 +61,11 @@ function LoginComponent() {
     }
   };
 
-  return <button onClick={handleLogin} disabled={loading}>Login</button>;
+  return (
+    <button onClick={handleLogin} disabled={loading}>
+      Login
+    </button>
+  );
 }
 ```
 
@@ -116,10 +120,7 @@ function LoginWithErrorHandling() {
         <div className="rounded-md border border-red-300 bg-red-50 p-4 text-sm text-red-700">
           <p className="font-medium">Login failed</p>
           <p>{loginError}</p>
-          <button
-            onClick={handleLogin}
-            className="mt-2 text-red-800 underline hover:no-underline"
-          >
+          <button onClick={handleLogin} className="mt-2 text-red-800 underline hover:no-underline">
             Try again
           </button>
         </div>
@@ -151,20 +152,12 @@ function LoginAndProfile() {
   if (status === 'connected' && profile) {
     return (
       <div className="flex items-center gap-4 rounded-lg border p-4">
-        <img
-          src={profile.picture?.data?.url}
-          alt={profile.name}
-          className="h-12 w-12 rounded-full"
-        />
+        <img src={profile.picture?.data?.url} alt={profile.name} className="h-12 w-12 rounded-full" />
         <div>
           <p className="font-semibold">{profile.name}</p>
           <p className="text-sm text-gray-500">{profile.email}</p>
         </div>
-        <button
-          onClick={logout}
-          disabled={authLoading}
-          className="ml-auto text-sm text-red-600 hover:underline"
-        >
+        <button onClick={logout} disabled={authLoading} className="ml-auto text-sm text-red-600 hover:underline">
           {authLoading ? 'Logging out...' : 'Logout'}
         </button>
       </div>

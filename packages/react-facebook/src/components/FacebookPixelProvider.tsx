@@ -62,15 +62,21 @@ export default function FacebookPixelProvider(props: FacebookPixelProviderProps)
     await pixelRef.current?.pageView();
   }, [init]);
 
-  const track = useCallback(async (eventName: string, data?: Record<string, unknown>) => {
-    await init();
-    await pixelRef.current?.track(eventName as Parameters<FacebookPixelInstance['track']>[0], data);
-  }, [init]);
+  const track = useCallback(
+    async (eventName: string, data?: Record<string, unknown>) => {
+      await init();
+      await pixelRef.current?.track(eventName as Parameters<FacebookPixelInstance['track']>[0], data);
+    },
+    [init],
+  );
 
-  const trackCustom = useCallback(async (eventName: string, data?: Record<string, unknown>) => {
-    await init();
-    await pixelRef.current?.trackCustom(eventName, data);
-  }, [init]);
+  const trackCustom = useCallback(
+    async (eventName: string, data?: Record<string, unknown>) => {
+      await init();
+      await pixelRef.current?.trackCustom(eventName, data);
+    },
+    [init],
+  );
 
   const grantConsent = useCallback(async () => {
     await init();
@@ -82,10 +88,13 @@ export default function FacebookPixelProvider(props: FacebookPixelProviderProps)
     await pixelRef.current?.revokeConsent();
   }, [init]);
 
-  const fbq = useCallback(async (...args: unknown[]) => {
-    await init();
-    await pixelRef.current?.fbq(...args);
-  }, [init]);
+  const fbq = useCallback(
+    async (...args: unknown[]) => {
+      await init();
+      await pixelRef.current?.fbq(...args);
+    },
+    [init],
+  );
 
   useEffect(() => {
     if (!lazy) {
@@ -93,22 +102,21 @@ export default function FacebookPixelProvider(props: FacebookPixelProviderProps)
     }
   }, [lazy]);
 
-  const value: FacebookPixelContextInterface = useMemo(() => ({
-    loading,
-    error,
-    init,
-    pixel: pixelRef.current,
-    pageView,
-    track,
-    trackCustom,
-    grantConsent,
-    revokeConsent,
-    fbq,
-  }), [loading, error, init, pageView, track, trackCustom, grantConsent, revokeConsent, fbq]);
-
-  return (
-    <FacebookPixelContext.Provider value={value}>
-      {children}
-    </FacebookPixelContext.Provider>
+  const value: FacebookPixelContextInterface = useMemo(
+    () => ({
+      loading,
+      error,
+      init,
+      pixel: pixelRef.current,
+      pageView,
+      track,
+      trackCustom,
+      grantConsent,
+      revokeConsent,
+      fbq,
+    }),
+    [loading, error, init, pageView, track, trackCustom, grantConsent, revokeConsent, fbq],
   );
+
+  return <FacebookPixelContext.Provider value={value}>{children}</FacebookPixelContext.Provider>;
 }

@@ -38,13 +38,7 @@ export type UseSendReturn = {
  */
 export default function useSend(): UseSendReturn {
   const { loading, error, invoke } = useDialog<SendOptions>('send', (options, api) => {
-    const {
-      link = getCurrentHref(),
-      display,
-      appId = api.getAppId(),
-      to,
-      redirectURI,
-    } = options;
+    const { link = getCurrentHref(), display, appId = api.getAppId(), to, redirectURI } = options;
 
     return {
       link,

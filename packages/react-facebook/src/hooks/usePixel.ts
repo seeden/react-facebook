@@ -31,8 +31,8 @@ export default function usePixel(props: UsePixelProps = {}): FacebookPixelContex
   if (!context) {
     throw new Error(
       '[react-facebook] usePixel must be used within a <FacebookPixelProvider>. ' +
-      'Wrap your component tree with <FacebookPixelProvider pixelId="YOUR_PIXEL_ID"> ' +
-      'or use the pixel prop on <FacebookProvider>.'
+        'Wrap your component tree with <FacebookPixelProvider pixelId="YOUR_PIXEL_ID"> ' +
+        'or use the pixel prop on <FacebookProvider>.',
     );
   }
 

@@ -11,9 +11,7 @@ test.describe('Facebook Pixel', () => {
     await page.waitForTimeout(500);
 
     const calls = await getFbqCalls(page);
-    const initCall = calls.find(
-      (call) => call[0] === 'init' && call[1] === 'test-pixel-id',
-    );
+    const initCall = calls.find((call) => call[0] === 'init' && call[1] === 'test-pixel-id');
     expect(initCall).toBeTruthy();
     expect(initCall![0]).toBe('init');
     expect(initCall![1]).toBe('test-pixel-id');
@@ -31,9 +29,7 @@ test.describe('Facebook Pixel', () => {
     await page.locator('[data-testid="track-purchase"]').click();
 
     const calls = await getFbqCalls(page);
-    const purchaseCall = calls.find(
-      (call) => call[0] === 'track' && call[1] === 'Purchase',
-    );
+    const purchaseCall = calls.find((call) => call[0] === 'track' && call[1] === 'Purchase');
     expect(purchaseCall).toBeTruthy();
     expect(purchaseCall![0]).toBe('track');
     expect(purchaseCall![1]).toBe('Purchase');
@@ -51,9 +47,7 @@ test.describe('Facebook Pixel', () => {
     await page.locator('[data-testid="track-custom"]').click();
 
     const calls = await getFbqCalls(page);
-    const customCall = calls.find(
-      (call) => call[0] === 'trackCustom' && call[1] === 'CustomEvent',
-    );
+    const customCall = calls.find((call) => call[0] === 'trackCustom' && call[1] === 'CustomEvent');
     expect(customCall).toBeTruthy();
     expect(customCall![0]).toBe('trackCustom');
     expect(customCall![1]).toBe('CustomEvent');
@@ -71,9 +65,7 @@ test.describe('Facebook Pixel', () => {
     await page.locator('[data-testid="page-view"]').click();
 
     const calls = await getFbqCalls(page);
-    const pageViewCall = calls.find(
-      (call) => call[0] === 'track' && call[1] === 'PageView',
-    );
+    const pageViewCall = calls.find((call) => call[0] === 'track' && call[1] === 'PageView');
     expect(pageViewCall).toBeTruthy();
     expect(pageViewCall![0]).toBe('track');
     expect(pageViewCall![1]).toBe('PageView');

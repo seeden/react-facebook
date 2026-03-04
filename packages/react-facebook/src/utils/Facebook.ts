@@ -6,12 +6,14 @@ export type AuthResponse = {
   accessToken: string;
 };
 
-export type LoginResponse = {
-  status: LoginStatus.CONNECTED,
-  authResponse: AuthResponse,
-} | {
-  status: Exclude<LoginStatus, LoginStatus.CONNECTED>,
-};
+export type LoginResponse =
+  | {
+      status: LoginStatus.CONNECTED;
+      authResponse: AuthResponse;
+    }
+  | {
+      status: Exclude<LoginStatus, LoginStatus.CONNECTED>;
+    };
 
 export type LoginOptions = {
   scope?: string;
@@ -63,7 +65,7 @@ export enum Method {
   GET = 'get',
   POST = 'post',
   DELETE = 'delete',
-};
+}
 
 export type FacebookOptions = {
   domain?: string;
@@ -151,13 +153,7 @@ export default function createFacebook(options: FacebookOptions): FacebookInstan
     }
 
     loadingPromise = new Promise<FacebookInstance>((resolve, reject) => {
-      const {
-        domain,
-        language,
-        debug,
-        chatSupport,
-        ...restOptions
-      } = opts;
+      const { domain, language, debug, chatSupport, ...restOptions } = opts;
 
       const initParams = {
         appId: restOptions.appId,
@@ -174,10 +170,12 @@ export default function createFacebook(options: FacebookOptions): FacebookInstan
         if (poll) clearInterval(poll);
         loadingPromise = undefined;
         instance.loadingPromise = undefined;
-        reject(new Error(
-          '[react-facebook] Facebook SDK loading timed out after 10 seconds. ' +
-          'This may be caused by an ad blocker or network issue.'
-        ));
+        reject(
+          new Error(
+            '[react-facebook] Facebook SDK loading timed out after 10 seconds. ' +
+              'This may be caused by an ad blocker or network issue.',
+          ),
+        );
       }, 10000);
 
       function onSDKReady() {
@@ -214,10 +212,12 @@ export default function createFacebook(options: FacebookOptions): FacebookInstan
         clearTimeout(timeout);
         loadingPromise = undefined;
         instance.loadingPromise = undefined;
-        reject(new Error(
-          `[react-facebook] Failed to load Facebook SDK from ${js.src}. ` +
-          'This may be caused by an ad blocker or network issue.'
-        ));
+        reject(
+          new Error(
+            `[react-facebook] Failed to load Facebook SDK from ${js.src}. ` +
+              'This may be caused by an ad blocker or network issue.',
+          ),
+        );
       };
 
       window.document.body.appendChild(js);

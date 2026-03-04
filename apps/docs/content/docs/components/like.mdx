@@ -8,11 +8,14 @@ import { Callout } from 'fumadocs-ui/components/callout';
 The `Like` component renders a Facebook Like button. It uses the XFBML parser under the hood to produce the official Facebook widget.
 
 <Callout title="Try it live">
-Experiment with layouts, sizes, and actions in the [Playground](/playground#like).
+  Experiment with layouts, sizes, and actions in the [Playground](/playground#like).
 </Callout>
 
 <Callout type="warn" title="EU/EEA Limitations">
-The Like button plugin is affected by Facebook's privacy changes in European regions. Users in EU/EEA countries and the United Kingdom must be logged into Facebook **and** have consented to "App and Website Cookies" in their Facebook settings. If these requirements are not met, the Like button will not be visible. This is a Facebook platform limitation. Consider alternative engagement methods for European users.
+  The Like button plugin is affected by Facebook's privacy changes in European regions. Users in EU/EEA countries and
+  the United Kingdom must be logged into Facebook **and** have consented to "App and Website Cookies" in their Facebook
+  settings. If these requirements are not met, the Like button will not be visible. This is a Facebook platform
+  limitation. Consider alternative engagement methods for European users.
 </Callout>
 
 ## Import
@@ -23,20 +26,20 @@ import { Like } from 'react-facebook';
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `href` | `string` | Current page URL | The URL to like. |
-| `layout` | `'standard' \| 'button_count' \| 'button' \| 'box_count'` | `undefined` | Layout style for the button. |
-| `showFaces` | `boolean` | `false` | Show profile photos of friends who liked the page. |
-| `colorScheme` | `string` | `undefined` | Color scheme (e.g. `'light'` or `'dark'`). |
-| `action` | `string` | `undefined` | The verb to display (e.g. `'like'` or `'recommend'`). |
-| `share` | `boolean` | `false` | Include a share button beside the Like button. |
-| `width` | `number \| string` | `undefined` | Width of the plugin in pixels. |
-| `size` | `string` | `undefined` | Button size (e.g. `'small'` or `'large'`). |
-| `kidDirectedSite` | `boolean` | `false` | If your site is directed at children under 13 set this to `true`. |
-| `referral` | `string` | `undefined` | A label for tracking referrals (maps to `data-ref`). |
-| `lazy` | `boolean` | `false` | Lazy-load the plugin. |
-| `className` | `string` | `''` | Additional CSS class names appended to the container. |
+| Prop              | Type                                                      | Default          | Description                                                       |
+| ----------------- | --------------------------------------------------------- | ---------------- | ----------------------------------------------------------------- |
+| `href`            | `string`                                                  | Current page URL | The URL to like.                                                  |
+| `layout`          | `'standard' \| 'button_count' \| 'button' \| 'box_count'` | `undefined`      | Layout style for the button.                                      |
+| `showFaces`       | `boolean`                                                 | `false`          | Show profile photos of friends who liked the page.                |
+| `colorScheme`     | `string`                                                  | `undefined`      | Color scheme (e.g. `'light'` or `'dark'`).                        |
+| `action`          | `string`                                                  | `undefined`      | The verb to display (e.g. `'like'` or `'recommend'`).             |
+| `share`           | `boolean`                                                 | `false`          | Include a share button beside the Like button.                    |
+| `width`           | `number \| string`                                        | `undefined`      | Width of the plugin in pixels.                                    |
+| `size`            | `string`                                                  | `undefined`      | Button size (e.g. `'small'` or `'large'`).                        |
+| `kidDirectedSite` | `boolean`                                                 | `false`          | If your site is directed at children under 13 set this to `true`. |
+| `referral`        | `string`                                                  | `undefined`      | A label for tracking referrals (maps to `data-ref`).              |
+| `lazy`            | `boolean`                                                 | `false`          | Lazy-load the plugin.                                             |
+| `className`       | `string`                                                  | `''`             | Additional CSS class names appended to the container.             |
 
 ## Usage
 
@@ -49,32 +52,17 @@ import { Like } from 'react-facebook';
 ### With Layout and Faces
 
 ```tsx
-<Like
-  href="https://www.facebook.com/YourPage"
-  layout="standard"
-  showFaces
-  share
-  width={450}
-/>
+<Like href="https://www.facebook.com/YourPage" layout="standard" showFaces share width={450} />
 ```
 
 ### Dark Color Scheme
 
 ```tsx
-<Like
-  href="https://www.facebook.com/YourPage"
-  colorScheme="dark"
-  layout="button_count"
-  size="large"
-/>
+<Like href="https://www.facebook.com/YourPage" colorScheme="dark" layout="button_count" size="large" />
 ```
 
 ### Box Count Layout
 
 ```tsx
-<Like
-  href="https://example.com/article"
-  layout="box_count"
-  action="recommend"
-/>
+<Like href="https://example.com/article" layout="box_count" action="recommend" />
 ```

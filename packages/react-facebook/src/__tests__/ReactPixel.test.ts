@@ -94,20 +94,14 @@ describe('ReactPixel', () => {
 
     await ReactPixel.init('my-pixel-id');
 
-    expect(mockCreateFacebookPixel).toHaveBeenCalledWith(
-      expect.objectContaining({ pixelId: 'my-pixel-id' }),
-    );
+    expect(mockCreateFacebookPixel).toHaveBeenCalledWith(expect.objectContaining({ pixelId: 'my-pixel-id' }));
     expect(mockMethods.init).toHaveBeenCalled();
   });
 
   it('init passes advancedMatching and options', async () => {
     const { default: ReactPixel } = await import('../utils/ReactPixel');
 
-    await ReactPixel.init(
-      'my-pixel-id',
-      { em: 'user@example.com' },
-      { autoConfig: false, debug: true },
-    );
+    await ReactPixel.init('my-pixel-id', { em: 'user@example.com' }, { autoConfig: false, debug: true });
 
     expect(mockCreateFacebookPixel).toHaveBeenCalledWith(
       expect.objectContaining({

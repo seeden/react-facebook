@@ -7,35 +7,35 @@ const packageJson = require('./package.json');
 
 module.exports = [
   {
-      input: 'src/index.ts',
-      output: [
-          {
-              file: packageJson.main,
-              format: 'cjs',
-              sourcemap: true,
-              name: 'react-facebook',
-              banner: "'use client';",
-          },
-          {
-              file: packageJson.module,
-              format: 'esm',
-              sourcemap: true,
-              banner: "'use client';",
-          }
-      ],
-      plugins: [
-          external(),
-          resolve(),
-          commonjs(),
-          typescript({
-            useTsconfigDeclarationDir: true
-          })
-      ],
+    input: 'src/index.ts',
+    output: [
+      {
+        file: packageJson.main,
+        format: 'cjs',
+        sourcemap: true,
+        name: 'react-facebook',
+        banner: "'use client';",
+      },
+      {
+        file: packageJson.module,
+        format: 'esm',
+        sourcemap: true,
+        banner: "'use client';",
+      },
+    ],
+    plugins: [
+      external(),
+      resolve(),
+      commonjs(),
+      typescript({
+        useTsconfigDeclarationDir: true,
+      }),
+    ],
   },
   {
-      input: 'dist/types/index.d.ts',
-      output: [{ file: 'dist/index.d.ts', format: "esm" }],
-      external: [/\.css$/],
-      plugins: [dts.default()],
+    input: 'dist/types/index.d.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'esm' }],
+    external: [/\.css$/],
+    plugins: [dts.default()],
   },
 ];

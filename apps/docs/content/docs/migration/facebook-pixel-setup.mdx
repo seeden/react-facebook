@@ -36,14 +36,18 @@ ReactPixel.trackCustom('ButtonClick', { button: 'hero-cta' });
 Pass user data for better attribution:
 
 ```tsx
-ReactPixel.init('YOUR_PIXEL_ID', {
-  em: 'user@example.com',
-  fn: 'john',
-  ln: 'doe',
-}, {
-  autoConfig: true,
-  debug: false,
-});
+ReactPixel.init(
+  'YOUR_PIXEL_ID',
+  {
+    em: 'user@example.com',
+    fn: 'john',
+    ln: 'doe',
+  },
+  {
+    autoConfig: true,
+    debug: false,
+  },
+);
 ```
 
 ### In a Next.js App
@@ -75,10 +79,7 @@ import { FacebookProvider, usePixel, usePageView } from 'react-facebook';
 
 function App() {
   return (
-    <FacebookProvider
-      appId="YOUR_APP_ID"
-      pixelId="YOUR_PIXEL_ID"
-    >
+    <FacebookProvider appId="YOUR_APP_ID" pixelId="YOUR_PIXEL_ID">
       <MyPage />
     </FacebookProvider>
   );
@@ -91,10 +92,7 @@ function MyPage() {
   if (error) return <p>Pixel failed to load</p>;
 
   return (
-    <button
-      onClick={() => track('Purchase', { value: 29.99, currency: 'USD' })}
-      disabled={loading}
-    >
+    <button onClick={() => track('Purchase', { value: 29.99, currency: 'USD' })} disabled={loading}>
       Buy Now
     </button>
   );
@@ -134,18 +132,18 @@ function Layout({ children }) {
 
 All Facebook standard events are supported:
 
-| Event | Example |
-|---|---|
-| `PageView` | `track('PageView')` |
-| `ViewContent` | `track('ViewContent', { content_name: 'Product X' })` |
-| `Search` | `track('Search', { search_string: 'shoes' })` |
-| `AddToCart` | `track('AddToCart', { value: 49.99, currency: 'USD' })` |
-| `AddToWishlist` | `track('AddToWishlist', { content_name: 'Item Y' })` |
-| `InitiateCheckout` | `track('InitiateCheckout', { value: 99.99 })` |
-| `AddPaymentInfo` | `track('AddPaymentInfo')` |
-| `Purchase` | `track('Purchase', { value: 29.99, currency: 'USD' })` |
-| `Lead` | `track('Lead', { content_name: 'Signup form' })` |
-| `CompleteRegistration` | `track('CompleteRegistration', { status: true })` |
+| Event                  | Example                                                 |
+| ---------------------- | ------------------------------------------------------- |
+| `PageView`             | `track('PageView')`                                     |
+| `ViewContent`          | `track('ViewContent', { content_name: 'Product X' })`   |
+| `Search`               | `track('Search', { search_string: 'shoes' })`           |
+| `AddToCart`            | `track('AddToCart', { value: 49.99, currency: 'USD' })` |
+| `AddToWishlist`        | `track('AddToWishlist', { content_name: 'Item Y' })`    |
+| `InitiateCheckout`     | `track('InitiateCheckout', { value: 99.99 })`           |
+| `AddPaymentInfo`       | `track('AddPaymentInfo')`                               |
+| `Purchase`             | `track('Purchase', { value: 29.99, currency: 'USD' })`  |
+| `Lead`                 | `track('Lead', { content_name: 'Signup form' })`        |
+| `CompleteRegistration` | `track('CompleteRegistration', { status: true })`       |
 
 Custom events:
 
@@ -189,12 +187,12 @@ function CookieBanner() {
 
 ## Available Pixel APIs
 
-| API | Description |
-|---|---|
-| `ReactPixel` | Imperative API — no provider needed |
-| `<FacebookPixelProvider>` | Pixel-only React context provider |
-| `usePixel()` | Hook returning `{ track, trackCustom, pageView, grantConsent, revokeConsent, loading }` |
-| `usePageView()` | Hook for automatic page view tracking on mount or route change |
+| API                       | Description                                                                             |
+| ------------------------- | --------------------------------------------------------------------------------------- |
+| `ReactPixel`              | Imperative API — no provider needed                                                     |
+| `<FacebookPixelProvider>` | Pixel-only React context provider                                                       |
+| `usePixel()`              | Hook returning `{ track, trackCustom, pageView, grantConsent, revokeConsent, loading }` |
+| `usePageView()`           | Hook for automatic page view tracking on mount or route change                          |
 
 ## TypeScript
 

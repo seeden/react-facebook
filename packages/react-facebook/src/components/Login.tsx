@@ -1,4 +1,12 @@
-import { type ReactNode, type ReactElement, type ComponentType, type ElementType, type CSSProperties, useEffect, useRef } from 'react';
+import {
+  type ReactNode,
+  type ReactElement,
+  type ComponentType,
+  type ElementType,
+  type CSSProperties,
+  useEffect,
+  useRef,
+} from 'react';
 import useLogin from '../hooks/useLogin';
 import useProfile from '../hooks/useProfile';
 import type { LoginOptions } from '../hooks/useLogin';
@@ -94,7 +102,7 @@ export default function Login(props: LoginProps) {
       aria-label={loading ? 'Logging in...' : 'Login with Facebook'}
       {...rest}
     >
-      {loading ? 'Loading...' : (children || 'Login with Facebook')}
+      {loading ? 'Loading...' : children || 'Login with Facebook'}
     </Component>
   );
 }

@@ -34,10 +34,7 @@ function CookieBanner() {
 
 function App() {
   return (
-    <FacebookProvider
-      appId="YOUR_APP_ID"
-      pixelId="YOUR_PIXEL_ID"
-    >
+    <FacebookProvider appId="YOUR_APP_ID" pixelId="YOUR_PIXEL_ID">
       <CookieBanner />
       <MainContent />
     </FacebookProvider>
@@ -88,7 +85,9 @@ function ConsentGate({ children }: { children: React.ReactNode }) {
 ```
 
 <Callout type="warn">
-  The pixel script itself is still loaded when consent is revoked. What changes is whether event data is transmitted to Facebook. If your privacy policy requires that no Facebook scripts load at all before consent, use the `lazy` prop on the provider and only call `init()` after consent is granted.
+  The pixel script itself is still loaded when consent is revoked. What changes is whether event data is transmitted to
+  Facebook. If your privacy policy requires that no Facebook scripts load at all before consent, use the `lazy` prop on
+  the provider and only call `init()` after consent is granted.
 </Callout>
 
 ## Fully Deferred Loading
@@ -159,5 +158,6 @@ function ConsentBridge() {
 ```
 
 <Callout type="info">
-  All tracking methods (`track`, `trackCustom`, `pageView`) are safe to call regardless of consent state. Facebook handles the queuing internally -- events made while consent is revoked are held and flushed when consent is granted.
+  All tracking methods (`track`, `trackCustom`, `pageView`) are safe to call regardless of consent state. Facebook
+  handles the queuing internally -- events made while consent is revoked are held and flushed when consent is granted.
 </Callout>

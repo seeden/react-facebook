@@ -55,9 +55,7 @@ type SelectProps<T extends string> = {
 function Select<T extends string>({ label, value, onChange, options, testId }: SelectProps<T>) {
   return (
     <div>
-      <label className="mb-1.5 block text-xs font-medium text-[var(--color-fd-muted-foreground)]">
-        {label}
-      </label>
+      <label className="mb-1.5 block text-xs font-medium text-[var(--color-fd-muted-foreground)]">{label}</label>
       <select
         data-testid={testId}
         value={value}
@@ -87,8 +85,20 @@ function Toggle({
 }) {
   return (
     <label className="flex cursor-pointer items-center gap-2.5 text-sm text-[var(--color-fd-foreground)]">
-      <span className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors ${checked ? 'border-[var(--color-fd-primary)] bg-[var(--color-fd-primary)]' : 'border-[var(--color-fd-border)] bg-[var(--color-fd-background)]'}`}>
-        {checked && <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none"><path d="M2.5 6l2.5 2.5 4.5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+      <span
+        className={`flex h-5 w-5 shrink-0 items-center justify-center rounded border transition-colors ${checked ? 'border-[var(--color-fd-primary)] bg-[var(--color-fd-primary)]' : 'border-[var(--color-fd-border)] bg-[var(--color-fd-background)]'}`}
+      >
+        {checked && (
+          <svg className="h-3 w-3 text-white" viewBox="0 0 12 12" fill="none">
+            <path
+              d="M2.5 6l2.5 2.5 4.5-5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        )}
       </span>
       <input
         data-testid={testId}
@@ -119,9 +129,7 @@ function NumberInput({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-xs font-medium text-[var(--color-fd-muted-foreground)]">
-        {label}
-      </label>
+      <label className="mb-1 block text-xs font-medium text-[var(--color-fd-muted-foreground)]">{label}</label>
       <input
         data-testid={testId}
         type="number"
@@ -150,9 +158,7 @@ function TextInput({
 }) {
   return (
     <div>
-      <label className="mb-1 block text-xs font-medium text-[var(--color-fd-muted-foreground)]">
-        {label}
-      </label>
+      <label className="mb-1 block text-xs font-medium text-[var(--color-fd-muted-foreground)]">{label}</label>
       <input
         data-testid={testId}
         type="text"
@@ -183,14 +189,16 @@ function DemoSection({
   id?: string;
 }) {
   return (
-    <section id={id} data-testid={testId} className="scroll-mt-20 rounded-xl border border-[var(--color-fd-border)] bg-[var(--color-fd-card)] p-6">
+    <section
+      id={id}
+      data-testid={testId}
+      className="scroll-mt-20 rounded-xl border border-[var(--color-fd-border)] bg-[var(--color-fd-card)] p-6"
+    >
       <h2 className="mb-1 text-xl font-semibold text-[var(--color-fd-foreground)]">{title}</h2>
       <p className="mb-4 text-sm text-[var(--color-fd-muted-foreground)]">{description}</p>
       {banner}
       <div className="grid gap-6 lg:grid-cols-[1fr_280px]">
-        <div className="flex min-h-[120px] items-start rounded-lg bg-[var(--color-fd-background)] p-4">
-          {children}
-        </div>
+        <div className="flex min-h-[120px] items-start rounded-lg bg-[var(--color-fd-background)] p-4">{children}</div>
         <div className="flex flex-col gap-3">{controls}</div>
       </div>
     </section>
@@ -222,8 +230,7 @@ export default function PlaygroundPage() {
   // Comments
   const [commentsNumPosts, setCommentsNumPosts] = useState(5);
   const [commentsOrderBy, setCommentsOrderBy] = useState<(typeof ORDER_BY)[number]>('reverse_time');
-  const [commentsColorScheme, setCommentsColorScheme] =
-    useState<(typeof COLOR_SCHEMES)[number]>('light');
+  const [commentsColorScheme, setCommentsColorScheme] = useState<(typeof COLOR_SCHEMES)[number]>('light');
 
   // Page
   const [pageTabs, setPageTabs] = useState('timeline');
@@ -248,18 +255,13 @@ export default function PlaygroundPage() {
     <div data-testid="playground-page" className="mx-auto max-w-5xl px-4 py-8">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-3xl font-bold text-[var(--color-fd-foreground)]">Playground</h1>
-        <Link
-          href="/docs"
-          className="text-sm text-[var(--color-fd-primary)] hover:underline"
-        >
+        <Link href="/docs" className="text-sm text-[var(--color-fd-primary)] hover:underline">
           Back to docs
         </Link>
       </div>
 
       <div className="mb-8 rounded-xl border border-[var(--color-fd-border)] bg-[var(--color-fd-card)] p-4">
-        <label className="mb-1 block text-sm font-medium text-[var(--color-fd-foreground)]">
-          Language
-        </label>
+        <label className="mb-1 block text-sm font-medium text-[var(--color-fd-foreground)]">Language</label>
         <select
           data-testid="locale-select"
           value={locale}
@@ -279,10 +281,11 @@ export default function PlaygroundPage() {
 
       <FacebookErrorBoundary
         fallback={(error, reset) => (
-          <div data-testid="error-fallback" className="rounded-xl border border-red-300 bg-red-50 p-6 dark:border-red-800 dark:bg-red-950">
-            <p className="text-sm font-medium text-red-700 dark:text-red-300">
-              Facebook SDK failed to load
-            </p>
+          <div
+            data-testid="error-fallback"
+            className="rounded-xl border border-red-300 bg-red-50 p-6 dark:border-red-800 dark:bg-red-950"
+          >
+            <p className="text-sm font-medium text-red-700 dark:text-red-300">Facebook SDK failed to load</p>
             <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error.message}</p>
             <button
               onClick={reset}
@@ -303,8 +306,12 @@ export default function PlaygroundPage() {
               description="Facebook Login button with OAuth support."
               banner={
                 <div className="mb-4 rounded-lg border border-blue-300 bg-blue-50 p-3 text-sm text-blue-800 dark:border-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                  <strong>EU/EEA users:</strong> Some social plugins (Like, Comments) require you to be logged into Facebook and have consented to &quot;App and Website Cookies&quot; in your Facebook settings. Log in here first to see all components below.{' '}
-                  <Link href="/docs/advanced/security#eueea-limitations-for-social-plugins" className="underline">Learn more</Link>
+                  <strong>EU/EEA users:</strong> Some social plugins (Like, Comments) require you to be logged into
+                  Facebook and have consented to &quot;App and Website Cookies&quot; in your Facebook settings. Log in
+                  here first to see all components below.{' '}
+                  <Link href="/docs/advanced/security#eueea-limitations-for-social-plugins" className="underline">
+                    Learn more
+                  </Link>
                 </div>
               }
               controls={
@@ -330,16 +337,34 @@ export default function PlaygroundPage() {
               description="Facebook Like button with configurable layout, size, and action."
               banner={
                 <div className="mb-4 rounded-lg border border-[var(--color-fd-border)] bg-[var(--color-fd-background)] p-3 text-xs text-[var(--color-fd-muted-foreground)]">
-                  Not visible? In the EU/EEA, the Like button requires being logged into Facebook with cookie consent enabled.
+                  Not visible? In the EU/EEA, the Like button requires being logged into Facebook with cookie consent
+                  enabled.
                 </div>
               }
               controls={
                 <>
-                  <Select testId="like-layout" label="layout" value={likeLayout} onChange={setLikeLayout} options={LIKE_LAYOUTS} />
+                  <Select
+                    testId="like-layout"
+                    label="layout"
+                    value={likeLayout}
+                    onChange={setLikeLayout}
+                    options={LIKE_LAYOUTS}
+                  />
                   <Select testId="like-size" label="size" value={likeSize} onChange={setLikeSize} options={SIZES} />
-                  <Select testId="like-action" label="action" value={likeAction} onChange={setLikeAction} options={ACTIONS} />
+                  <Select
+                    testId="like-action"
+                    label="action"
+                    value={likeAction}
+                    onChange={setLikeAction}
+                    options={ACTIONS}
+                  />
                   <Toggle testId="like-share" label="share" checked={likeShare} onChange={setLikeShare} />
-                  <Toggle testId="like-show-faces" label="showFaces" checked={likeShowFaces} onChange={setLikeShowFaces} />
+                  <Toggle
+                    testId="like-show-faces"
+                    label="showFaces"
+                    checked={likeShowFaces}
+                    onChange={setLikeShowFaces}
+                  />
                 </>
               }
             >
@@ -361,7 +386,13 @@ export default function PlaygroundPage() {
               description="Facebook Share button for sharing URLs."
               controls={
                 <>
-                  <Select testId="share-layout" label="layout" value={shareLayout} onChange={setShareLayout} options={SHARE_LAYOUTS} />
+                  <Select
+                    testId="share-layout"
+                    label="layout"
+                    value={shareLayout}
+                    onChange={setShareLayout}
+                    options={SHARE_LAYOUTS}
+                  />
                   <Select testId="share-size" label="size" value={shareSize} onChange={setShareSize} options={SIZES} />
                 </>
               }
@@ -377,7 +408,8 @@ export default function PlaygroundPage() {
               description="Facebook Comments plugin with color scheme and ordering options."
               banner={
                 <div className="mb-4 rounded-lg border border-[var(--color-fd-border)] bg-[var(--color-fd-background)] p-3 text-xs text-[var(--color-fd-muted-foreground)]">
-                  Not visible? In the EU/EEA, the Comments plugin requires being logged into Facebook with cookie consent enabled.
+                  Not visible? In the EU/EEA, the Comments plugin requires being logged into Facebook with cookie
+                  consent enabled.
                 </div>
               }
               controls={
@@ -390,7 +422,13 @@ export default function PlaygroundPage() {
                     min={1}
                     max={10}
                   />
-                  <Select testId="comments-order-by" label="orderBy" value={commentsOrderBy} onChange={setCommentsOrderBy} options={ORDER_BY} />
+                  <Select
+                    testId="comments-order-by"
+                    label="orderBy"
+                    value={commentsOrderBy}
+                    onChange={setCommentsOrderBy}
+                    options={ORDER_BY}
+                  />
                   <Select
                     testId="comments-color-scheme"
                     label="colorScheme"
@@ -418,10 +456,31 @@ export default function PlaygroundPage() {
               description="Facebook Page plugin showing a page's timeline, events, or messages."
               controls={
                 <>
-                  <TextInput testId="page-tabs" label="tabs" value={pageTabs} onChange={setPageTabs} placeholder="timeline,events,messages" />
-                  <Toggle testId="page-hide-cover" label="hideCover" checked={pageHideCover} onChange={setPageHideCover} />
-                  <Toggle testId="page-small-header" label="smallHeader" checked={pageSmallHeader} onChange={setPageSmallHeader} />
-                  <Toggle testId="page-show-facepile" label="showFacepile" checked={pageShowFacepile} onChange={setPageShowFacepile} />
+                  <TextInput
+                    testId="page-tabs"
+                    label="tabs"
+                    value={pageTabs}
+                    onChange={setPageTabs}
+                    placeholder="timeline,events,messages"
+                  />
+                  <Toggle
+                    testId="page-hide-cover"
+                    label="hideCover"
+                    checked={pageHideCover}
+                    onChange={setPageHideCover}
+                  />
+                  <Toggle
+                    testId="page-small-header"
+                    label="smallHeader"
+                    checked={pageSmallHeader}
+                    onChange={setPageSmallHeader}
+                  />
+                  <Toggle
+                    testId="page-show-facepile"
+                    label="showFacepile"
+                    checked={pageShowFacepile}
+                    onChange={setPageShowFacepile}
+                  />
                 </>
               }
             >
@@ -467,9 +526,24 @@ export default function PlaygroundPage() {
               description="Embed a public Facebook video with playback controls."
               controls={
                 <>
-                  <Toggle testId="video-show-text" label="showText" checked={videoShowText} onChange={setVideoShowText} />
-                  <Toggle testId="video-auto-play" label="autoPlay" checked={videoAutoPlay} onChange={setVideoAutoPlay} />
-                  <Toggle testId="video-show-captions" label="showCaptions" checked={videoShowCaptions} onChange={setVideoShowCaptions} />
+                  <Toggle
+                    testId="video-show-text"
+                    label="showText"
+                    checked={videoShowText}
+                    onChange={setVideoShowText}
+                  />
+                  <Toggle
+                    testId="video-auto-play"
+                    label="autoPlay"
+                    checked={videoAutoPlay}
+                    onChange={setVideoAutoPlay}
+                  />
+                  <Toggle
+                    testId="video-show-captions"
+                    label="showCaptions"
+                    checked={videoShowCaptions}
+                    onChange={setVideoShowCaptions}
+                  />
                   <Toggle
                     testId="video-allow-fullscreen"
                     label="allowFullScreen"
@@ -509,7 +583,6 @@ export default function PlaygroundPage() {
                 Share on Facebook
               </ShareButton>
             </DemoSection>
-
           </div>
         </FacebookProvider>
       </FacebookErrorBoundary>

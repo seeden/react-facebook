@@ -15,17 +15,17 @@ import { usePageView } from 'react-facebook';
 
 ## Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `trackOnMount` | `boolean` | `true` | Fire a `PageView` event when the component mounts |
+| Option               | Type      | Default | Description                                                 |
+| -------------------- | --------- | ------- | ----------------------------------------------------------- |
+| `trackOnMount`       | `boolean` | `true`  | Fire a `PageView` event when the component mounts           |
 | `trackOnRouteChange` | `boolean` | `false` | Fire a `PageView` event when `window.location.href` changes |
 
 ## Return Value
 
-| Property | Type | Description |
-|---|---|---|
-| `pageView` | `() => Promise<void>` | Manually fire a `PageView` event |
-| `loading` | `boolean` | `true` while the pixel script is loading |
+| Property   | Type                  | Description                              |
+| ---------- | --------------------- | ---------------------------------------- |
+| `pageView` | `() => Promise<void>` | Manually fire a `PageView` event         |
+| `loading`  | `boolean`             | `true` while the pixel script is loading |
 
 ## Basic Usage
 
@@ -76,7 +76,8 @@ function App() {
 ```
 
 <Callout type="info">
-  Route change detection works by comparing `window.location.href` between renders. It fires on any URL change, including hash changes and query parameter updates.
+  Route change detection works by comparing `window.location.href` between renders. It fires on any URL change,
+  including hash changes and query parameter updates.
 </Callout>
 
 ## Manual Page View
@@ -113,5 +114,6 @@ export default function TrackingLayout({ children }: { children: React.ReactNode
 ```
 
 <Callout type="warn">
-  `usePageView` must be used inside a `FacebookPixelProvider` or a `FacebookProvider` with the `pixelId` prop. It depends on `usePixel` internally.
+  `usePageView` must be used inside a `FacebookPixelProvider` or a `FacebookProvider` with the `pixelId` prop. It
+  depends on `usePixel` internally.
 </Callout>

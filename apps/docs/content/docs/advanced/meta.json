@@ -1,9 +1,4 @@
 {
   "title": "Advanced",
-  "pages": [
-    "ssr",
-    "error-handling",
-    "performance",
-    "security"
-  ]
+  "pages": ["ssr", "error-handling", "performance", "security"]
 }

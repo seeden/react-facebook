@@ -14,18 +14,18 @@ The complete Facebook SDK for React — one package for everything.
 
 Facebook integration in React has been fragmented across abandoned, single-purpose packages with no TypeScript, no SSR support, and no maintenance. `react-facebook` is a unified, actively maintained solution that covers the entire Facebook platform.
 
-| Feature | react-facebook |
-|---|---|
-| Login & Logout | `<Login>`, `useLogin` |
-| Pixel Tracking | `usePixel`, `usePageView`, `ReactPixel` |
-| Graph API | `useGraphAPI` with typed responses |
-| Social Plugins | Like, Share, Comments, Page, Embeds |
-| TypeScript | Full type coverage, no `@types/` needed |
-| SSR / Next.js | `'use client'` directives, `window` guards |
-| Error Handling | `FacebookErrorBoundary` for ad blockers |
-| GDPR Consent | Built-in `grantConsent` / `revokeConsent` |
-| Bundle Size | Tree-shakeable, under 15 KB gzipped |
-| i18n | Dynamic locale switching with `useLocale` |
+| Feature        | react-facebook                             |
+| -------------- | ------------------------------------------ |
+| Login & Logout | `<Login>`, `useLogin`                      |
+| Pixel Tracking | `usePixel`, `usePageView`, `ReactPixel`    |
+| Graph API      | `useGraphAPI` with typed responses         |
+| Social Plugins | Like, Share, Comments, Page, Embeds        |
+| TypeScript     | Full type coverage, no `@types/` needed    |
+| SSR / Next.js  | `'use client'` directives, `window` guards |
+| Error Handling | `FacebookErrorBoundary` for ad blockers    |
+| GDPR Consent   | Built-in `grantConsent` / `revokeConsent`  |
+| Bundle Size    | Tree-shakeable, under 15 KB gzipped        |
+| i18n           | Dynamic locale switching with `useLocale`  |
 
 ## Quick Start
 
@@ -81,16 +81,37 @@ function PhotoGallery() {
 ```
 
 <Callout title="Try it live">
-See every component in action with interactive controls. Change props, switch languages, and preview results instantly in the [Playground](/playground).
+  See every component in action with interactive controls. Change props, switch languages, and preview results instantly
+  in the [Playground](/playground).
 </Callout>
 
 ## Explore
 
 <Cards>
-  <Card title="Getting Started" description="Installation, provider setup, and your first component." href="/docs/getting-started" />
-  <Card title="Components" description="FacebookProvider, Login, Like, Share, Comments, Embeds, Page, and more." href="/docs/components" />
-  <Card title="Hooks" description="useLogin, useShare, useGraphAPI, useLocale, usePixel, and other hooks." href="/docs/hooks" />
-  <Card title="Facebook Pixel" description="Conversion tracking, page views, custom events, and GDPR consent." href="/docs/pixel" />
-  <Card title="Guides" description="Facebook Login setup, Facebook Pixel setup, and version upgrade guides." href="/docs/migration" />
+  <Card
+    title="Getting Started"
+    description="Installation, provider setup, and your first component."
+    href="/docs/getting-started"
+  />
+  <Card
+    title="Components"
+    description="FacebookProvider, Login, Like, Share, Comments, Embeds, Page, and more."
+    href="/docs/components"
+  />
+  <Card
+    title="Hooks"
+    description="useLogin, useShare, useGraphAPI, useLocale, usePixel, and other hooks."
+    href="/docs/hooks"
+  />
+  <Card
+    title="Facebook Pixel"
+    description="Conversion tracking, page views, custom events, and GDPR consent."
+    href="/docs/pixel"
+  />
+  <Card
+    title="Guides"
+    description="Facebook Login setup, Facebook Pixel setup, and version upgrade guides."
+    href="/docs/migration"
+  />
   <Card title="Playground" description="Interactive demo with live controls for every component." href="/playground" />
 </Cards>

@@ -66,9 +66,7 @@ describe('Facebook', () => {
       window.fbAsyncInit();
 
       await initPromise;
-      expect((window.FB as { init: unknown }).init).toHaveBeenCalledWith(
-        expect.objectContaining({ appId: 'test123' })
-      );
+      expect((window.FB as { init: unknown }).init).toHaveBeenCalledWith(expect.objectContaining({ appId: 'test123' }));
     });
 
     it('returns cached promise on second init call', async () => {
@@ -228,9 +226,7 @@ describe('Facebook', () => {
       simulateSDKLoad();
       await changePromise;
 
-      expect(window.FB.init).toHaveBeenCalledWith(
-        expect.objectContaining({ appId: 'test123' }),
-      );
+      expect(window.FB.init).toHaveBeenCalledWith(expect.objectContaining({ appId: 'test123' }));
     });
 
     it('calls XFBML.parse after locale change to re-render widgets', async () => {

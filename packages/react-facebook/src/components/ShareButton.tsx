@@ -11,15 +11,7 @@ export type ShareButtonProps = ShareOptions & {
 };
 
 export default function ShareButton(props: ShareButtonProps) {
-  const {
-    as: AsChild = 'button',
-    disabled,
-    href,
-    display,
-    hashtag,
-    redirectUri,
-    ...rest
-  } = props;
+  const { as: AsChild = 'button', disabled, href, display, hashtag, redirectUri, ...rest } = props;
 
   const { loading, share } = useShare();
 
@@ -36,11 +28,5 @@ export default function ShareButton(props: ShareButtonProps) {
     });
   }
 
-  return (
-    <AsChild
-      onClick={handleShare}
-      disabled={isDisabled}
-      {...rest}
-    />
-  );
+  return <AsChild onClick={handleShare} disabled={isDisabled} {...rest} />;
 }

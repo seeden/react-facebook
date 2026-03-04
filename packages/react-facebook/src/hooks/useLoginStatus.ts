@@ -62,9 +62,11 @@ export default function useLoginStatus(): UseLoginStatusReturn {
 
     fetchStatus();
 
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [init]);
-  
+
   return {
     loading,
     error,

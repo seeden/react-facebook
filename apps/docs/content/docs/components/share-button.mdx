@@ -7,9 +7,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 `ShareButton` renders a fully customizable element that opens the Facebook Share dialog when clicked. Unlike the `Share` component (which renders the official Facebook XFBML widget), `ShareButton` lets you control the markup and styling entirely.
 
-<Callout title="Try it live">
-Try the programmatic share dialog in the [Playground](/playground#sharebutton).
-</Callout>
+<Callout title="Try it live">Try the programmatic share dialog in the [Playground](/playground#sharebutton).</Callout>
 
 ## Import
 
@@ -21,17 +19,17 @@ import { ShareButton } from 'react-facebook';
 
 `ShareButton` extends `ShareOptions` with rendering props.
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `href` | `string` | **required** | The URL to share. |
-| `display` | `'iframe' \| 'popup' \| 'async' \| 'page'` | **required** | How the share dialog is presented. |
-| `hashtag` | `string` | `undefined` | A hashtag to include in the share (e.g. `'#react'`). |
-| `redirectUri` | `string` | `undefined` | URL to redirect to after the dialog closes (for `'page'` display mode). |
-| `children` | `ReactNode` | `undefined` | Content rendered inside the button. |
-| `as` | `ComponentType \| ElementType` | `'button'` | The element or component to render. |
-| `disabled` | `boolean` | `undefined` | Disables the button. |
-| `className` | `string` | `undefined` | CSS class name. |
-| `style` | `CSSProperties` | `undefined` | Inline styles. |
+| Prop          | Type                                       | Default      | Description                                                             |
+| ------------- | ------------------------------------------ | ------------ | ----------------------------------------------------------------------- |
+| `href`        | `string`                                   | **required** | The URL to share.                                                       |
+| `display`     | `'iframe' \| 'popup' \| 'async' \| 'page'` | **required** | How the share dialog is presented.                                      |
+| `hashtag`     | `string`                                   | `undefined`  | A hashtag to include in the share (e.g. `'#react'`).                    |
+| `redirectUri` | `string`                                   | `undefined`  | URL to redirect to after the dialog closes (for `'page'` display mode). |
+| `children`    | `ReactNode`                                | `undefined`  | Content rendered inside the button.                                     |
+| `as`          | `ComponentType \| ElementType`             | `'button'`   | The element or component to render.                                     |
+| `disabled`    | `boolean`                                  | `undefined`  | Disables the button.                                                    |
+| `className`   | `string`                                   | `undefined`  | CSS class name.                                                         |
+| `style`       | `CSSProperties`                            | `undefined`  | Inline styles.                                                          |
 
 Any additional props are spread onto the rendered element.
 
@@ -61,12 +59,7 @@ Any additional props are spread onto the rendered element.
 ### Custom Element
 
 ```tsx
-<ShareButton
-  as="a"
-  href="https://example.com"
-  display="popup"
-  className="text-blue-600 hover:underline cursor-pointer"
->
+<ShareButton as="a" href="https://example.com" display="popup" className="text-blue-600 hover:underline cursor-pointer">
   Share this article
 </ShareButton>
 ```

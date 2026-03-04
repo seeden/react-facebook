@@ -7,9 +7,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 The `Share` component renders the official Facebook Share button widget. It produces an XFBML-parsed button that opens the Facebook Share dialog when clicked.
 
-<Callout title="Try it live">
-Experiment with layouts and sizes in the [Playground](/playground#share).
-</Callout>
+<Callout title="Try it live">Experiment with layouts and sizes in the [Playground](/playground#share).</Callout>
 
 If you need a custom-styled share button (rather than the Facebook widget), see [ShareButton](/docs/components/share-button).
 
@@ -21,13 +19,13 @@ import { Share } from 'react-facebook';
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `href` | `string` | Current page URL | The URL to share. |
-| `layout` | `'box_count' \| 'button_count' \| 'button' \| 'icon_link'` | `'icon_link'` | Layout style for the share button. |
-| `size` | `'small' \| 'large'` | `'small'` | Button size. |
-| `lazy` | `boolean` | `false` | Lazy-load the plugin. |
-| `className` | `string` | `''` | Additional CSS class names appended to the container. |
+| Prop        | Type                                                       | Default          | Description                                           |
+| ----------- | ---------------------------------------------------------- | ---------------- | ----------------------------------------------------- |
+| `href`      | `string`                                                   | Current page URL | The URL to share.                                     |
+| `layout`    | `'box_count' \| 'button_count' \| 'button' \| 'icon_link'` | `'icon_link'`    | Layout style for the share button.                    |
+| `size`      | `'small' \| 'large'`                                       | `'small'`        | Button size.                                          |
+| `lazy`      | `boolean`                                                  | `false`          | Lazy-load the plugin.                                 |
+| `className` | `string`                                                   | `''`             | Additional CSS class names appended to the container. |
 
 ## Usage
 
@@ -40,18 +38,11 @@ import { Share } from 'react-facebook';
 ### Large Button with Count
 
 ```tsx
-<Share
-  href="https://example.com/article"
-  layout="button_count"
-  size="large"
-/>
+<Share href="https://example.com/article" layout="button_count" size="large" />
 ```
 
 ### Box Count Layout
 
 ```tsx
-<Share
-  href="https://example.com/article"
-  layout="box_count"
-/>
+<Share href="https://example.com/article" layout="box_count" />
 ```

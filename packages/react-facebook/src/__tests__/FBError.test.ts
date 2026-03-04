@@ -5,9 +5,7 @@ describe('FBError', () => {
   it('formats the message correctly', () => {
     const error = new FBError('Something went wrong', 190, 'OAuthException');
 
-    expect(error.message).toBe(
-      '[react-facebook] Something went wrong (code: 190, type: OAuthException)',
-    );
+    expect(error.message).toBe('[react-facebook] Something went wrong (code: 190, type: OAuthException)');
   });
 
   it('stores the error code', () => {

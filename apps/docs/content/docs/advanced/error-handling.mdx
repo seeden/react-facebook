@@ -60,11 +60,11 @@ function App() {
 
 ### Props
 
-| Prop | Type | Description |
-|---|---|---|
+| Prop       | Type                                                          | Description                                                                         |
+| ---------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
 | `fallback` | `ReactNode \| (error: Error, reset: () => void) => ReactNode` | UI to render when an error is caught. Can be a static element or a render function. |
-| `onError` | `(error: Error, errorInfo: ErrorInfo) => void` | Callback invoked when an error is caught. Use for logging or analytics. |
-| `children` | `ReactNode` | The component tree to protect. |
+| `onError`  | `(error: Error, errorInfo: ErrorInfo) => void`                | Callback invoked when an error is caught. Use for logging or analytics.             |
+| `children` | `ReactNode`                                                   | The component tree to protect.                                                      |
 
 ## SDK Load Timeout
 
@@ -133,13 +133,13 @@ function RetryButton() {
 
 All errors thrown by `react-facebook` are prefixed with `[react-facebook]` for easy identification in logs and error tracking services. Common prefixes:
 
-| Error | Cause |
-|---|---|
-| `[react-facebook] Facebook SDK loading timed out after 10 seconds...` | SDK script did not load in time |
-| `[react-facebook] Failed to load Facebook SDK from ...` | Script blocked or network failure |
-| `[react-facebook] Failed to load Facebook Pixel script...` | Pixel script blocked or network failure |
-| `[react-facebook] usePixel must be used within a <FacebookPixelProvider>...` | Hook called outside provider |
-| `[react-facebook] useFacebook must be used within a <FacebookProvider>...` | Hook called outside provider |
+| Error                                                                        | Cause                                   |
+| ---------------------------------------------------------------------------- | --------------------------------------- |
+| `[react-facebook] Facebook SDK loading timed out after 10 seconds...`        | SDK script did not load in time         |
+| `[react-facebook] Failed to load Facebook SDK from ...`                      | Script blocked or network failure       |
+| `[react-facebook] Failed to load Facebook Pixel script...`                   | Pixel script blocked or network failure |
+| `[react-facebook] usePixel must be used within a <FacebookPixelProvider>...` | Hook called outside provider            |
+| `[react-facebook] useFacebook must be used within a <FacebookProvider>...`   | Hook called outside provider            |
 
 ## Hook-Level Error State
 
@@ -163,5 +163,6 @@ function LoginButton() {
 ```
 
 <Callout type="info">
-  Action hooks (`useLogin`, `useShare`, `useFeed`, `useSend`) both set the `error` state and rethrow the error so you can catch it with try/catch. Data hooks (`useProfile`, `useGraphAPI`) only set the error state.
+  Action hooks (`useLogin`, `useShare`, `useFeed`, `useSend`) both set the `error` state and rethrow the error so you
+  can catch it with try/catch. Data hooks (`useProfile`, `useGraphAPI`) only set the error state.
 </Callout>

@@ -7,9 +7,7 @@ import { Callout } from 'fumadocs-ui/components/callout';
 
 The `Login` component handles Facebook authentication. It supports three rendering modes -- a default button, a children-as-function pattern for full control, and a custom element via the `as` prop. It also supports automatic profile fetching after a successful login.
 
-<Callout title="Try it live">
-See the login button in action in the [Playground](/playground#login).
-</Callout>
+<Callout title="Try it live">See the login button in action in the [Playground](/playground#login).</Callout>
 
 ## Import
 
@@ -19,22 +17,22 @@ import { Login } from 'react-facebook';
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `ReactNode \| ((props: LoginRenderProps) => ReactElement)` | `undefined` | Button content, or a render function receiving `{ onClick, loading, isDisabled }`. |
-| `onSuccess` | `(response: LoginResponse) => void` | `undefined` | Called after a successful login with the login response containing `authResponse`. |
-| `onError` | `(error: Error) => void` | `undefined` | Called when the login fails or the user cancels. |
-| `onProfileSuccess` | `(profile: Record<string, unknown>) => void` | `undefined` | Called with the user profile when `fields` are provided and the profile is fetched. |
-| `scope` | `string \| string[]` | `['public_profile', 'email']` | Permissions to request. Accepts a comma-separated string or an array. |
-| `fields` | `string[]` | `[]` | Profile fields to fetch after login (e.g. `['name', 'email', 'picture']`). |
-| `as` | `ElementType \| ComponentType` | `'button'` | The HTML element or React component to render. |
-| `disabled` | `boolean` | `false` | Disables the login button. |
-| `returnScopes` | `boolean` | `undefined` | When `true`, the response includes the scopes the user actually granted. |
-| `authType` | `string[]` | `undefined` | Auth type array (e.g. `['rerequest']`). |
-| `rerequest` | `boolean` | `undefined` | Adds `'rerequest'` to `authType`, prompting for previously declined permissions. |
-| `reauthorize` | `boolean` | `undefined` | Adds `'reauthenticate'` to `authType`, forcing re-authentication. |
-| `className` | `string` | `undefined` | CSS class name applied to the rendered element. |
-| `style` | `CSSProperties` | `undefined` | Inline styles applied to the rendered element. |
+| Prop               | Type                                                       | Default                       | Description                                                                         |
+| ------------------ | ---------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------- |
+| `children`         | `ReactNode \| ((props: LoginRenderProps) => ReactElement)` | `undefined`                   | Button content, or a render function receiving `{ onClick, loading, isDisabled }`.  |
+| `onSuccess`        | `(response: LoginResponse) => void`                        | `undefined`                   | Called after a successful login with the login response containing `authResponse`.  |
+| `onError`          | `(error: Error) => void`                                   | `undefined`                   | Called when the login fails or the user cancels.                                    |
+| `onProfileSuccess` | `(profile: Record<string, unknown>) => void`               | `undefined`                   | Called with the user profile when `fields` are provided and the profile is fetched. |
+| `scope`            | `string \| string[]`                                       | `['public_profile', 'email']` | Permissions to request. Accepts a comma-separated string or an array.               |
+| `fields`           | `string[]`                                                 | `[]`                          | Profile fields to fetch after login (e.g. `['name', 'email', 'picture']`).          |
+| `as`               | `ElementType \| ComponentType`                             | `'button'`                    | The HTML element or React component to render.                                      |
+| `disabled`         | `boolean`                                                  | `false`                       | Disables the login button.                                                          |
+| `returnScopes`     | `boolean`                                                  | `undefined`                   | When `true`, the response includes the scopes the user actually granted.            |
+| `authType`         | `string[]`                                                 | `undefined`                   | Auth type array (e.g. `['rerequest']`).                                             |
+| `rerequest`        | `boolean`                                                  | `undefined`                   | Adds `'rerequest'` to `authType`, prompting for previously declined permissions.    |
+| `reauthorize`      | `boolean`                                                  | `undefined`                   | Adds `'reauthenticate'` to `authType`, forcing re-authentication.                   |
+| `className`        | `string`                                                   | `undefined`                   | CSS class name applied to the rendered element.                                     |
+| `style`            | `CSSProperties`                                            | `undefined`                   | Inline styles applied to the rendered element.                                      |
 
 Any additional props are spread onto the rendered element.
 
@@ -42,11 +40,11 @@ Any additional props are spread onto the rendered element.
 
 When `children` is a function, it receives:
 
-| Property | Type | Description |
-|----------|------|-------------|
-| `onClick` | `() => void` | Triggers the Facebook login dialog. |
-| `loading` | `boolean` | `true` while the SDK is initializing or the login is in progress. |
-| `isDisabled` | `boolean` | `true` when the button should not be clickable (loading or explicitly disabled). |
+| Property     | Type         | Description                                                                      |
+| ------------ | ------------ | -------------------------------------------------------------------------------- |
+| `onClick`    | `() => void` | Triggers the Facebook login dialog.                                              |
+| `loading`    | `boolean`    | `true` while the SDK is initializing or the login is in progress.                |
+| `isDisabled` | `boolean`    | `true` when the button should not be clickable (loading or explicitly disabled). |
 
 ## Usage
 
@@ -76,11 +74,7 @@ For complete control over the rendered output, pass a function as children.
   scope={['public_profile', 'email']}
 >
   {({ onClick, loading, isDisabled }) => (
-    <button
-      onClick={onClick}
-      disabled={isDisabled}
-      className={loading ? 'opacity-50 cursor-wait' : 'cursor-pointer'}
-    >
+    <button onClick={onClick} disabled={isDisabled} className={loading ? 'opacity-50 cursor-wait' : 'cursor-pointer'}>
       {loading ? 'Connecting...' : 'Sign in with Facebook'}
     </button>
   )}

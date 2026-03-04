@@ -17,22 +17,22 @@ import { useShare } from 'react-facebook';
 
 The hook returns an object with the following properties:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `share` | `(options: ShareOptions) => Promise<unknown>` | Function to open the Facebook Share dialog with the given options. Returns a promise that resolves with the dialog response. |
-| `loading` | `boolean` | Whether the share request is in progress. |
-| `error` | `Error \| undefined` | The error from the most recent share attempt, if any. |
+| Property  | Type                                          | Description                                                                                                                  |
+| --------- | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `share`   | `(options: ShareOptions) => Promise<unknown>` | Function to open the Facebook Share dialog with the given options. Returns a promise that resolves with the dialog response. |
+| `loading` | `boolean`                                     | Whether the share request is in progress.                                                                                    |
+| `error`   | `Error \| undefined`                          | The error from the most recent share attempt, if any.                                                                        |
 
 ### ShareOptions
 
 The `share` function accepts the following options:
 
-| Property | Type | Required | Description |
-| --- | --- | --- | --- |
-| `href` | `string` | Yes | The URL to share. |
-| `display` | `'iframe' \| 'popup' \| 'async' \| 'page'` | Yes | How the share dialog is rendered. |
-| `hashtag` | `string` | No | A hashtag to include with the shared content (e.g. `'#example'`). |
-| `redirectUri` | `string` | No | The URL to redirect to after the share dialog closes (for `'page'` display mode). |
+| Property      | Type                                       | Required | Description                                                                       |
+| ------------- | ------------------------------------------ | -------- | --------------------------------------------------------------------------------- |
+| `href`        | `string`                                   | Yes      | The URL to share.                                                                 |
+| `display`     | `'iframe' \| 'popup' \| 'async' \| 'page'` | Yes      | How the share dialog is rendered.                                                 |
+| `hashtag`     | `string`                                   | No       | A hashtag to include with the shared content (e.g. `'#example'`).                 |
+| `redirectUri` | `string`                                   | No       | The URL to redirect to after the share dialog closes (for `'page'` display mode). |
 
 ## Usage
 
@@ -48,7 +48,11 @@ function ShareComponent() {
     });
   };
 
-  return <button onClick={handleShare} disabled={loading}>Share</button>;
+  return (
+    <button onClick={handleShare} disabled={loading}>
+      Share
+    </button>
+  );
 }
 ```
 
@@ -84,9 +88,7 @@ function ShareCurrentPage() {
         {loading ? 'Sharing...' : 'Share this page'}
       </button>
 
-      {error && (
-        <p className="text-sm text-red-600">Share failed: {error.message}</p>
-      )}
+      {error && <p className="text-sm text-red-600">Share failed: {error.message}</p>}
     </div>
   );
 }

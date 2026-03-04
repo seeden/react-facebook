@@ -10,14 +10,7 @@ export type ShareProps = Partial<ParserProps> & {
 };
 
 function Share(props: ShareProps, ref: Ref<HTMLElement>) {
-  const {
-    className = '',
-    href = getCurrentHref(),
-    lazy,
-    layout,
-    size,
-    ...rest
-  } = props;
+  const { className = '', href = getCurrentHref(), lazy, layout, size, ...rest } = props;
 
   const data = useMemo(() => {
     return {
@@ -28,14 +21,7 @@ function Share(props: ShareProps, ref: Ref<HTMLElement>) {
     };
   }, [href, lazy, size, layout]);
 
-  return (
-    <Parser
-      className={`fb-share-button ${className}`}
-      data={data}
-      {...rest}
-      ref={ref}
-    />
-  );
+  return <Parser className={`fb-share-button ${className}`} data={data} {...rest} ref={ref} />;
 }
 
 export default memo(forwardRef(Share));

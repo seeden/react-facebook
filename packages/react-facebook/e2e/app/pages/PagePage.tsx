@@ -11,11 +11,7 @@ export default function PagePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Facebook Page</h2>
           <div data-testid="facebook-page">
-            <Page
-              href="https://www.facebook.com/meta"
-              tabs="timeline"
-              showFacepile={true}
-            />
+            <Page href="https://www.facebook.com/meta" tabs="timeline" showFacepile={true} />
           </div>
         </section>
 
@@ -23,12 +19,7 @@ export default function PagePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Page with Tabs</h2>
           <div data-testid="page-with-tabs">
-            <Page
-              href="https://www.facebook.com/meta"
-              tabs="timeline,events,messages"
-              width={400}
-              height={300}
-            />
+            <Page href="https://www.facebook.com/meta" tabs="timeline,events,messages" width={400} height={300} />
           </div>
         </section>
 
@@ -44,12 +35,7 @@ export default function PagePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Compact Page</h2>
           <div data-testid="compact-page">
-            <Page
-              href="https://www.facebook.com/meta"
-              smallHeader={true}
-              adaptContainerWidth={true}
-              hideCTA={true}
-            />
+            <Page href="https://www.facebook.com/meta" smallHeader={true} adaptContainerWidth={true} hideCTA={true} />
           </div>
         </section>
       </div>

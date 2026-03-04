@@ -30,11 +30,7 @@ With the App Router, place `FacebookProvider` in a client component. A common pa
 import { FacebookProvider } from 'react-facebook';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  return (
-    <FacebookProvider appId="YOUR_APP_ID">
-      {children}
-    </FacebookProvider>
-  );
+  return <FacebookProvider appId="YOUR_APP_ID">{children}</FacebookProvider>;
 }
 ```
 
@@ -58,7 +54,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 Any page or component inside this layout can now use hooks like `useLogin`, `useShare`, or `usePixel` directly.
 
 <Callout type="info">
-  You do not need to mark every page that uses Facebook hooks as `'use client'`. Only the component that directly calls the hook needs to be a client component. Server components can render client components that use hooks.
+  You do not need to mark every page that uses Facebook hooks as `'use client'`. Only the component that directly calls
+  the hook needs to be a client component. Server components can render client components that use hooks.
 </Callout>
 
 ## Next.js Pages Router
@@ -102,10 +99,7 @@ import { FacebookProvider } from 'react-facebook';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <FacebookProvider
-      appId="YOUR_APP_ID"
-      pixelId="YOUR_PIXEL_ID"
-    >
+    <FacebookProvider appId="YOUR_APP_ID" pixelId="YOUR_PIXEL_ID">
       {children}
     </FacebookProvider>
   );
@@ -121,17 +115,15 @@ import { FacebookProvider, FacebookErrorBoundary } from 'react-facebook';
 
 function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <FacebookErrorBoundary
-      fallback={<div>Facebook features are unavailable.</div>}
-    >
-      <FacebookProvider appId="YOUR_APP_ID">
-        {children}
-      </FacebookProvider>
+    <FacebookErrorBoundary fallback={<div>Facebook features are unavailable.</div>}>
+      <FacebookProvider appId="YOUR_APP_ID">{children}</FacebookProvider>
     </FacebookErrorBoundary>
   );
 }
 ```
 
 <Callout type="warn">
-  While the library is SSR-safe, the Facebook SDK itself is a client-side script. Facebook widgets (Like, Share, Comments, etc.) render only on the client. During SSR, the component tree renders but the Facebook widget is not painted until the client hydrates and the SDK loads.
+  While the library is SSR-safe, the Facebook SDK itself is a client-side script. Facebook widgets (Like, Share,
+  Comments, etc.) render only on the client. During SSR, the component tree renders but the Facebook widget is not
+  painted until the client hydrates and the SDK loads.
 </Callout>

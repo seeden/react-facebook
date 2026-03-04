@@ -35,7 +35,14 @@ export default function ErrorBoundaryPage() {
           fallback={(error, reset) => (
             <div data-testid="function-fallback">
               <span data-testid="error-text">Error: {error.message}</span>
-              <button data-testid="reset-button" onClick={() => { setResetCount(c => c + 1); setShouldThrow(false); reset(); }}>
+              <button
+                data-testid="reset-button"
+                onClick={() => {
+                  setResetCount((c) => c + 1);
+                  setShouldThrow(false);
+                  reset();
+                }}
+              >
                 Reset
               </button>
             </div>

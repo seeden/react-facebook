@@ -9,14 +9,7 @@ export type EmbeddedPostProps = Partial<ParserProps> & {
 };
 
 function EmbeddedPost(props: EmbeddedPostProps, ref: Ref<HTMLElement>) {
-  const {
-    className = '',
-    href,
-    width,
-    showText,
-    lazy,
-    ...rest
-  } = props;
+  const { className = '', href, width, showText, lazy, ...rest } = props;
 
   const data = useMemo(() => {
     return {
@@ -27,9 +20,7 @@ function EmbeddedPost(props: EmbeddedPostProps, ref: Ref<HTMLElement>) {
     };
   }, [href, width, lazy, showText]);
 
-  return (
-    <Parser className={`fb-post ${className}`} data={data} {...rest} ref={ref} />
-  );
+  return <Parser className={`fb-post ${className}`} data={data} {...rest} ref={ref} />;
 }
 
 export default memo(forwardRef(EmbeddedPost));

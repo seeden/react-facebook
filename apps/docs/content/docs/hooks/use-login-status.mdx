@@ -17,20 +17,20 @@ import { useLoginStatus } from 'react-facebook';
 
 The hook returns an object with the following properties:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `status` | `LoginStatus \| undefined` | The current login status. One of `'connected'`, `'authorization_expired'`, `'not_authorized'`, or `'unknown'`. |
-| `loading` | `boolean` | Whether the initial status check is in progress. |
-| `error` | `Error \| undefined` | The error from the status check, if any. |
+| Property  | Type                       | Description                                                                                                    |
+| --------- | -------------------------- | -------------------------------------------------------------------------------------------------------------- |
+| `status`  | `LoginStatus \| undefined` | The current login status. One of `'connected'`, `'authorization_expired'`, `'not_authorized'`, or `'unknown'`. |
+| `loading` | `boolean`                  | Whether the initial status check is in progress.                                                               |
+| `error`   | `Error \| undefined`       | The error from the status check, if any.                                                                       |
 
 ### LoginStatus Values
 
-| Value | Description |
-| --- | --- |
-| `'connected'` | The user is logged into Facebook and has authorized your app. |
-| `'authorization_expired'` | The user was previously authorized but the authorization has expired. |
-| `'not_authorized'` | The user is logged into Facebook but has not authorized your app. |
-| `'unknown'` | The user is not logged into Facebook or the status has not been determined. |
+| Value                     | Description                                                                 |
+| ------------------------- | --------------------------------------------------------------------------- |
+| `'connected'`             | The user is logged into Facebook and has authorized your app.               |
+| `'authorization_expired'` | The user was previously authorized but the authorization has expired.       |
+| `'not_authorized'`        | The user is logged into Facebook but has not authorized your app.           |
+| `'unknown'`               | The user is not logged into Facebook or the status has not been determined. |
 
 ## Usage
 
@@ -85,8 +85,7 @@ function AuthStateMachine() {
         <div className="rounded-md bg-yellow-50 p-4 text-yellow-800">
           <p className="font-medium">Not Authorized</p>
           <p className="text-sm">
-            You are logged into Facebook but have not authorized this app.
-            Please click "Login" to grant permissions.
+            You are logged into Facebook but have not authorized this app. Please click "Login" to grant permissions.
           </p>
         </div>
       );
@@ -95,9 +94,7 @@ function AuthStateMachine() {
       return (
         <div className="rounded-md bg-orange-50 p-4 text-orange-800">
           <p className="font-medium">Authorization Expired</p>
-          <p className="text-sm">
-            Your previous authorization has expired. Please log in again to continue.
-          </p>
+          <p className="text-sm">Your previous authorization has expired. Please log in again to continue.</p>
         </div>
       );
 

@@ -20,7 +20,11 @@ export default function SitePage() {
         </section>
 
         <section data-testid="share-section">
-          <Share href="https://developers.facebook.com/docs/plugins/" layout="button_count" data-testid="facebook-share" />
+          <Share
+            href="https://developers.facebook.com/docs/plugins/"
+            layout="button_count"
+            data-testid="facebook-share"
+          />
         </section>
 
         <section data-testid="comments-section">

@@ -38,9 +38,7 @@ function Comments(props: CommentsProps, ref: Ref<HTMLElement>) {
     };
   }, [colorScheme, href, numPosts, orderBy, width, mobile, lazy]);
 
-  return (
-    <Parser className={`fb-comments ${className}`} data={data} {...rest} ref={ref} />
-  );
+  return <Parser className={`fb-comments ${className}`} data={data} {...rest} ref={ref} />;
 }
 
 export default memo(forwardRef(Comments));

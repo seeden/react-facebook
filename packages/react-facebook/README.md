@@ -72,30 +72,30 @@ function App() {
 
 ### Components
 
-| Component | Description |
-|---|---|
-| `FacebookProvider` | SDK initialization and context provider |
-| `Login` | Facebook Login with render props and children as function |
-| `Like` | Like button with layout, color scheme, and share options |
-| `Share` / `ShareButton` | Share dialog and inline share button |
-| `Comments` / `CommentsCount` | Comments plugin and count display |
-| `EmbeddedPost` / `EmbeddedVideo` | Embed Facebook posts and videos |
-| `Page` | Facebook Page plugin with tabs |
-| `FacebookPixelProvider` | Standalone Pixel provider (no SDK required) |
-| `FacebookErrorBoundary` | Catches SDK failures with customizable fallback |
+| Component                        | Description                                               |
+| -------------------------------- | --------------------------------------------------------- |
+| `FacebookProvider`               | SDK initialization and context provider                   |
+| `Login`                          | Facebook Login with render props and children as function |
+| `Like`                           | Like button with layout, color scheme, and share options  |
+| `Share` / `ShareButton`          | Share dialog and inline share button                      |
+| `Comments` / `CommentsCount`     | Comments plugin and count display                         |
+| `EmbeddedPost` / `EmbeddedVideo` | Embed Facebook posts and videos                           |
+| `Page`                           | Facebook Page plugin with tabs                            |
+| `FacebookPixelProvider`          | Standalone Pixel provider (no SDK required)               |
+| `FacebookErrorBoundary`          | Catches SDK failures with customizable fallback           |
 
 ### Hooks
 
-| Hook | Description |
-|---|---|
-| `useLogin` | Programmatic login and logout |
-| `useProfile` | Fetch user profile fields |
-| `useLoginStatus` | Check authentication status |
-| `useGraphAPI` | Typed Graph API calls with loading/error/data states |
-| `useShare` / `useFeed` / `useSend` | Share, Feed, and Send dialogs |
-| `usePixel` / `usePageView` | Pixel event tracking and automatic page views |
-| `useLocale` | Dynamic language switching without page reload |
-| `useFacebook` | Direct access to the Facebook SDK instance |
+| Hook                               | Description                                          |
+| ---------------------------------- | ---------------------------------------------------- |
+| `useLogin`                         | Programmatic login and logout                        |
+| `useProfile`                       | Fetch user profile fields                            |
+| `useLoginStatus`                   | Check authentication status                          |
+| `useGraphAPI`                      | Typed Graph API calls with loading/error/data states |
+| `useShare` / `useFeed` / `useSend` | Share, Feed, and Send dialogs                        |
+| `usePixel` / `usePageView`         | Pixel event tracking and automatic page views        |
+| `useLocale`                        | Dynamic language switching without page reload       |
+| `useFacebook`                      | Direct access to the Facebook SDK instance           |
 
 ## Examples
 
@@ -115,11 +115,7 @@ function App() {
 function TrackingExample() {
   const { track, pageView, grantConsent, revokeConsent } = usePixel();
 
-  return (
-    <button onClick={() => track('Purchase', { value: 29.99, currency: 'USD' })}>
-      Buy Now
-    </button>
-  );
+  return <button onClick={() => track('Purchase', { value: 29.99, currency: 'USD' })}>Buy Now</button>;
 }
 ```
 
@@ -193,7 +189,7 @@ import { FacebookProvider, FacebookErrorBoundary, Login } from 'react-facebook';
   >
     <Login onSuccess={handleSuccess}>Login with Facebook</Login>
   </FacebookErrorBoundary>
-</FacebookProvider>
+</FacebookProvider>;
 ```
 
 ### Dynamic Locale
@@ -205,11 +201,7 @@ function LocaleSwitcher() {
   const { locale, setLocale, isChangingLocale } = useLocale();
 
   return (
-    <select
-      value={locale}
-      onChange={(e) => setLocale(e.target.value)}
-      disabled={isChangingLocale}
-    >
+    <select value={locale} onChange={(e) => setLocale(e.target.value)} disabled={isChangingLocale}>
       <option value="en_US">English</option>
       <option value="es_ES">Spanish</option>
       <option value="fr_FR">French</option>

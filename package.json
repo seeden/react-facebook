@@ -17,7 +17,9 @@
     "lint": "pnpm --filter react-facebook run lint",
     "typecheck": "pnpm --filter react-facebook run typecheck",
     "deploy:docs": "pnpm run build && pnpm --filter docs-site run deploy",
-    "publish:lib": "pnpm --filter react-facebook publish"
+    "publish:lib": "pnpm --filter react-facebook publish",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "author": {
     "name": "Zlatko Fedor"
@@ -29,6 +31,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^25.3.3",
+    "prettier": "^3.8.1",
     "typescript": "^5.9.3"
   }
 }

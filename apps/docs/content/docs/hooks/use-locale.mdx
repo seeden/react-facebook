@@ -17,11 +17,11 @@ import { useLocale } from 'react-facebook';
 
 The hook returns an object with the following properties:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `locale` | `string` | The current locale used by the Facebook SDK (e.g. `'en_US'`). |
-| `setLocale` | `(newLocale: string) => Promise<void>` | Change the SDK locale. If the new locale matches the current one, no action is taken. |
-| `isChangingLocale` | `boolean` | Whether a locale change or SDK initialization is in progress. |
+| Property           | Type                                   | Description                                                                           |
+| ------------------ | -------------------------------------- | ------------------------------------------------------------------------------------- |
+| `locale`           | `string`                               | The current locale used by the Facebook SDK (e.g. `'en_US'`).                         |
+| `setLocale`        | `(newLocale: string) => Promise<void>` | Change the SDK locale. If the new locale matches the current one, no action is taken. |
+| `isChangingLocale` | `boolean`                              | Whether a locale change or SDK initialization is in progress.                         |
 
 ### Supported Locales
 
@@ -40,10 +40,7 @@ function MyComponent() {
   return (
     <div>
       <p>Current locale: {locale}</p>
-      <button
-        onClick={() => setLocale('es_ES')}
-        disabled={isChangingLocale}
-      >
+      <button onClick={() => setLocale('es_ES')} disabled={isChangingLocale}>
         Switch to Spanish
       </button>
       {isChangingLocale && <p>Changing locale...</p>}

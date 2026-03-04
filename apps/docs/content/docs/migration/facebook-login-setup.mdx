@@ -140,17 +140,15 @@ function App() {
 Use the children-as-function pattern for complete control over the button UI:
 
 ```tsx
-<Login
-  onSuccess={handleSuccess}
-  onError={handleError}
-  scope={['public_profile', 'email']}
->
+<Login onSuccess={handleSuccess} onError={handleError} scope={['public_profile', 'email']}>
   {({ onClick, loading, isDisabled }) => (
     <button onClick={onClick} disabled={isDisabled}>
       {loading ? (
         <span>Connecting...</span>
       ) : (
-        <span><FacebookIcon /> Sign in with Facebook</span>
+        <span>
+          <FacebookIcon /> Sign in with Facebook
+        </span>
       )}
     </button>
   )}
@@ -183,7 +181,7 @@ import { FacebookProvider, FacebookErrorBoundary, Login } from 'react-facebook';
   >
     <Login onSuccess={handleSuccess}>Login with Facebook</Login>
   </FacebookErrorBoundary>
-</FacebookProvider>
+</FacebookProvider>;
 ```
 
 ## TypeScript
@@ -211,9 +209,7 @@ export default function RootLayout({ children }) {
   return (
     <html>
       <body>
-        <FacebookProvider appId={process.env.NEXT_PUBLIC_FB_APP_ID!}>
-          {children}
-        </FacebookProvider>
+        <FacebookProvider appId={process.env.NEXT_PUBLIC_FB_APP_ID!}>{children}</FacebookProvider>
       </body>
     </html>
   );
@@ -222,12 +218,12 @@ export default function RootLayout({ children }) {
 
 ## Available Login APIs
 
-| API | Description |
-|---|---|
-| `<Login>` | Component with `onSuccess`, `onError`, `onProfileSuccess` callbacks |
-| `useLogin()` | Hook returning `{ login, logout, loading, error }` |
-| `useProfile(fields)` | Hook returning `{ profile, loading, error }` |
-| `useLoginStatus()` | Hook returning `{ status, loading, error }` |
+| API                  | Description                                                         |
+| -------------------- | ------------------------------------------------------------------- |
+| `<Login>`            | Component with `onSuccess`, `onError`, `onProfileSuccess` callbacks |
+| `useLogin()`         | Hook returning `{ login, logout, loading, error }`                  |
+| `useProfile(fields)` | Hook returning `{ profile, loading, error }`                        |
+| `useLoginStatus()`   | Hook returning `{ status, loading, error }`                         |
 
 ---
 
@@ -242,15 +238,15 @@ npm uninstall react-facebook-login @types/react-facebook-login
 npm install react-facebook
 ```
 
-| react-facebook-login | react-facebook | Notes |
-|---|---|---|
-| `appId` | `appId` on `<FacebookProvider>` | Moved to provider (shared by all components) |
-| `callback` | `onSuccess` + `onProfileSuccess` | Split into typed callbacks |
-| `fields` | `fields` prop on `<Login>` | Accepts array |
-| `scope` | `scope` | Accepts array |
-| `cssClass` | `className` | Standard React convention |
-| `icon` / `textButton` | `children` | Full render control |
-| `render` | `children` as function | Same pattern |
-| `isDisabled` | `disabled` | Standard HTML convention |
-| `disableMobileRedirect` | N/A | Handled automatically |
-| `autoLoad` | `lazy={false}` (default) | SDK loads automatically |
+| react-facebook-login    | react-facebook                   | Notes                                        |
+| ----------------------- | -------------------------------- | -------------------------------------------- |
+| `appId`                 | `appId` on `<FacebookProvider>`  | Moved to provider (shared by all components) |
+| `callback`              | `onSuccess` + `onProfileSuccess` | Split into typed callbacks                   |
+| `fields`                | `fields` prop on `<Login>`       | Accepts array                                |
+| `scope`                 | `scope`                          | Accepts array                                |
+| `cssClass`              | `className`                      | Standard React convention                    |
+| `icon` / `textButton`   | `children`                       | Full render control                          |
+| `render`                | `children` as function           | Same pattern                                 |
+| `isDisabled`            | `disabled`                       | Standard HTML convention                     |
+| `disableMobileRedirect` | N/A                              | Handled automatically                        |
+| `autoLoad`              | `lazy={false}` (default)         | SDK loads automatically                      |

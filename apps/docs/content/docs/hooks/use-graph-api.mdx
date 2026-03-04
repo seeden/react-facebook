@@ -17,25 +17,25 @@ import { useGraphAPI } from 'react-facebook';
 
 The hook accepts a single options object:
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `path` | `string` | -- | Graph API path, e.g. `'/me'`, `'/me/friends'`, `'/{post-id}/comments'`. |
-| `method` | `Method` | `Method.GET` | HTTP method for the request. One of `Method.GET`, `Method.POST`, or `Method.DELETE`. |
-| `params` | `Record<string, unknown>` | `undefined` | Query parameters to include in the request. |
-| `autoFetch` | `boolean` | `true` | Whether to fetch automatically when the component mounts. Set to `false` for manual triggering. |
-| `transform` | `(data: unknown) => T` | `undefined` | Transform function applied to the response before it is stored in `data`. |
+| Property    | Type                      | Default      | Description                                                                                     |
+| ----------- | ------------------------- | ------------ | ----------------------------------------------------------------------------------------------- |
+| `path`      | `string`                  | --           | Graph API path, e.g. `'/me'`, `'/me/friends'`, `'/{post-id}/comments'`.                         |
+| `method`    | `Method`                  | `Method.GET` | HTTP method for the request. One of `Method.GET`, `Method.POST`, or `Method.DELETE`.            |
+| `params`    | `Record<string, unknown>` | `undefined`  | Query parameters to include in the request.                                                     |
+| `autoFetch` | `boolean`                 | `true`       | Whether to fetch automatically when the component mounts. Set to `false` for manual triggering. |
+| `transform` | `(data: unknown) => T`    | `undefined`  | Transform function applied to the response before it is stored in `data`.                       |
 
 ## Return Value
 
 The hook returns an object with the following properties:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `data` | `T \| undefined` | The response data. `undefined` until the request completes. If a `transform` function is provided, this holds the transformed result. |
-| `loading` | `boolean` | Whether the request is in progress. |
-| `error` | `Error \| undefined` | The error from the most recent request, if any. |
-| `fetch` | `(overrideParams?: Record<string, unknown>) => Promise<T>` | Manually trigger the API call. Optionally pass parameters that override the ones from options. Returns the response. |
-| `reset` | `() => void` | Reset `data` and `error` to their initial state (`undefined`). |
+| Property  | Type                                                       | Description                                                                                                                           |
+| --------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `data`    | `T \| undefined`                                           | The response data. `undefined` until the request completes. If a `transform` function is provided, this holds the transformed result. |
+| `loading` | `boolean`                                                  | Whether the request is in progress.                                                                                                   |
+| `error`   | `Error \| undefined`                                       | The error from the most recent request, if any.                                                                                       |
+| `fetch`   | `(overrideParams?: Record<string, unknown>) => Promise<T>` | Manually trigger the API call. Optionally pass parameters that override the ones from options. Returns the response.                  |
+| `reset`   | `() => void`                                               | Reset `data` and `error` to their initial state (`undefined`).                                                                        |
 
 ## Usage
 
@@ -52,7 +52,13 @@ function MyFriends() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error.message}</p>;
-  return <ul>{data?.data?.map(f => <li key={f.id}>{f.name}</li>)}</ul>;
+  return (
+    <ul>
+      {data?.data?.map((f) => (
+        <li key={f.id}>{f.name}</li>
+      ))}
+    </ul>
+  );
 }
 ```
 

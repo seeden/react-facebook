@@ -43,7 +43,10 @@ body {
   font-family: 'DM Sans', 'Segoe UI', sans-serif;
 }
 
-code, pre, kbd, samp {
+code,
+pre,
+kbd,
+samp {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 

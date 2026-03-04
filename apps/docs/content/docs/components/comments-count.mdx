@@ -13,10 +13,10 @@ import { CommentsCount } from 'react-facebook';
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `href` | `string` | Current page URL | The URL whose comment count should be displayed. |
-| `className` | `string` | `''` | Additional CSS class names appended to the `<span>`. |
+| Prop        | Type     | Default          | Description                                          |
+| ----------- | -------- | ---------------- | ---------------------------------------------------- |
+| `href`      | `string` | Current page URL | The URL whose comment count should be displayed.     |
+| `className` | `string` | `''`             | Additional CSS class names appended to the `<span>`. |
 
 ## Usage
 
@@ -30,11 +30,6 @@ import { CommentsCount } from 'react-facebook';
 
 ```tsx
 <p>
-  This post has{' '}
-  <CommentsCount
-    href="https://example.com/post"
-    className="font-bold text-blue-600"
-  />{' '}
-  comments.
+  This post has <CommentsCount href="https://example.com/post" className="font-bold text-blue-600" /> comments.
 </p>
 ```

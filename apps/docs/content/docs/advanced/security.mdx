@@ -14,7 +14,8 @@ This guide covers security best practices and privacy compliance when using `rea
 Your Facebook **App Secret** must never appear in client-side code. The App Secret is used for server-to-server communication (e.g., verifying webhook signatures, exchanging tokens). If exposed in the browser, an attacker could impersonate your application.
 
 <Callout type="error">
-  The `appId` passed to `FacebookProvider` is safe to include in client-side code -- it is a public identifier. The **App Secret** is a completely separate credential and must only be used on your server.
+  The `appId` passed to `FacebookProvider` is safe to include in client-side code -- it is a public identifier. The
+  **App Secret** is a completely separate credential and must only be used on your server.
 </Callout>
 
 ```tsx
@@ -101,7 +102,8 @@ These restrictions are enforced by Facebook's servers, not by `react-facebook`. 
 - Using native share links (`https://www.facebook.com/sharer/sharer.php?u=...`) as an alternative to the Like/Share widgets.
 
 <Callout type="warn">
-  Facebook's EU/EEA restrictions can change without notice as regulatory requirements evolve. Monitor the [Facebook Platform Changelog](https://developers.facebook.com/docs/graph-api/changelog) for updates.
+  Facebook's EU/EEA restrictions can change without notice as regulatory requirements evolve. Monitor the [Facebook
+  Platform Changelog](https://developers.facebook.com/docs/graph-api/changelog) for updates.
 </Callout>
 
 ## Content Security Policy (CSP)

@@ -11,10 +11,7 @@ export default function SharePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Share Widget</h2>
           <div data-testid="share-widget">
-            <Share
-              href="https://github.com/seeden/react-facebook"
-              layout="button_count"
-            />
+            <Share href="https://github.com/seeden/react-facebook" layout="button_count" />
           </div>
         </section>
 
@@ -22,9 +19,7 @@ export default function SharePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Share Button</h2>
           <div data-testid="share-button">
-            <ShareButton href="https://reactjs.org">
-              Share React
-            </ShareButton>
+            <ShareButton href="https://reactjs.org">Share React</ShareButton>
           </div>
         </section>
 
@@ -32,21 +27,13 @@ export default function SharePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Multiple Shares</h2>
           <div data-testid="multi-share-1">
-            <Share
-              href="https://github.com/seeden/react-facebook"
-              layout="button"
-            />
+            <Share href="https://github.com/seeden/react-facebook" layout="button" />
           </div>
           <div data-testid="multi-share-button">
-            <ShareButton href="https://github.com/seeden/react-facebook">
-              Share GitHub
-            </ShareButton>
+            <ShareButton href="https://github.com/seeden/react-facebook">Share GitHub</ShareButton>
           </div>
           <div data-testid="multi-share-2">
-            <Share
-              href="https://github.com/seeden/react-facebook"
-              layout="box_count"
-            />
+            <Share href="https://github.com/seeden/react-facebook" layout="box_count" />
           </div>
         </section>
       </div>

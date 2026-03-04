@@ -13,11 +13,11 @@ import { FacebookErrorBoundary } from 'react-facebook';
 
 ## Props
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | `ReactNode` | **required** | The component tree to protect. |
-| `fallback` | `ReactNode \| ((error: Error, reset: () => void) => ReactNode)` | `undefined` | UI to render when an error is caught. When a function is provided it receives the error and a `reset` callback. When `undefined`, nothing is rendered on error. |
-| `onError` | `(error: Error, errorInfo: ErrorInfo) => void` | `undefined` | Callback invoked when an error is caught. Useful for logging to an error reporting service. |
+| Prop       | Type                                                            | Default      | Description                                                                                                                                                     |
+| ---------- | --------------------------------------------------------------- | ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `children` | `ReactNode`                                                     | **required** | The component tree to protect.                                                                                                                                  |
+| `fallback` | `ReactNode \| ((error: Error, reset: () => void) => ReactNode)` | `undefined`  | UI to render when an error is caught. When a function is provided it receives the error and a `reset` callback. When `undefined`, nothing is rendered on error. |
+| `onError`  | `(error: Error, errorInfo: ErrorInfo) => void`                  | `undefined`  | Callback invoked when an error is caught. Useful for logging to an error reporting service.                                                                     |
 
 ## Usage
 
@@ -56,9 +56,7 @@ If you do not need the error details or a reset button, pass a static ReactNode.
 
 ```tsx
 <FacebookErrorBoundary fallback={<p>Facebook features are currently unavailable.</p>}>
-  <FacebookProvider appId="YOUR_APP_ID">
-    {children}
-  </FacebookProvider>
+  <FacebookProvider appId="YOUR_APP_ID">{children}</FacebookProvider>
 </FacebookErrorBoundary>
 ```
 
@@ -68,8 +66,6 @@ When `fallback` is omitted the boundary renders nothing on error, silently hidin
 
 ```tsx
 <FacebookErrorBoundary onError={(error) => logError(error)}>
-  <FacebookProvider appId="YOUR_APP_ID">
-    {children}
-  </FacebookProvider>
+  <FacebookProvider appId="YOUR_APP_ID">{children}</FacebookProvider>
 </FacebookErrorBoundary>
 ```

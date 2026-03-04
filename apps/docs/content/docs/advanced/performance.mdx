@@ -85,15 +85,16 @@ You do not need to add your own memoization around these providers -- it is alre
 
 ## Recommendations
 
-| Technique | When to use |
-|---|---|
-| `lazy` prop | Facebook features are not needed on first render |
-| Tree shaking | Always -- just import what you use |
-| `FacebookErrorBoundary` | Prevents re-render storms from SDK failures |
-| Single provider | Use one `FacebookProvider` at the root, not multiple |
+| Technique               | When to use                                          |
+| ----------------------- | ---------------------------------------------------- |
+| `lazy` prop             | Facebook features are not needed on first render     |
+| Tree shaking            | Always -- just import what you use                   |
+| `FacebookErrorBoundary` | Prevents re-render storms from SDK failures          |
+| Single provider         | Use one `FacebookProvider` at the root, not multiple |
 
 <Callout type="info">
-  The Facebook SDK script itself (loaded from `connect.facebook.net`) is roughly 200-300KB and is loaded asynchronously. The `lazy` prop controls when this external script is fetched, not the size of your JavaScript bundle.
+  The Facebook SDK script itself (loaded from `connect.facebook.net`) is roughly 200-300KB and is loaded asynchronously.
+  The `lazy` prop controls when this external script is fetched, not the size of your JavaScript bundle.
 </Callout>
 
 ## Measuring Impact

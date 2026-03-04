@@ -30,7 +30,7 @@ export default function useFacebook(props: UseFacebookProps = {}): FacebookConte
   if (!context) {
     throw new Error(
       '[react-facebook] useFacebook must be used within a <FacebookProvider>. ' +
-      'Wrap your component tree with <FacebookProvider appId="YOUR_APP_ID">.'
+        'Wrap your component tree with <FacebookProvider appId="YOUR_APP_ID">.',
     );
   }
 

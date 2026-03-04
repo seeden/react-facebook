@@ -41,7 +41,8 @@ export default function Testimonials() {
       {/* Left: pitch */}
       <div>
         <p className="mb-6 max-w-md text-sm leading-relaxed text-[var(--color-fd-muted-foreground)]">
-          Using react-facebook in production? Get your company featured here. We add your logo with a dofollow backlink, visible to every developer who visits.
+          Using react-facebook in production? Get your company featured here. We add your logo with a dofollow backlink,
+          visible to every developer who visits.
         </p>
 
         <div className="flex flex-col gap-4">
@@ -82,9 +83,7 @@ export default function Testimonials() {
         {state === 'success' ? (
           <div className="flex h-full items-center justify-center rounded-xl border border-[var(--color-fd-border)] bg-[var(--color-fd-card)] p-8">
             <div className="text-center">
-              <p className="text-lg font-semibold text-[var(--color-fd-foreground)]">
-                Thank you!
-              </p>
+              <p className="text-lg font-semibold text-[var(--color-fd-foreground)]">Thank you!</p>
               <p className="mt-2 text-sm text-[var(--color-fd-muted-foreground)]">
                 We&apos;ll review your submission and add your logo to this page.
               </p>
@@ -95,15 +94,11 @@ export default function Testimonials() {
             onSubmit={handleSubmit}
             className="flex flex-col gap-4 rounded-xl border border-[var(--color-fd-border)] bg-[var(--color-fd-card)] p-6"
           >
-            <p className="text-sm font-semibold text-[var(--color-fd-foreground)]">
-              Get featured
-            </p>
+            <p className="text-sm font-semibold text-[var(--color-fd-foreground)]">Get featured</p>
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">
-                  Your name
-                </span>
+                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">Your name</span>
                 <input
                   type="text"
                   name="name"
@@ -112,9 +107,7 @@ export default function Testimonials() {
                 />
               </label>
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">
-                  Email
-                </span>
+                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">Email</span>
                 <input
                   type="email"
                   name="email"
@@ -126,9 +119,7 @@ export default function Testimonials() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">
-                  Job title
-                </span>
+                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">Job title</span>
                 <input
                   type="text"
                   name="title"
@@ -138,9 +129,7 @@ export default function Testimonials() {
                 />
               </label>
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">
-                  Company / Project
-                </span>
+                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">Company / Project</span>
                 <input
                   type="text"
                   name="company"
@@ -152,9 +141,7 @@ export default function Testimonials() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">
-                  Website URL
-                </span>
+                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">Website URL</span>
                 <input
                   type="url"
                   name="url"
@@ -164,9 +151,7 @@ export default function Testimonials() {
                 />
               </label>
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">
-                  Country
-                </span>
+                <span className="text-xs font-medium text-[var(--color-fd-muted-foreground)]">Country</span>
                 <input
                   type="text"
                   name="country"
@@ -202,11 +187,7 @@ export default function Testimonials() {
               />
             </label>
 
-            {state === 'error' && (
-              <p className="text-sm text-red-500">
-                Something went wrong. Please try again.
-              </p>
-            )}
+            {state === 'error' && <p className="text-sm text-red-500">Something went wrong. Please try again.</p>}
 
             <button
               type="submit"

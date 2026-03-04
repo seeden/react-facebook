@@ -17,23 +17,23 @@ import { useSend } from 'react-facebook';
 
 The hook returns an object with the following properties:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `send` | `(options: SendOptions) => Promise<unknown>` | Function to open the Facebook Send dialog with the given options. Returns a promise that resolves with the dialog response. |
-| `loading` | `boolean` | Whether the send request is in progress. |
-| `error` | `Error \| undefined` | The error from the most recent send attempt, if any. |
+| Property  | Type                                         | Description                                                                                                                 |
+| --------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `send`    | `(options: SendOptions) => Promise<unknown>` | Function to open the Facebook Send dialog with the given options. Returns a promise that resolves with the dialog response. |
+| `loading` | `boolean`                                    | Whether the send request is in progress.                                                                                    |
+| `error`   | `Error \| undefined`                         | The error from the most recent send attempt, if any.                                                                        |
 
 ### SendOptions
 
 The `send` function accepts the following options:
 
-| Property | Type | Required | Description |
-| --- | --- | --- | --- |
-| `to` | `string` | Yes | The ID of the recipient. |
-| `link` | `string` | No | The URL to send. Defaults to the current page URL. |
-| `appId` | `string` | No | The Facebook App ID. Defaults to the app ID from the provider. |
-| `display` | `string` | No | How the send dialog is rendered (e.g. `'popup'`, `'page'`). |
-| `redirectURI` | `string` | No | The URL to redirect to after the dialog closes. |
+| Property      | Type     | Required | Description                                                    |
+| ------------- | -------- | -------- | -------------------------------------------------------------- |
+| `to`          | `string` | Yes      | The ID of the recipient.                                       |
+| `link`        | `string` | No       | The URL to send. Defaults to the current page URL.             |
+| `appId`       | `string` | No       | The Facebook App ID. Defaults to the app ID from the provider. |
+| `display`     | `string` | No       | How the send dialog is rendered (e.g. `'popup'`, `'page'`).    |
+| `redirectURI` | `string` | No       | The URL to redirect to after the dialog closes.                |
 
 ## Usage
 
@@ -48,7 +48,11 @@ function SendComponent() {
     });
   };
 
-  return <button onClick={handleSend} disabled={loading}>Send</button>;
+  return (
+    <button onClick={handleSend} disabled={loading}>
+      Send
+    </button>
+  );
 }
 ```
 
@@ -90,9 +94,7 @@ function SendToUser({ recipientId, recipientName }: SendToUserProps) {
         {loading ? 'Opening...' : `Send to ${recipientName}`}
       </button>
 
-      {error && (
-        <p className="text-sm text-red-600">{error.message}</p>
-      )}
+      {error && <p className="text-sm text-red-600">{error.message}</p>}
     </div>
   );
 }
@@ -123,11 +125,7 @@ function SendWithLoadingState() {
   };
 
   if (sent) {
-    return (
-      <p className="text-sm text-green-600 font-medium">
-        Message sent! Thanks for sharing.
-      </p>
-    );
+    return <p className="text-sm text-green-600 font-medium">Message sent! Thanks for sharing.</p>;
   }
 
   return (

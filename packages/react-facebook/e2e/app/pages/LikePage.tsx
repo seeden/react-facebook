@@ -11,10 +11,7 @@ export default function LikePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Basic Like</h2>
           <div data-testid="like-button">
-            <Like
-              href="https://github.com/seeden/react-facebook"
-              colorScheme="dark"
-            />
+            <Like href="https://github.com/seeden/react-facebook" colorScheme="dark" />
           </div>
         </section>
 
@@ -22,11 +19,7 @@ export default function LikePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Like with Share</h2>
           <div data-testid="like-share-button">
-            <Like
-              href="https://reactjs.org"
-              share={true}
-              layout="button_count"
-            />
+            <Like href="https://reactjs.org" share={true} layout="button_count" />
           </div>
         </section>
 
@@ -34,12 +27,7 @@ export default function LikePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Comments</h2>
           <div data-testid="comments-widget">
-            <Comments
-              href="https://github.com/seeden/react-facebook"
-              numPosts={5}
-              width={500}
-              colorScheme="dark"
-            />
+            <Comments href="https://github.com/seeden/react-facebook" numPosts={5} width={500} colorScheme="dark" />
           </div>
         </section>
 
@@ -47,22 +35,13 @@ export default function LikePage() {
         <section style={{ marginBottom: 20 }}>
           <h2>Multiple Likes</h2>
           <div data-testid="like-1">
-            <Like
-              href="https://github.com/seeden/react-facebook"
-              layout="standard"
-            />
+            <Like href="https://github.com/seeden/react-facebook" layout="standard" />
           </div>
           <div data-testid="like-2">
-            <Like
-              href="https://github.com/seeden/react-facebook"
-              layout="box_count"
-            />
+            <Like href="https://github.com/seeden/react-facebook" layout="box_count" />
           </div>
           <div data-testid="like-3">
-            <Like
-              href="https://github.com/seeden/react-facebook"
-              layout="button"
-            />
+            <Like href="https://github.com/seeden/react-facebook" layout="button" />
           </div>
         </section>
       </div>

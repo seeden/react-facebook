@@ -1,8 +1,4 @@
 {
   "title": "Guides",
-  "pages": [
-    "facebook-login-setup",
-    "facebook-pixel-setup",
-    "v10-to-v11"
-  ]
+  "pages": ["facebook-login-setup", "facebook-pixel-setup", "v10-to-v11"]
 }

@@ -10,7 +10,8 @@ import { Callout } from 'fumadocs-ui/components/callout';
 v11 is a major release with new hooks, an error boundary component, extensive bug fixes for SSR and Next.js, and significant developer experience improvements. There are no breaking API changes for existing code -- this release is additive.
 
 <Callout type="info">
-  If you are upgrading from v10, your existing code should continue to work without changes. v11 adds new features and fixes but does not remove or rename existing APIs.
+  If you are upgrading from v10, your existing code should continue to work without changes. v11 adds new features and
+  fixes but does not remove or rename existing APIs.
 </Callout>
 
 ## New Features
@@ -143,12 +144,12 @@ Context values in `FacebookProvider` and `FacebookPixelProvider` are now memoize
 
 All hooks now have explicit, exported return types:
 
-| Hook | Return Type |
-|---|---|
-| `useLogin` | `UseLoginReturn` |
-| `useShare` | `UseShareReturn` |
-| `useFeed` | `UseFeedReturn` |
-| `useSend` | `UseSendReturn` |
+| Hook          | Return Type            |
+| ------------- | ---------------------- |
+| `useLogin`    | `UseLoginReturn`       |
+| `useShare`    | `UseShareReturn`       |
+| `useFeed`     | `UseFeedReturn`        |
+| `useSend`     | `UseSendReturn`        |
 | `useGraphAPI` | `UseGraphAPIReturn<T>` |
 
 ### Type Exports

@@ -65,13 +65,7 @@ export type UseGraphAPIReturn<T = unknown> = {
  * ```
  */
 export default function useGraphAPI<T = unknown>(options: GraphAPIOptions<T>): UseGraphAPIReturn<T> {
-  const {
-    path,
-    method = Method.GET,
-    params,
-    autoFetch = true,
-    transform,
-  } = options;
+  const { path, method = Method.GET, params, autoFetch = true, transform } = options;
 
   const { init } = useFacebook();
   const [data, setData] = useState<T | undefined>(undefined);
@@ -84,36 +78,39 @@ export default function useGraphAPI<T = unknown>(options: GraphAPIOptions<T>): U
   // Stabilize params for dependency tracking
   const paramsKey = params ? JSON.stringify(params) : '';
 
-  const fetchData = useCallback(async (overrideParams?: Record<string, unknown>) => {
-    try {
-      setError(undefined);
-      setLoading(true);
+  const fetchData = useCallback(
+    async (overrideParams?: Record<string, unknown>) => {
+      try {
+        setError(undefined);
+        setLoading(true);
 
-      const api = await init();
-      if (!api) {
-        throw new Error('[react-facebook] Facebook API is not initialized');
-      }
+        const api = await init();
+        if (!api) {
+          throw new Error('[react-facebook] Facebook API is not initialized');
+        }
 
-      const requestParams = overrideParams ?? params ?? {};
-      const response = await api.api<T>(path, method, requestParams);
-      const result = transformRef.current ? transformRef.current(response) : response;
+        const requestParams = overrideParams ?? params ?? {};
+        const response = await api.api<T>(path, method, requestParams);
+        const result = transformRef.current ? transformRef.current(response) : response;
 
-      if (mountedRef.current) {
-        setData(result);
+        if (mountedRef.current) {
+          setData(result);
+        }
+        return result;
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error(String(err));
+        if (mountedRef.current) {
+          setError(error);
+        }
+        throw error;
+      } finally {
+        if (mountedRef.current) {
+          setLoading(false);
+        }
       }
-      return result;
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error(String(err));
-      if (mountedRef.current) {
-        setError(error);
-      }
-      throw error;
-    } finally {
-      if (mountedRef.current) {
-        setLoading(false);
-      }
-    }
-  }, [init, path, method, paramsKey]);
+    },
+    [init, path, method, paramsKey],
+  );
 
   const reset = useCallback(() => {
     setData(undefined);

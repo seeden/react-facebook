@@ -19,23 +19,23 @@ import { useFacebook } from 'react-facebook';
 
 The hook accepts an optional options object:
 
-| Property | Type | Default | Description |
-| --- | --- | --- | --- |
-| `lazy` | `boolean` | `false` | When `true`, the Facebook SDK is not initialized automatically on mount. You must call `init()` manually. |
+| Property | Type      | Default | Description                                                                                               |
+| -------- | --------- | ------- | --------------------------------------------------------------------------------------------------------- |
+| `lazy`   | `boolean` | `false` | When `true`, the Facebook SDK is not initialized automatically on mount. You must call `init()` manually. |
 
 ## Return Value
 
 The hook returns the `FacebookContextInterface` object with the following properties:
 
-| Property | Type | Description |
-| --- | --- | --- |
-| `api` | `FacebookInstance \| undefined` | The Facebook SDK wrapper instance. `undefined` until initialization completes. |
-| `loading` | `boolean` | Whether the Facebook SDK is currently being loaded. |
-| `error` | `Error \| undefined` | The error encountered during SDK initialization, if any. |
-| `init` | `() => Promise<FacebookInstance \| undefined>` | Manually initialize the Facebook SDK. Returns a promise that resolves with the API instance. |
-| `parse` | `(element: HTMLDivElement \| HTMLSpanElement) => Promise<void>` | Parse a DOM element for Facebook XFBML widgets. |
-| `locale` | `string` | The current locale used by the Facebook SDK (e.g. `'en_US'`). |
-| `setLocale` | `(locale: string) => Promise<void>` | Change the SDK locale. This removes the existing SDK script, reinitializes with the new locale, and re-parses all widgets. |
+| Property    | Type                                                            | Description                                                                                                                |
+| ----------- | --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `api`       | `FacebookInstance \| undefined`                                 | The Facebook SDK wrapper instance. `undefined` until initialization completes.                                             |
+| `loading`   | `boolean`                                                       | Whether the Facebook SDK is currently being loaded.                                                                        |
+| `error`     | `Error \| undefined`                                            | The error encountered during SDK initialization, if any.                                                                   |
+| `init`      | `() => Promise<FacebookInstance \| undefined>`                  | Manually initialize the Facebook SDK. Returns a promise that resolves with the API instance.                               |
+| `parse`     | `(element: HTMLDivElement \| HTMLSpanElement) => Promise<void>` | Parse a DOM element for Facebook XFBML widgets.                                                                            |
+| `locale`    | `string`                                                        | The current locale used by the Facebook SDK (e.g. `'en_US'`).                                                              |
+| `setLocale` | `(locale: string) => Promise<void>`                             | Change the SDK locale. This removes the existing SDK script, reinitializes with the new locale, and re-parses all widgets. |
 
 ## Usage
 
@@ -90,11 +90,7 @@ function LazyFacebookInit() {
     );
   }
 
-  return (
-    <p className="text-green-600 font-medium">
-      Facebook SDK is ready (App ID: {api?.getAppId()})
-    </p>
-  );
+  return <p className="text-green-600 font-medium">Facebook SDK is ready (App ID: {api?.getAppId()})</p>;
 }
 ```
 
@@ -135,10 +131,7 @@ function DynamicXFBML() {
 
   return (
     <div className="flex flex-col gap-4">
-      <button
-        onClick={loadWidget}
-        className="w-fit rounded-md bg-gray-200 px-4 py-2 text-sm hover:bg-gray-300"
-      >
+      <button onClick={loadWidget} className="w-fit rounded-md bg-gray-200 px-4 py-2 text-sm hover:bg-gray-300">
         Load Like Button
       </button>
       <div ref={containerRef} />
@@ -192,9 +185,7 @@ function LocaleSwitcher() {
           </option>
         ))}
       </select>
-      {loading && (
-        <span className="text-sm text-gray-400">Reloading SDK...</span>
-      )}
+      {loading && <span className="text-sm text-gray-400">Reloading SDK...</span>}
     </div>
   );
 }

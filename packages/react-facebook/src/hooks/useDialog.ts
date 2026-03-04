@@ -25,10 +25,12 @@ export default function useDialog<TOptions>(
         throw new Error('[react-facebook] Facebook API is not initialized');
       }
 
-      return api.ui(clearUndefinedProperties({
-        method,
-        ...buildParams(options, api),
-      }));
+      return api.ui(
+        clearUndefinedProperties({
+          method,
+          ...buildParams(options, api),
+        }),
+      );
     } catch (error) {
       const err = error instanceof Error ? error : new Error(String(error));
       setError(err);

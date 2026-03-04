@@ -54,12 +54,15 @@ export default function FacebookProvider(props: FacebookProviderProps) {
     return initPromiseRef.current;
   }, []);
 
-  const parse = useCallback(async (element: HTMLElement) => {
-    const api = await init();
-    if (api) {
-      await api.parse(element);
-    }
-  }, [init]);
+  const parse = useCallback(
+    async (element: HTMLElement) => {
+      const api = await init();
+      if (api) {
+        await api.parse(element);
+      }
+    },
+    [init],
+  );
 
   const setLocale = useCallback(async (newLocale: string) => {
     if (!apiRef.current) {
@@ -98,28 +101,23 @@ export default function FacebookProvider(props: FacebookProviderProps) {
     }
   }, [options.language]);
 
-  const value: FacebookContextInterface = useMemo(() => ({
-    loading,
-    error,
-    init,
-    api: isReady ? apiRef.current : undefined,
-    parse,
-    locale,
-    setLocale,
-  }), [loading, error, init, isReady, parse, locale, setLocale]);
-
-  const content = (
-    <FacebookContext.Provider value={value}>
-      {children}
-    </FacebookContext.Provider>
+  const value: FacebookContextInterface = useMemo(
+    () => ({
+      loading,
+      error,
+      init,
+      api: isReady ? apiRef.current : undefined,
+      parse,
+      locale,
+      setLocale,
+    }),
+    [loading, error, init, isReady, parse, locale, setLocale],
   );
 
+  const content = <FacebookContext.Provider value={value}>{children}</FacebookContext.Provider>;
+
   if (pixelId) {
-    return (
-      <FacebookPixelProvider pixelId={pixelId}>
-        {content}
-      </FacebookPixelProvider>
-    );
+    return <FacebookPixelProvider pixelId={pixelId}>{content}</FacebookPixelProvider>;
   }
 
   return content;

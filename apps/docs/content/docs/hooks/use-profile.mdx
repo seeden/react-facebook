@@ -15,19 +15,19 @@ import { useProfile } from 'react-facebook';
 
 ## Parameters
 
-| Parameter | Type | Description |
-| --- | --- | --- |
-| `fields` | `string[]` | Array of profile fields to request (e.g. `['name', 'email', 'picture']`). These are passed as a comma-separated string to the Graph API `/me` endpoint. |
+| Parameter | Type       | Description                                                                                                                                             |
+| --------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `fields`  | `string[]` | Array of profile fields to request (e.g. `['name', 'email', 'picture']`). These are passed as a comma-separated string to the Graph API `/me` endpoint. |
 
 ## Return Value
 
 The hook returns an object with the following properties:
 
-| Property | Type | Description |
-| --- | --- | --- |
+| Property  | Type                                   | Description                                                                           |
+| --------- | -------------------------------------- | ------------------------------------------------------------------------------------- |
 | `profile` | `Record<string, unknown> \| undefined` | The fetched profile data. `undefined` until loaded or when the user is not logged in. |
-| `loading` | `boolean` | Whether the profile request is in progress. |
-| `error` | `Error \| undefined` | The error from the most recent fetch attempt, if any. |
+| `loading` | `boolean`                              | Whether the profile request is in progress.                                           |
+| `error`   | `Error \| undefined`                   | The error from the most recent fetch attempt, if any.                                 |
 
 ## Usage
 
@@ -51,11 +51,7 @@ Render a full profile card with the user's name, email address, and profile pict
 import { useProfile } from 'react-facebook';
 
 function ProfileCard() {
-  const { profile, loading, error } = useProfile([
-    'name',
-    'email',
-    'picture.width(120).height(120)',
-  ]);
+  const { profile, loading, error } = useProfile(['name', 'email', 'picture.width(120).height(120)']);
 
   if (loading) {
     return (
@@ -87,9 +83,7 @@ function ProfileCard() {
         className="mx-auto h-20 w-20 rounded-full border-2 border-blue-100"
       />
       <h2 className="mt-4 text-lg font-semibold">{profile.name}</h2>
-      {profile.email && (
-        <p className="mt-1 text-sm text-gray-500">{profile.email}</p>
-      )}
+      {profile.email && <p className="mt-1 text-sm text-gray-500">{profile.email}</p>}
     </div>
   );
 }
@@ -104,11 +98,7 @@ import { useLogin, useProfile } from 'react-facebook';
 
 function AuthenticatedProfile() {
   const { login, logout, loading: isLoggingIn, status, error: loginError } = useLogin();
-  const { profile, loading: loadingProfile, error: profileError } = useProfile([
-    'name',
-    'email',
-    'picture',
-  ]);
+  const { profile, loading: loadingProfile, error: profileError } = useProfile(['name', 'email', 'picture']);
 
   const handleLogin = async () => {
     try {
@@ -130,9 +120,7 @@ function AuthenticatedProfile() {
           {isLoggingIn ? 'Connecting...' : 'Log in with Facebook'}
         </button>
 
-        {loginError && (
-          <p className="text-sm text-red-600">{loginError.message}</p>
-        )}
+        {loginError && <p className="text-sm text-red-600">{loginError.message}</p>}
       </div>
     );
   }
@@ -149,13 +137,7 @@ function AuthenticatedProfile() {
   // Profile loaded
   return (
     <div className="flex items-center gap-4 rounded-lg border bg-white p-4 shadow-sm">
-      {profile?.picture?.data?.url && (
-        <img
-          src={profile.picture.data.url}
-          alt=""
-          className="h-14 w-14 rounded-full"
-        />
-      )}
+      {profile?.picture?.data?.url && <img src={profile.picture.data.url} alt="" className="h-14 w-14 rounded-full" />}
       <div>
         <p className="font-semibold">{profile?.name}</p>
         <p className="text-sm text-gray-500">{profile?.email ?? 'No email provided'}</p>
