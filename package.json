@@ -28,6 +28,7 @@
     "type": "git",
     "url": "git://github.com/seeden/react-facebook.git"
   },
+  "packageManager": "pnpm@10.29.3",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^25.3.3",
