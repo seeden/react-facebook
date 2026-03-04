@@ -9,4 +9,5 @@ module
 out
 .source
 test-results
+next-env.d.ts
 
