@@ -64,7 +64,7 @@ function App() {
 - [Components](https://seeden.github.io/react-facebook/docs/components) — Login, Like, Share, Comments, Embeds, Page
 - [Hooks](https://seeden.github.io/react-facebook/docs/hooks) — useLogin, useGraphAPI, useShare, useLocale, and more
 - [Facebook Pixel](https://seeden.github.io/react-facebook/docs/pixel) — Tracking, page views, custom events, GDPR consent
-- [Guides](https://seeden.github.io/react-facebook/docs/migration) — Facebook Login setup, Pixel setup, version upgrades
+- [Guides](https://seeden.github.io/react-facebook/docs/migration/v10-to-v11) — Facebook Login setup, Pixel setup, version upgrades
 
 ## What's Included
 
