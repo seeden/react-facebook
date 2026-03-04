@@ -1,0 +1,271 @@
+---
+title: useLogin
+description: Hook for handling Facebook login and logout with automatic loading and error state management.
+---
+
+# useLogin
+
+The `useLogin` hook provides functions to trigger Facebook login and logout, along with automatic tracking of loading state, errors, and the resulting login status.
+
+## Import
+
+```tsx
+import { useLogin } from 'react-facebook';
+```
+
+## Return Value
+
+The hook returns an object with the following properties:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `login` | `(options: LoginOptions, callback?: (response: LoginResponse) => void) => Promise<LoginResponse>` | Function to trigger the Facebook login dialog. Returns a promise that resolves with the login response. |
+| `logout` | `() => Promise<void>` | Function to log the current user out of Facebook. Initializes the SDK if needed, then calls `FB.logout()`. |
+| `loading` | `boolean` | Whether the Facebook SDK is initializing or a login/logout request is in progress. |
+| `error` | `Error \| undefined` | The error from the most recent login or logout attempt, if any. |
+| `status` | `LoginStatus \| undefined` | The login status from the most recent successful response. One of `'connected'`, `'authorization_expired'`, `'not_authorized'`, or `'unknown'`. |
+
+### LoginOptions
+
+The `login` function accepts the following options:
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `scope` | `string` | `undefined` | Comma-separated list of permissions to request (e.g. `'email,public_profile'`). |
+| `returnScopes` | `boolean` | `undefined` | When `true`, the response includes the scopes that were granted. |
+| `authType` | `string[]` | `undefined` | Array of auth types to include in the request. |
+| `rerequest` | `boolean` | `undefined` | When `true`, asks the user again for previously declined permissions. |
+| `reauthorize` | `boolean` | `undefined` | When `true`, forces re-authentication of the user. |
+
+### LoginResponse
+
+When the status is `'connected'`, the response includes an `authResponse` object with:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `userID` | `string` | The Facebook user ID. |
+| `accessToken` | `string` | The access token for API calls. |
+
+## Usage
+
+```tsx
+function LoginComponent() {
+  const { login, loading, error } = useLogin();
+
+  const handleLogin = async () => {
+    try {
+      const response = await login({ scope: 'email,public_profile' });
+      console.log('Logged in:', response);
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
+
+  return <button onClick={handleLogin} disabled={loading}>Login</button>;
+}
+```
+
+## Logout
+
+The `logout` function is included in the same hook since login and logout are part of the same auth lifecycle. Only one action can be in progress at a time, so `loading` and `error` are shared.
+
+```tsx
+function LogoutButton() {
+  const { logout, loading } = useLogin();
+
+  return (
+    <button onClick={logout} disabled={loading}>
+      {loading ? 'Logging out...' : 'Logout'}
+    </button>
+  );
+}
+```
+
+## With Error Handling UI
+
+Display login errors directly in the UI so users know what went wrong and can retry.
+
+```tsx
+function LoginWithErrorHandling() {
+  const { login, loading, error } = useLogin();
+  const [loginError, setLoginError] = useState<string | null>(null);
+
+  const handleLogin = async () => {
+    setLoginError(null);
+
+    try {
+      const response = await login({ scope: 'email,public_profile' });
+      console.log('Logged in as:', response.authResponse?.userID);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'An unexpected error occurred';
+      setLoginError(message);
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center gap-4">
+      <button
+        onClick={handleLogin}
+        disabled={loading}
+        className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+      >
+        {loading ? 'Logging in...' : 'Login with Facebook'}
+      </button>
+
+      {loginError && (
+        <div className="rounded-md border border-red-300 bg-red-50 p-4 text-sm text-red-700">
+          <p className="font-medium">Login failed</p>
+          <p>{loginError}</p>
+          <button
+            onClick={handleLogin}
+            className="mt-2 text-red-800 underline hover:no-underline"
+          >
+            Try again
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+## Login + Fetch Profile
+
+Combine `useLogin` with `useProfile` to show the complete authentication flow: log the user in, then immediately display their profile information.
+
+```tsx
+import { useLogin, useProfile } from 'react-facebook';
+
+function LoginAndProfile() {
+  const { login, logout, loading: authLoading, status } = useLogin();
+  const { profile, loading: profileLoading } = useProfile(['name', 'email', 'picture']);
+
+  const handleLogin = async () => {
+    try {
+      await login({ scope: 'email,public_profile' });
+    } catch (err) {
+      console.error('Login failed:', err);
+    }
+  };
+
+  if (status === 'connected' && profile) {
+    return (
+      <div className="flex items-center gap-4 rounded-lg border p-4">
+        <img
+          src={profile.picture?.data?.url}
+          alt={profile.name}
+          className="h-12 w-12 rounded-full"
+        />
+        <div>
+          <p className="font-semibold">{profile.name}</p>
+          <p className="text-sm text-gray-500">{profile.email}</p>
+        </div>
+        <button
+          onClick={logout}
+          disabled={authLoading}
+          className="ml-auto text-sm text-red-600 hover:underline"
+        >
+          {authLoading ? 'Logging out...' : 'Logout'}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={handleLogin}
+      disabled={authLoading || profileLoading}
+      className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+    >
+      {authLoading ? 'Connecting...' : 'Continue with Facebook'}
+    </button>
+  );
+}
+```
+
+## Forward Token to Server
+
+After login, send the `accessToken` to your backend API for server-side verification or session creation.
+
+```tsx
+import { useLogin } from 'react-facebook';
+
+function LoginWithBackend() {
+  const { login, loading } = useLogin();
+  const [authenticated, setAuthenticated] = useState(false);
+
+  const handleLogin = async () => {
+    try {
+      const response = await login({ scope: 'email,public_profile' });
+
+      if (response.status !== 'connected' || !response.authResponse) {
+        throw new Error('Login did not complete');
+      }
+
+      const { accessToken, userID } = response.authResponse;
+
+      // Send the access token to your backend for verification
+      const res = await fetch('/api/auth/facebook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ accessToken, userID }),
+      });
+
+      if (!res.ok) {
+        throw new Error('Server authentication failed');
+      }
+
+      const session = await res.json();
+      console.log('Session created:', session);
+      setAuthenticated(true);
+    } catch (err) {
+      console.error('Authentication error:', err);
+    }
+  };
+
+  if (authenticated) {
+    return <p className="text-green-600 font-medium">Successfully authenticated!</p>;
+  }
+
+  return (
+    <button
+      onClick={handleLogin}
+      disabled={loading}
+      className="rounded-lg bg-blue-600 px-6 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
+    >
+      {loading ? 'Authenticating...' : 'Sign in with Facebook'}
+    </button>
+  );
+}
+```
+
+## Conditional Logout
+
+Combine with `useLoginStatus` to only show the logout button when connected.
+
+```tsx
+import { useLogin, useLoginStatus } from 'react-facebook';
+
+function ConditionalLogout() {
+  const { logout, loading: authLoading } = useLogin();
+  const { status, loading: statusLoading } = useLoginStatus();
+
+  if (statusLoading) {
+    return <p className="text-sm text-gray-400">Checking session...</p>;
+  }
+
+  if (status !== 'connected') {
+    return null;
+  }
+
+  return (
+    <button
+      onClick={logout}
+      disabled={authLoading}
+      className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 disabled:opacity-50"
+    >
+      {authLoading ? 'Signing out...' : 'Sign out of Facebook'}
+    </button>
+  );
+}
+```

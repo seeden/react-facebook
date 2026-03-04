@@ -1,0 +1,256 @@
+---
+title: Facebook Login for React & Next.js
+description: Add Facebook Login to your React or Next.js app with TypeScript, SSR support, and React hooks. Works with Next.js App Router out of the box.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Facebook Login for React & Next.js
+
+Add Facebook Login to any React app in minutes. Works with Next.js App Router, TypeScript, and SSR out of the box — no `window is not defined` errors.
+
+## Installation
+
+```bash
+npm install react-facebook
+```
+
+## Quick Start
+
+Wrap your app with `FacebookProvider`, then use the `Login` component or `useLogin` hook anywhere inside it.
+
+```tsx
+import { FacebookProvider, Login } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID">
+      <Login
+        scope={['public_profile', 'email']}
+        fields={['name', 'email', 'picture']}
+        onSuccess={(response) => {
+          console.log('Auth token:', response.authResponse.accessToken);
+        }}
+        onProfileSuccess={(profile) => {
+          console.log('User:', profile.name, profile.email);
+        }}
+        onError={(error) => {
+          console.error('Login failed:', error);
+        }}
+      >
+        Continue with Facebook
+      </Login>
+    </FacebookProvider>
+  );
+}
+```
+
+## Using the Login Hook
+
+For full programmatic control, use the `useLogin` hook instead of the `Login` component:
+
+```tsx
+import { FacebookProvider, useLogin, useProfile } from 'react-facebook';
+
+function LoginButton() {
+  const { login, loading, error } = useLogin();
+
+  const handleLogin = async () => {
+    try {
+      const response = await login({ scope: 'email,public_profile' });
+      // Send token to your backend
+      await fetch('/api/auth/facebook', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          accessToken: response.authResponse.accessToken,
+          userID: response.authResponse.userID,
+        }),
+      });
+    } catch (err) {
+      console.error('Login failed:', err);
+    }
+  };
+
+  return (
+    <button
+      onClick={handleLogin}
+      disabled={loading}
+      className="bg-[#1877F2] text-white px-6 py-3 rounded-lg font-semibold"
+    >
+      {loading ? 'Connecting...' : 'Continue with Facebook'}
+    </button>
+  );
+}
+
+function App() {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID">
+      <LoginButton />
+    </FacebookProvider>
+  );
+}
+```
+
+## Complete Auth Flow
+
+A full login-to-profile-to-logout example:
+
+```tsx
+import { FacebookProvider, useLogin, useProfile, useLoginStatus } from 'react-facebook';
+
+function AuthFlow() {
+  const { status } = useLoginStatus();
+  const { login, logout, loading: isLoggingIn } = useLogin();
+  const { profile } = useProfile(['name', 'email', 'picture']);
+
+  if (status === 'connected' && profile) {
+    return (
+      <div className="flex items-center gap-4">
+        <img src={profile.picture?.data?.url} alt={profile.name} className="w-10 h-10 rounded-full" />
+        <div>
+          <p className="font-semibold">{profile.name}</p>
+          <p className="text-sm text-gray-500">{profile.email}</p>
+        </div>
+        <button onClick={() => logout()} disabled={isLoggingIn}>
+          {isLoggingIn ? 'Logging out...' : 'Logout'}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button onClick={() => login({ scope: 'email,public_profile' })} disabled={isLoggingIn}>
+      {isLoggingIn ? 'Connecting...' : 'Continue with Facebook'}
+    </button>
+  );
+}
+
+function App() {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID">
+      <AuthFlow />
+    </FacebookProvider>
+  );
+}
+```
+
+## Custom Render
+
+Use the children-as-function pattern for complete control over the button UI:
+
+```tsx
+<Login
+  onSuccess={handleSuccess}
+  onError={handleError}
+  scope={['public_profile', 'email']}
+>
+  {({ onClick, loading, isDisabled }) => (
+    <button onClick={onClick} disabled={isDisabled}>
+      {loading ? (
+        <span>Connecting...</span>
+      ) : (
+        <span><FacebookIcon /> Sign in with Facebook</span>
+      )}
+    </button>
+  )}
+</Login>
+```
+
+Or use the `as` prop to render as a different element:
+
+```tsx
+<Login as="a" href="#" onSuccess={handleSuccess}>
+  Connect Facebook Account
+</Login>
+```
+
+## Error Handling
+
+Wrap Facebook components with `FacebookErrorBoundary` to handle ad blockers and network failures gracefully:
+
+```tsx
+import { FacebookProvider, FacebookErrorBoundary, Login } from 'react-facebook';
+
+<FacebookProvider appId="YOUR_APP_ID">
+  <FacebookErrorBoundary
+    fallback={(error, reset) => (
+      <div>
+        <p>Facebook is unavailable: {error.message}</p>
+        <button onClick={reset}>Try again</button>
+      </div>
+    )}
+  >
+    <Login onSuccess={handleSuccess}>Login with Facebook</Login>
+  </FacebookErrorBoundary>
+</FacebookProvider>
+```
+
+## TypeScript
+
+Every component and hook is fully typed. No separate `@types/` package needed.
+
+```tsx
+import type { LoginResponse, AuthResponse } from 'react-facebook';
+
+function handleSuccess(response: LoginResponse) {
+  const token: string = response.authResponse.accessToken;
+  const userId: string = response.authResponse.userID;
+}
+```
+
+## Next.js App Router
+
+All components include `'use client'` directives. No dynamic imports or SSR workarounds needed:
+
+```tsx
+// app/layout.tsx
+import { FacebookProvider } from 'react-facebook';
+
+export default function RootLayout({ children }) {
+  return (
+    <html>
+      <body>
+        <FacebookProvider appId={process.env.NEXT_PUBLIC_FB_APP_ID!}>
+          {children}
+        </FacebookProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+## Available Login APIs
+
+| API | Description |
+|---|---|
+| `<Login>` | Component with `onSuccess`, `onError`, `onProfileSuccess` callbacks |
+| `useLogin()` | Hook returning `{ login, logout, loading, error }` |
+| `useProfile(fields)` | Hook returning `{ profile, loading, error }` |
+| `useLoginStatus()` | Hook returning `{ status, loading, error }` |
+
+---
+
+## Switching from react-facebook-login?
+
+<Callout type="info">
+  `react-facebook-login` has not been updated since 2018. If you're migrating, here's the quick mapping.
+</Callout>
+
+```bash
+npm uninstall react-facebook-login @types/react-facebook-login
+npm install react-facebook
+```
+
+| react-facebook-login | react-facebook | Notes |
+|---|---|---|
+| `appId` | `appId` on `<FacebookProvider>` | Moved to provider (shared by all components) |
+| `callback` | `onSuccess` + `onProfileSuccess` | Split into typed callbacks |
+| `fields` | `fields` prop on `<Login>` | Accepts array |
+| `scope` | `scope` | Accepts array |
+| `cssClass` | `className` | Standard React convention |
+| `icon` / `textButton` | `children` | Full render control |
+| `render` | `children` as function | Same pattern |
+| `isDisabled` | `disabled` | Standard HTML convention |
+| `disableMobileRedirect` | N/A | Handled automatically |
+| `autoLoad` | `lazy={false}` (default) | SDK loads automatically |

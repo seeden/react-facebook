@@ -1,0 +1,201 @@
+---
+title: useFacebook
+description: Hook for accessing the Facebook SDK context, including the API instance, initialization, and locale management.
+---
+
+# useFacebook
+
+The `useFacebook` hook gives you direct access to the Facebook SDK context provided by `FacebookProvider`. It returns the underlying API instance, loading/error state, and utility functions for initialization, XFBML parsing, and locale management.
+
+This hook must be used inside a `FacebookProvider`. If called outside the provider, it throws an error.
+
+## Import
+
+```tsx
+import { useFacebook } from 'react-facebook';
+```
+
+## Parameters
+
+The hook accepts an optional options object:
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `lazy` | `boolean` | `false` | When `true`, the Facebook SDK is not initialized automatically on mount. You must call `init()` manually. |
+
+## Return Value
+
+The hook returns the `FacebookContextInterface` object with the following properties:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `api` | `FacebookInstance \| undefined` | The Facebook SDK wrapper instance. `undefined` until initialization completes. |
+| `loading` | `boolean` | Whether the Facebook SDK is currently being loaded. |
+| `error` | `Error \| undefined` | The error encountered during SDK initialization, if any. |
+| `init` | `() => Promise<FacebookInstance \| undefined>` | Manually initialize the Facebook SDK. Returns a promise that resolves with the API instance. |
+| `parse` | `(element: HTMLDivElement \| HTMLSpanElement) => Promise<void>` | Parse a DOM element for Facebook XFBML widgets. |
+| `locale` | `string` | The current locale used by the Facebook SDK (e.g. `'en_US'`). |
+| `setLocale` | `(locale: string) => Promise<void>` | Change the SDK locale. This removes the existing SDK script, reinitializes with the new locale, and re-parses all widgets. |
+
+## Usage
+
+```tsx
+function MyComponent() {
+  const { api, loading, error } = useFacebook();
+
+  if (loading) return <p>Loading Facebook SDK...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  return <p>Facebook SDK ready! App ID: {api?.getAppId()}</p>;
+}
+```
+
+## Manual SDK Initialization
+
+Use the `lazy` option to defer SDK initialization until a user action. This is useful when you want to reduce initial page load time or only load the SDK when actually needed.
+
+```tsx
+import { useFacebook } from 'react-facebook';
+import { useState } from 'react';
+
+function LazyFacebookInit() {
+  const { api, init, loading, error } = useFacebook({ lazy: true });
+  const [initialized, setInitialized] = useState(false);
+
+  const handleInit = async () => {
+    try {
+      const facebook = await init();
+      if (facebook) {
+        console.log('SDK initialized. App ID:', facebook.getAppId());
+        setInitialized(true);
+      }
+    } catch (err) {
+      console.error('SDK initialization failed:', err);
+    }
+  };
+
+  if (error) {
+    return <p className="text-red-600">SDK Error: {error.message}</p>;
+  }
+
+  if (!initialized) {
+    return (
+      <button
+        onClick={handleInit}
+        disabled={loading}
+        className="rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+      >
+        {loading ? 'Loading SDK...' : 'Load Facebook SDK'}
+      </button>
+    );
+  }
+
+  return (
+    <p className="text-green-600 font-medium">
+      Facebook SDK is ready (App ID: {api?.getAppId()})
+    </p>
+  );
+}
+```
+
+## Parse Dynamic XFBML
+
+Use the `parse()` function to re-parse a DOM element after dynamically inserting Facebook XFBML widgets (e.g., Like buttons, embedded posts).
+
+```tsx
+import { useFacebook } from 'react-facebook';
+import { useRef, useCallback } from 'react';
+
+function DynamicXFBML() {
+  const { parse, loading } = useFacebook();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const loadWidget = useCallback(async () => {
+    if (!containerRef.current) return;
+
+    // Dynamically insert XFBML markup
+    containerRef.current.innerHTML = `
+      <div
+        class="fb-like"
+        data-href="https://example.com"
+        data-layout="standard"
+        data-action="like"
+        data-size="large"
+      ></div>
+    `;
+
+    // Tell the SDK to parse the new XFBML content
+    await parse(containerRef.current);
+    console.log('XFBML widgets parsed successfully');
+  }, [parse]);
+
+  if (loading) {
+    return <p className="text-gray-500">Loading SDK...</p>;
+  }
+
+  return (
+    <div className="flex flex-col gap-4">
+      <button
+        onClick={loadWidget}
+        className="w-fit rounded-md bg-gray-200 px-4 py-2 text-sm hover:bg-gray-300"
+      >
+        Load Like Button
+      </button>
+      <div ref={containerRef} />
+    </div>
+  );
+}
+```
+
+## Change Locale
+
+Use `setLocale()` to dynamically switch the Facebook SDK language at runtime. This removes the current SDK script and reinitializes it with the new locale.
+
+```tsx
+import { useFacebook } from 'react-facebook';
+
+const LOCALE_OPTIONS = [
+  { value: 'en_US', label: 'English' },
+  { value: 'es_LA', label: 'Spanish' },
+  { value: 'fr_FR', label: 'French' },
+  { value: 'de_DE', label: 'German' },
+  { value: 'ja_JP', label: 'Japanese' },
+] as const;
+
+function LocaleSwitcher() {
+  const { locale, setLocale, loading } = useFacebook();
+
+  const handleLocaleChange = async (newLocale: string) => {
+    try {
+      await setLocale(newLocale);
+      console.log('Locale changed to:', newLocale);
+    } catch (err) {
+      console.error('Failed to change locale:', err);
+    }
+  };
+
+  return (
+    <div className="flex items-center gap-3">
+      <label htmlFor="locale-select" className="text-sm font-medium text-gray-700">
+        SDK Language:
+      </label>
+      <select
+        id="locale-select"
+        value={locale}
+        onChange={(e) => handleLocaleChange(e.target.value)}
+        disabled={loading}
+        className="rounded-md border px-3 py-1.5 text-sm disabled:opacity-50"
+      >
+        {LOCALE_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {loading && (
+        <span className="text-sm text-gray-400">Reloading SDK...</span>
+      )}
+    </div>
+  );
+}
+```

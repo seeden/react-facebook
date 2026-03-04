@@ -1,0 +1,216 @@
+---
+title: Getting Started
+description: Install react-facebook, set up the FacebookProvider, and render your first Facebook component.
+---
+
+## Installation
+
+Install the package with your preferred package manager:
+
+```bash
+npm install react-facebook
+```
+
+```bash
+yarn add react-facebook
+```
+
+```bash
+pnpm add react-facebook
+```
+
+## Basic Setup
+
+Wrap your application (or the subtree that needs Facebook features) with `FacebookProvider`. Every other component and hook in this library reads from the context that `FacebookProvider` creates.
+
+```tsx
+import { FacebookProvider } from 'react-facebook';
+
+export default function App({ children }) {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID">
+      {children}
+    </FacebookProvider>
+  );
+}
+```
+
+## Provider Options
+
+`FacebookProvider` accepts every property from the `FacebookOptions` type plus an optional `pixelId`.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `appId` | `string` | **required** | Your Facebook App ID. |
+| `version` | `string` | `'v23.0'` | Graph API version. |
+| `language` | `string` | `'en_US'` | SDK locale (e.g. `'fr_FR'`, `'de_DE'`). |
+| `lazy` | `boolean` | `false` | When `true`, the SDK is not loaded until a component or hook calls `init()`. |
+| `cookie` | `boolean` | `false` | Enable cookie support for server access tokens. |
+| `status` | `boolean` | `false` | Check login status on SDK init. |
+| `xfbml` | `boolean` | `false` | Parse XFBML tags on init. |
+| `frictionlessRequests` | `boolean` | `false` | Enable frictionless requests. |
+| `debug` | `boolean` | `false` | Load the debug version of the SDK. |
+| `chatSupport` | `boolean` | `false` | Load the Customer Chat SDK variant. |
+| `autoLogAppEvents` | `boolean` | `true` | Automatically log app events. |
+| `domain` | `string` | `'connect.facebook.net'` | SDK domain. |
+| `pixelId` | `string` | `undefined` | When provided, wraps children with `FacebookPixelProvider` automatically. For advanced pixel options, use `FacebookPixelProvider` directly. |
+
+```tsx
+<FacebookProvider
+  appId="YOUR_APP_ID"
+  language="en_US"
+  lazy={false}
+  pixelId="YOUR_PIXEL_ID"
+>
+  {children}
+</FacebookProvider>
+```
+
+## Your First Login Component
+
+Once the provider is in place you can drop in any component. Here is a minimal login example:
+
+```tsx
+import { FacebookProvider, Login } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID">
+      <Login
+        onSuccess={(response) => {
+          console.log('Logged in:', response.authResponse.accessToken);
+        }}
+        onError={(error) => {
+          console.error('Login failed:', error);
+        }}
+        scope={['public_profile', 'email']}
+      >
+        Login with Facebook
+      </Login>
+    </FacebookProvider>
+  );
+}
+```
+
+## Complete Auth Flow
+
+Here is a realistic example combining hooks for a full login-to-profile-to-logout flow — the most common use case:
+
+```tsx
+import { FacebookProvider, useLogin, useProfile, useLoginStatus } from 'react-facebook';
+
+function AuthFlow() {
+  const { status } = useLoginStatus();
+  const { login, logout, loading: isLoggingIn } = useLogin();
+  const { profile, loading: isLoadingProfile } = useProfile(['name', 'email', 'picture']);
+
+  if (status === 'connected' && profile) {
+    return (
+      <div className="flex items-center gap-4">
+        <img
+          src={profile.picture?.data?.url}
+          alt={profile.name}
+          className="w-10 h-10 rounded-full"
+        />
+        <div>
+          <p className="font-semibold">{profile.name}</p>
+          <p className="text-sm text-gray-500">{profile.email}</p>
+        </div>
+        <button
+          onClick={() => logout()}
+          disabled={isLoggingIn}
+          className="ml-auto text-sm text-red-600 hover:underline"
+        >
+          {isLoggingIn ? 'Logging out...' : 'Logout'}
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <button
+      onClick={async () => {
+        try {
+          const response = await login({ scope: 'email,public_profile' });
+          // Send token to your server
+          await fetch('/api/auth/facebook', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              accessToken: response.authResponse.accessToken,
+              userID: response.authResponse.userID,
+            }),
+          });
+        } catch (err) {
+          console.error('Login failed:', err);
+        }
+      }}
+      disabled={isLoggingIn}
+      className="bg-[#1877F2] text-white px-6 py-3 rounded-lg font-semibold hover:bg-[#166FE5] disabled:opacity-50"
+    >
+      {isLoggingIn ? 'Connecting...' : 'Continue with Facebook'}
+    </button>
+  );
+}
+
+function App() {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID">
+      <AuthFlow />
+    </FacebookProvider>
+  );
+}
+```
+
+## Hooks Overview
+
+Every component in this library has a corresponding hook for programmatic control. Hooks must be called inside a `FacebookProvider`.
+
+| Hook | Purpose |
+|------|---------|
+| `useLogin` | Trigger the login dialog, log out, and receive a `LoginResponse`. |
+| `useProfile` | Fetch profile fields for the logged-in user. |
+| `useLoginStatus` | Check the current authentication status. |
+| `useGraphAPI` | Make typed Graph API calls with loading/error states. |
+| `useShare` | Open the Share dialog programmatically. |
+| `useFeed` | Post to a user's feed via the Feed dialog. |
+| `useSend` | Send a private message with a link via the Send dialog. |
+| `useFacebook` | Direct access to the low-level `FacebookInstance` and `parse` function. |
+| `useLocale` | Read and change the SDK locale at runtime. |
+| `useSubscribe` | Subscribe to Facebook SDK events with automatic cleanup. |
+| `usePixel` | Track standard and custom Pixel events. |
+| `usePageView` | Automatically fire a `PageView` event on mount or route change. |
+
+## Pixel Quick Setup
+
+You can enable Facebook Pixel tracking with zero extra components by passing `pixelId` to `FacebookProvider`:
+
+```tsx
+import { FacebookProvider, usePixel } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookProvider
+      appId="YOUR_APP_ID"
+      pixelId="YOUR_PIXEL_ID"
+    >
+      <TrackingExample />
+    </FacebookProvider>
+  );
+}
+
+function TrackingExample() {
+  const { track, pageView } = usePixel();
+
+  return (
+    <div>
+      <button onClick={() => pageView()}>Track Page View</button>
+      <button onClick={() => track('Purchase', { value: 29.99, currency: 'USD' })}>
+        Track Purchase
+      </button>
+    </div>
+  );
+}
+```
+
+If you only need Pixel tracking without the full Facebook SDK, use `FacebookPixelProvider` directly. See the [Pixel Provider](/docs/components/pixel-provider) documentation.

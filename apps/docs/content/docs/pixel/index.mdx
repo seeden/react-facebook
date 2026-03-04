@@ -1,0 +1,110 @@
+---
+title: Pixel Setup
+description: How to set up Facebook Pixel tracking with react-facebook using FacebookProvider or standalone FacebookPixelProvider.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Pixel Setup
+
+Facebook Pixel lets you measure the effectiveness of your advertising by tracking visitor actions on your website. `react-facebook` provides two ways to set it up.
+
+## Approach 1: Via FacebookProvider
+
+If you are already using `FacebookProvider` for login, social plugins, or Graph API, add the `pixelId` prop to enable pixel tracking alongside the SDK.
+
+```tsx
+import { FacebookProvider } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookProvider
+      appId="YOUR_APP_ID"
+      pixelId="YOUR_PIXEL_ID"
+    >
+      <YourApp />
+    </FacebookProvider>
+  );
+}
+```
+
+This wraps your component tree with both `FacebookContext` and `FacebookPixelContext`, so you can use any hook (`useLogin`, `usePixel`, `usePageView`, etc.) anywhere inside.
+
+## Approach 2: Standalone FacebookPixelProvider
+
+If you only need pixel tracking and do not need the Facebook SDK (login, social plugins, Graph API), use `FacebookPixelProvider` directly for a smaller footprint.
+
+```tsx
+import { FacebookPixelProvider } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookPixelProvider pixelId="YOUR_PIXEL_ID" autoConfig debug={false}>
+      <YourApp />
+    </FacebookPixelProvider>
+  );
+}
+```
+
+### Provider Props
+
+| Prop | Type | Default | Description |
+|---|---|---|---|
+| `pixelId` | `string` | **(required)** | Your Facebook Pixel ID |
+| `autoConfig` | `boolean` | `true` | Enable automatic configuration of page-level events |
+| `debug` | `boolean` | `false` | Log pixel calls to the console |
+| `advancedMatching` | `Record<string, unknown>` | `{}` | Advanced matching parameters (e.g. `{ em: 'user@example.com' }`) |
+| `lazy` | `boolean` | `false` | Delay loading the pixel script until `init()` is called manually |
+
+## Tracking Events
+
+Once the provider is in place, use the `usePixel` hook in any child component to fire events.
+
+```tsx
+import { usePixel } from 'react-facebook';
+
+function CheckoutButton() {
+  const { track } = usePixel();
+
+  return (
+    <button
+      onClick={() =>
+        track('Purchase', { value: 29.99, currency: 'USD' })
+      }
+    >
+      Complete Purchase
+    </button>
+  );
+}
+```
+
+## Standard Events
+
+These are the standard pixel events recognized by Facebook. Pass the event name as the first argument to `track()`.
+
+| Event Name | When to use |
+|---|---|
+| `PageView` | A page is loaded (use `usePageView` for automatic tracking) |
+| `ViewContent` | A key page is viewed (product page, article, etc.) |
+| `Search` | A search is performed |
+| `AddToCart` | An item is added to a shopping cart |
+| `AddToWishlist` | An item is added to a wishlist |
+| `InitiateCheckout` | Checkout flow is started |
+| `AddPaymentInfo` | Payment information is entered |
+| `Purchase` | A purchase is completed |
+| `Lead` | A lead form is submitted |
+| `CompleteRegistration` | A registration form is completed |
+
+Additional standard events are also supported: `Contact`, `CustomizeProduct`, `Donate`, `FindLocation`, `Schedule`, `StartTrial`, `SubmitApplication`, and `Subscribe`.
+
+For events not in this list, use `trackCustom()` instead.
+
+<Callout type="info">
+  The pixel script is loaded asynchronously. All tracking calls are safe to make immediately -- they will wait for the script to finish loading before firing.
+</Callout>
+
+## Next Steps
+
+- [usePixel](/docs/pixel/use-pixel) -- Full hook API reference
+- [usePageView](/docs/pixel/use-page-view) -- Automatic page view tracking
+- [Consent Management](/docs/pixel/consent) -- GDPR-compliant consent handling

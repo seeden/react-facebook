@@ -1,0 +1,200 @@
+---
+title: From v10 to v11
+description: Migration guide from react-facebook v10 to v11 covering new features, bug fixes, and developer experience improvements.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Migrating from v10 to v11
+
+v11 is a major release with new hooks, an error boundary component, extensive bug fixes for SSR and Next.js, and significant developer experience improvements. There are no breaking API changes for existing code -- this release is additive.
+
+<Callout type="info">
+  If you are upgrading from v10, your existing code should continue to work without changes. v11 adds new features and fixes but does not remove or rename existing APIs.
+</Callout>
+
+## New Features
+
+### useGraphAPI Hook
+
+A typed hook for arbitrary Graph API calls with full loading/error/data lifecycle management.
+
+```tsx
+import { useGraphAPI } from 'react-facebook';
+
+function UserPhotos() {
+  const { data, loading, error, fetch } = useGraphAPI<{ data: Photo[] }>({
+    path: '/me/photos',
+    params: { fields: 'id,source,name' },
+  });
+
+  if (loading) return <p>Loading photos...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+
+  return (
+    <div>
+      {data?.data.map((photo) => (
+        <img key={photo.id} src={photo.source} alt={photo.name} />
+      ))}
+      <button onClick={() => fetch()}>Refresh</button>
+    </div>
+  );
+}
+```
+
+Features include auto-fetch on mount, manual fetch/reset, and a `transform` option for reshaping response data.
+
+### logout merged into useLogin
+
+The `logout` function is now part of the `useLogin` hook. There is no separate `useLogout` hook.
+
+```tsx
+import { useLogin } from 'react-facebook';
+
+function AuthButtons() {
+  const { login, logout, loading } = useLogin();
+
+  return (
+    <div>
+      <button onClick={() => login({ scope: 'email' })} disabled={loading}>
+        Login
+      </button>
+      <button onClick={() => logout()} disabled={loading}>
+        Logout
+      </button>
+    </div>
+  );
+}
+```
+
+### FacebookErrorBoundary
+
+An error boundary component for Facebook SDK errors. Catches errors from ad blockers, network failures, and SDK initialization issues with a customizable fallback.
+
+```tsx
+import { FacebookErrorBoundary, FacebookProvider } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookErrorBoundary
+      fallback={(error, reset) => (
+        <div>
+          <p>Facebook unavailable: {error.message}</p>
+          <button onClick={reset}>Retry</button>
+        </div>
+      )}
+    >
+      <FacebookProvider appId="YOUR_APP_ID">
+        <MainContent />
+      </FacebookProvider>
+    </FacebookErrorBoundary>
+  );
+}
+```
+
+### useFeed and useSend Exports
+
+`useFeed` and `useSend` hooks are now exported from the main entry point. Previously they existed in the codebase but were not part of the public API.
+
+```tsx
+import { useFeed, useSend } from 'react-facebook';
+```
+
+## Bug Fixes
+
+### SSR Safety
+
+All `window` and `document` access is now guarded with `typeof window === 'undefined'` checks. The `window is not defined` error that could occur in Next.js and other SSR environments is eliminated.
+
+### Next.js App Router Support
+
+All components and hooks now include `'use client'` directives. The directive is preserved in the bundled output so Next.js correctly treats these as client components.
+
+### Script Load Timeout
+
+A **10-second timeout** has been added to the Facebook SDK script loading. If the SDK fails to load in time, a descriptive error is thrown:
+
+```
+[react-facebook] Facebook SDK loading timed out after 10 seconds.
+This may be caused by an ad blocker or network issue.
+```
+
+An `onerror` handler on the script tag also catches outright load failures (e.g., ad blockers). After either failure, the loading promise is reset, allowing a retry on the next `init()` call.
+
+### Facebook Pixel Error Handling
+
+The pixel script loader previously called `resolve()` silently on failure. It now properly calls `reject()` with a descriptive error message, so pixel load failures are surfaced through `usePixel().error` and caught by error boundaries.
+
+### useProfile Race Conditions
+
+The `useProfile` hook stabilized its `fields` dependency using a `fieldsKey` pattern and added a `cancelled` flag to prevent state updates after component unmount. This eliminates race conditions when the component unmounts while a profile fetch is in flight.
+
+### ShareButton Type Name
+
+The incorrectly named `LoginButton` type was renamed to `ShareButtonProps` to match the actual component.
+
+### Context Re-renders
+
+Context values in `FacebookProvider` and `FacebookPixelProvider` are now memoized with `useMemo`, and all callback functions use `useCallback`. Child components no longer re-render unnecessarily when provider state does not change.
+
+## Developer Experience
+
+### TypeScript Return Types
+
+All hooks now have explicit, exported return types:
+
+| Hook | Return Type |
+|---|---|
+| `useLogin` | `UseLoginReturn` |
+| `useShare` | `UseShareReturn` |
+| `useFeed` | `UseFeedReturn` |
+| `useSend` | `UseSendReturn` |
+| `useGraphAPI` | `UseGraphAPIReturn<T>` |
+
+### Type Exports
+
+All public types are exported from the main entry point:
+
+```tsx
+import type {
+  FBError,
+  FacebookOptions,
+  LoginResponse,
+  AuthResponse,
+  Method,
+  PixelOptions,
+  PixelEventName,
+  PixelEventData,
+} from 'react-facebook';
+```
+
+### JSDoc Documentation
+
+All hooks and key components have comprehensive JSDoc with `@example` blocks. Your editor will show inline documentation and usage examples on hover.
+
+### Error Message Prefixes
+
+All errors thrown by the library are prefixed with `[react-facebook]` for easy identification in logs and error tracking. Context-missing errors include actionable messages mentioning the specific provider you need to add.
+
+### Consistent Error Handling
+
+Error handling is now consistent across all hooks:
+
+- **Action hooks** (`useLogin`, `useShare`, `useFeed`, `useSend`) -- set `error` state AND rethrow the error, so you can handle it with either the `error` property or a try/catch.
+- **Data hooks** (`useProfile`, `useGraphAPI`) -- set `error` state only, without rethrowing.
+
+## Accessibility
+
+The `Login` component now includes `aria-busy` and `aria-label` attributes for better screen reader support.
+
+## Testing
+
+v11 includes 25 Vitest unit tests covering the Facebook SDK utility, `FacebookProvider`, `useLogin`, and `useGraphAPI`. The size-limit threshold has been updated to 15KB gzipped to match the actual bundle size.
+
+## Upgrade
+
+```bash
+npm install react-facebook@latest
+```
+
+No code changes are required. All new features are opt-in.

@@ -1,0 +1,91 @@
+---
+title: FacebookProvider
+description: Initializes the Facebook SDK and provides context to all child components and hooks.
+---
+
+`FacebookProvider` loads the Facebook JavaScript SDK, initializes it with your app configuration, and exposes a React context that every other component and hook in this library depends on. Place it at the root of the subtree that needs Facebook features.
+
+## Import
+
+```tsx
+import { FacebookProvider } from 'react-facebook';
+```
+
+## Props
+
+`FacebookProvider` extends `FacebookOptions` with `children` and an optional `pixelId`.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `appId` | `string` | **required** | Your Facebook App ID. |
+| `children` | `ReactNode` | **required** | Child elements that will have access to the Facebook context. |
+| `pixelId` | `string` | `undefined` | When provided, wraps children with `FacebookPixelProvider` automatically. For advanced pixel options, use `FacebookPixelProvider` directly. |
+| `version` | `string` | `'v23.0'` | Graph API version string. |
+| `language` | `string` | `'en_US'` | SDK locale code (e.g. `'fr_FR'`, `'de_DE'`). Changing this at runtime reloads the SDK. |
+| `lazy` | `boolean` | `false` | When `true` the SDK script is not injected until a component or hook calls `init()`. |
+| `cookie` | `boolean` | `false` | Enable cookie support so your server can access the session. |
+| `status` | `boolean` | `false` | Check login status when the SDK initializes. |
+| `xfbml` | `boolean` | `false` | Parse XFBML tags automatically on init. |
+| `frictionlessRequests` | `boolean` | `false` | Enable frictionless requests for game apps. |
+| `debug` | `boolean` | `false` | Load the debug build of the SDK (`sdk/debug.js`). |
+| `chatSupport` | `boolean` | `false` | Load the Customer Chat SDK variant. |
+| `autoLogAppEvents` | `boolean` | `true` | Automatically log app events to Facebook Analytics. |
+| `domain` | `string` | `'connect.facebook.net'` | Domain from which the SDK script is loaded. |
+
+## Usage
+
+### Basic
+
+```tsx
+import { FacebookProvider } from 'react-facebook';
+
+export default function App({ children }) {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID">
+      {children}
+    </FacebookProvider>
+  );
+}
+```
+
+### With All Options
+
+```tsx
+<FacebookProvider
+  appId="YOUR_APP_ID"
+  version="v23.0"
+  language="en_US"
+  lazy={false}
+  cookie={false}
+  status={false}
+  xfbml={false}
+  debug={false}
+  autoLogAppEvents={true}
+>
+  {children}
+</FacebookProvider>
+```
+
+### With Facebook Pixel
+
+Pass a `pixelId` to enable Pixel tracking without adding a separate `FacebookPixelProvider`. For advanced pixel options (`debug`, `autoConfig`, `advancedMatching`), use `FacebookPixelProvider` directly.
+
+```tsx
+<FacebookProvider
+  appId="YOUR_APP_ID"
+  pixelId="YOUR_PIXEL_ID"
+>
+  {children}
+</FacebookProvider>
+```
+
+### Lazy Initialization
+
+When `lazy` is `true`, the SDK will not load until a child component or hook triggers `init()`. This is useful for deferring the network request until the user actually interacts with a Facebook feature.
+
+```tsx
+<FacebookProvider appId="YOUR_APP_ID" lazy>
+  {/* SDK won't load until Login, Like, or another component needs it */}
+  {children}
+</FacebookProvider>
+```

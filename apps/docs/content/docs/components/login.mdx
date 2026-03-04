@@ -1,0 +1,125 @@
+---
+title: Login
+description: Unified Facebook login component supporting button rendering, render props, and custom elements.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+The `Login` component handles Facebook authentication. It supports three rendering modes -- a default button, a children-as-function pattern for full control, and a custom element via the `as` prop. It also supports automatic profile fetching after a successful login.
+
+<Callout title="Try it live">
+See the login button in action in the [Playground](/playground#login).
+</Callout>
+
+## Import
+
+```tsx
+import { Login } from 'react-facebook';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode \| ((props: LoginRenderProps) => ReactElement)` | `undefined` | Button content, or a render function receiving `{ onClick, loading, isDisabled }`. |
+| `onSuccess` | `(response: LoginResponse) => void` | `undefined` | Called after a successful login with the login response containing `authResponse`. |
+| `onError` | `(error: Error) => void` | `undefined` | Called when the login fails or the user cancels. |
+| `onProfileSuccess` | `(profile: Record<string, unknown>) => void` | `undefined` | Called with the user profile when `fields` are provided and the profile is fetched. |
+| `scope` | `string \| string[]` | `['public_profile', 'email']` | Permissions to request. Accepts a comma-separated string or an array. |
+| `fields` | `string[]` | `[]` | Profile fields to fetch after login (e.g. `['name', 'email', 'picture']`). |
+| `as` | `ElementType \| ComponentType` | `'button'` | The HTML element or React component to render. |
+| `disabled` | `boolean` | `false` | Disables the login button. |
+| `returnScopes` | `boolean` | `undefined` | When `true`, the response includes the scopes the user actually granted. |
+| `authType` | `string[]` | `undefined` | Auth type array (e.g. `['rerequest']`). |
+| `rerequest` | `boolean` | `undefined` | Adds `'rerequest'` to `authType`, prompting for previously declined permissions. |
+| `reauthorize` | `boolean` | `undefined` | Adds `'reauthenticate'` to `authType`, forcing re-authentication. |
+| `className` | `string` | `undefined` | CSS class name applied to the rendered element. |
+| `style` | `CSSProperties` | `undefined` | Inline styles applied to the rendered element. |
+
+Any additional props are spread onto the rendered element.
+
+### LoginRenderProps
+
+When `children` is a function, it receives:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `onClick` | `() => void` | Triggers the Facebook login dialog. |
+| `loading` | `boolean` | `true` while the SDK is initializing or the login is in progress. |
+| `isDisabled` | `boolean` | `true` when the button should not be clickable (loading or explicitly disabled). |
+
+## Usage
+
+### Basic Button
+
+The simplest usage renders a `<button>` element. If no children are provided the text defaults to "Login with Facebook".
+
+```tsx
+<Login
+  onSuccess={(response) => console.log('Success:', response)}
+  onError={(error) => console.error('Error:', error)}
+  scope={['public_profile', 'email']}
+  className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+>
+  Continue with Facebook
+</Login>
+```
+
+### Children as Function (Render Props)
+
+For complete control over the rendered output, pass a function as children.
+
+```tsx
+<Login
+  onSuccess={(response) => console.log('Success:', response)}
+  onError={(error) => console.error('Error:', error)}
+  scope={['public_profile', 'email']}
+>
+  {({ onClick, loading, isDisabled }) => (
+    <button
+      onClick={onClick}
+      disabled={isDisabled}
+      className={loading ? 'opacity-50 cursor-wait' : 'cursor-pointer'}
+    >
+      {loading ? 'Connecting...' : 'Sign in with Facebook'}
+    </button>
+  )}
+</Login>
+```
+
+### Custom Element (as prop)
+
+Use the `as` prop to render a different HTML element or a custom component.
+
+```tsx
+<Login
+  as="a"
+  href="#"
+  className="text-blue-600 hover:underline"
+  onSuccess={(response) => console.log('Success:', response)}
+>
+  Connect Facebook Account
+</Login>
+```
+
+### Profile Fetching with onProfileSuccess
+
+When you provide `fields`, the component automatically fetches the user profile after login. The profile data is passed to `onProfileSuccess`.
+
+```tsx
+<Login
+  fields={['name', 'email', 'picture']}
+  scope={['public_profile', 'email']}
+  onSuccess={(response) => {
+    console.log('Auth response:', response);
+  }}
+  onProfileSuccess={(profile) => {
+    console.log('Name:', profile.name);
+    console.log('Email:', profile.email);
+    console.log('Picture:', profile.picture?.data?.url);
+  }}
+  onError={(error) => console.error('Login failed:', error)}
+>
+  Sign in with Facebook
+</Login>
+```

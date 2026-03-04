@@ -1,8 +1,8 @@
-import React, { type ReactNode, type ComponentType, type ElementType, type CSSProperties } from 'react';
+import { type ReactNode, type ComponentType, type ElementType, type CSSProperties } from 'react';
 import type { ShareOptions } from '../hooks/useShare';
 import useShare from '../hooks/useShare';
 
-export type LoginButton = ShareOptions & {
+export type ShareButtonProps = ShareOptions & {
   children?: ReactNode;
   as?: ComponentType | ElementType;
   disabled?: boolean;
@@ -10,7 +10,7 @@ export type LoginButton = ShareOptions & {
   style?: CSSProperties;
 };
 
-export default function ShareButton(props: LoginButton) {
+export default function ShareButton(props: ShareButtonProps) {
   const {
     as: AsChild = 'button',
     disabled,
@@ -21,12 +21,12 @@ export default function ShareButton(props: LoginButton) {
     ...rest
   } = props;
 
-  const { isLoading, share } = useShare();
+  const { loading, share } = useShare();
+
+  const isDisabled = disabled || loading;
 
   function handleShare() {
-    if (isLoading) {
-      return;
-    }
+    if (isDisabled) return;
 
     share({
       href,
@@ -39,7 +39,7 @@ export default function ShareButton(props: LoginButton) {
   return (
     <AsChild
       onClick={handleShare}
-      disabled={isLoading}
+      disabled={isDisabled}
       {...rest}
     />
   );

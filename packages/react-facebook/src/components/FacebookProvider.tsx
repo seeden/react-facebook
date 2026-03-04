@@ -1,32 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
-import type { ReactNode } from 'react';
-import Facebook from '../utils/Facebook';
-import type { FacebookOptions } from '../utils/Facebook';
+import { useState, useEffect, useRef, useCallback, useMemo, type ReactNode } from 'react';
+import createFacebook from '../utils/Facebook';
+import type { FacebookOptions, FacebookInstance } from '../utils/Facebook';
 import FacebookContext from './FacebookContext';
 import type { FacebookContextInterface } from './FacebookContext';
 import FacebookPixelProvider from './FacebookPixelProvider';
 
 export type FacebookProviderProps = FacebookOptions & {
   children: ReactNode;
-  /** Facebook Pixel configuration */
-  pixel?: {
-    pixelId: string;
-    autoConfig?: boolean;
-    debug?: boolean;
-    advancedMatching?: Record<string, any>;
-  };
+  /** Facebook Pixel ID — enables automatic pixel integration */
+  pixelId?: string;
 };
 
 export default function FacebookProvider(props: FacebookProviderProps) {
-  const { children, pixel, ...options } = props;
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const { children, pixelId, ...options } = props;
+  const [loading, setLoading] = useState<boolean>(true);
   const [isReady, setIsReady] = useState<boolean>(false);
   const [error, setError] = useState<Error | undefined>();
   const [locale, setLocaleState] = useState<string>(options.language || 'en_US');
-  const apiRef = useRef<Facebook | undefined>();
-  const initPromiseRef = useRef<Promise<Facebook | undefined> | undefined>();
+  const apiRef = useRef<FacebookInstance | undefined>(undefined);
+  const initPromiseRef = useRef<Promise<FacebookInstance | undefined> | undefined>(undefined);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
-  async function init() {
+  const init = useCallback(async () => {
     if (initPromiseRef.current) {
       return initPromiseRef.current;
     }
@@ -38,55 +34,52 @@ export default function FacebookProvider(props: FacebookProviderProps) {
         }
 
         setIsReady(false);
-        setIsLoading(true);
+        setLoading(true);
 
-        apiRef.current = new Facebook(options);
+        apiRef.current = createFacebook(optionsRef.current);
 
         await apiRef.current.init();
 
         setIsReady(true);
         return apiRef.current;
       } catch (error) {
-        setError(error as Error);
+        setError(error instanceof Error ? error : new Error(String(error)));
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
 
       return apiRef.current;
     })();
 
     return initPromiseRef.current;
-  }
+  }, []);
 
-  async function parse(element: HTMLElement) {
+  const parse = useCallback(async (element: HTMLElement) => {
     const api = await init();
     if (api) {
       await api.parse(element);
     }
-  }
+  }, [init]);
 
-  async function setLocale(newLocale: string) {
+  const setLocale = useCallback(async (newLocale: string) => {
     if (!apiRef.current) {
-      // If API not initialized yet, just update the state
       setLocaleState(newLocale);
       return;
     }
 
     try {
-      setIsLoading(true);
+      setLoading(true);
       setError(undefined);
-      
-      // Change locale on the Facebook API instance
+
       await apiRef.current.changeLocale(newLocale);
-      
-      // Update local state
+
       setLocaleState(newLocale);
     } catch (error) {
-      setError(error as Error);
+      setError(error instanceof Error ? error : new Error(String(error)));
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
     const { lazy } = options;
@@ -95,22 +88,25 @@ export default function FacebookProvider(props: FacebookProviderProps) {
     }
   }, [options.lazy]);
 
+  // Sync locale when the language *prop* changes (controlled mode).
+  // We intentionally exclude `locale` from the dependency array so that
+  // programmatic setLocale() calls are not reverted.
   useEffect(() => {
     const newLocale = options.language || 'en_US';
     if (newLocale !== locale) {
       setLocale(newLocale);
     }
-  }, [options.language, locale]);
+  }, [options.language]);
 
-  const value: FacebookContextInterface = {
-    isLoading,
+  const value: FacebookContextInterface = useMemo(() => ({
+    loading,
     error,
     init,
     api: isReady ? apiRef.current : undefined,
     parse,
     locale,
     setLocale,
-  };
+  }), [loading, error, init, isReady, parse, locale, setLocale]);
 
   const content = (
     <FacebookContext.Provider value={value}>
@@ -118,10 +114,9 @@ export default function FacebookProvider(props: FacebookProviderProps) {
     </FacebookContext.Provider>
   );
 
-  // Wrap with pixel provider if pixel config is provided
-  if (pixel) {
+  if (pixelId) {
     return (
-      <FacebookPixelProvider {...pixel}>
+      <FacebookPixelProvider pixelId={pixelId}>
         {content}
       </FacebookPixelProvider>
     );

@@ -1,0 +1,75 @@
+---
+title: FacebookErrorBoundary
+description: Error boundary that catches Facebook SDK errors from ad blockers, network failures, and initialization issues.
+---
+
+`FacebookErrorBoundary` is a React error boundary that catches errors thrown by the Facebook SDK -- for example when an ad blocker prevents the script from loading or when a network request fails. It renders a customizable fallback UI and provides a reset function to retry.
+
+## Import
+
+```tsx
+import { FacebookErrorBoundary } from 'react-facebook';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `children` | `ReactNode` | **required** | The component tree to protect. |
+| `fallback` | `ReactNode \| ((error: Error, reset: () => void) => ReactNode)` | `undefined` | UI to render when an error is caught. When a function is provided it receives the error and a `reset` callback. When `undefined`, nothing is rendered on error. |
+| `onError` | `(error: Error, errorInfo: ErrorInfo) => void` | `undefined` | Callback invoked when an error is caught. Useful for logging to an error reporting service. |
+
+## Usage
+
+### With Render Function Fallback
+
+The render function pattern gives you access to the error message and a reset function to retry rendering.
+
+```tsx
+import { FacebookProvider, FacebookErrorBoundary, Login } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookErrorBoundary
+      fallback={(error, reset) => (
+        <div>
+          <p>Facebook features are unavailable: {error.message}</p>
+          <button onClick={reset}>Try again</button>
+        </div>
+      )}
+      onError={(error, errorInfo) => {
+        // Send to your error reporting service
+        console.error('Facebook error:', error, errorInfo);
+      }}
+    >
+      <FacebookProvider appId="YOUR_APP_ID">
+        <Login onSuccess={handleSuccess}>Login with Facebook</Login>
+      </FacebookProvider>
+    </FacebookErrorBoundary>
+  );
+}
+```
+
+### With Static Fallback
+
+If you do not need the error details or a reset button, pass a static ReactNode.
+
+```tsx
+<FacebookErrorBoundary fallback={<p>Facebook features are currently unavailable.</p>}>
+  <FacebookProvider appId="YOUR_APP_ID">
+    {children}
+  </FacebookProvider>
+</FacebookErrorBoundary>
+```
+
+### Silent Fallback
+
+When `fallback` is omitted the boundary renders nothing on error, silently hiding the failed Facebook components.
+
+```tsx
+<FacebookErrorBoundary onError={(error) => logError(error)}>
+  <FacebookProvider appId="YOUR_APP_ID">
+    {children}
+  </FacebookProvider>
+</FacebookErrorBoundary>
+```

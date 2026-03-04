@@ -1,56 +1,59 @@
-import { useState } from 'react';
-import clearUndefinedProperties from '../utils/clearUndefinedProperties';
-import useFacebook from './useFacebook';
+import useDialog from './useDialog';
 import getCurrentHref from '../utils/getCurrentHref';
 
-export default function useSend() {
-  const { init } = useFacebook();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<Error | undefined>(undefined);
+export type SendOptions = {
+  link?: string;
+  appId?: string;
+  to: string;
+  redirectURI?: string;
+  display?: string;
+};
 
-  async function handleSend(options: {
-    link?: string,
-    appId?: string;
-    to: string;
-    redirectURI?: string;
-    display?: string;
-  }) {
-    try {
-      setError(undefined);
-      setIsLoading(true);
-  
-      const api = await init();
-      if (!api) {
-        throw new Error('Facebook API is not initialized');
-      }
+export type UseSendReturn = {
+  loading: boolean;
+  error: Error | undefined;
+  send: (options: SendOptions) => Promise<unknown>;
+};
 
-      const {
-        link = getCurrentHref(),
-        display,
-        appId = api.getAppId(),
-        to,
-        redirectURI,
-      } = options;
-  
-      return api.ui(clearUndefinedProperties({
-        method: 'send',
-        link,
-        display,
-        app_id: appId,
-        to,
-        redirect_uri: redirectURI,
-      }));
-    } catch (error) {
-      setError(error as Error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }
+/**
+ * Hook for sending messages via Facebook Send dialog
+ *
+ * @returns Object with send function, loading state, and error
+ *
+ * @example
+ * ```tsx
+ * function SendComponent() {
+ *   const { send, loading } = useSend();
+ *
+ *   const handleSend = () => {
+ *     send({
+ *       to: 'friend_id',
+ *       link: 'https://example.com',
+ *     });
+ *   };
+ *
+ *   return <button onClick={handleSend} disabled={loading}>Send</button>;
+ * }
+ * ```
+ */
+export default function useSend(): UseSendReturn {
+  const { loading, error, invoke } = useDialog<SendOptions>('send', (options, api) => {
+    const {
+      link = getCurrentHref(),
+      display,
+      appId = api.getAppId(),
+      to,
+      redirectURI,
+    } = options;
 
-  return {
-    isLoading,
-    error,
-    send: handleSend,
-  };
+    return {
+      link,
+      display,
+      app_id: appId,
+      to,
+      redirect_uri: redirectURI,
+    };
+  });
+
+  return { loading, error, send: invoke };
 }

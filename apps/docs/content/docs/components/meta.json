@@ -1,0 +1,18 @@
+{
+  "title": "Components",
+  "pages": [
+    "index",
+    "facebook-provider",
+    "login",
+    "like",
+    "share",
+    "share-button",
+    "comments",
+    "comments-count",
+    "embedded-post",
+    "embedded-video",
+    "page",
+    "error-boundary",
+    "pixel-provider"
+  ]
+}

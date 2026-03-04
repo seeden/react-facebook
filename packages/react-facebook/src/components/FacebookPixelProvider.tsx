@@ -1,19 +1,18 @@
-import React, { useState, useEffect, useRef, createContext } from 'react';
-import type { ReactNode } from 'react';
-import FacebookPixel from '../utils/FacebookPixel';
-import type { PixelOptions } from '../utils/FacebookPixel';
+import { useState, useEffect, useRef, useCallback, useMemo, createContext, type ReactNode } from 'react';
+import createFacebookPixel from '../utils/FacebookPixel';
+import type { FacebookPixelInstance, PixelOptions } from '../utils/FacebookPixel';
 
 export type FacebookPixelContextInterface = {
-  isLoading: boolean;
+  loading: boolean;
   error: Error | undefined;
   init: () => Promise<void>;
-  pixel: FacebookPixel | undefined;
+  pixel: FacebookPixelInstance | undefined;
   pageView: () => Promise<void>;
-  track: (eventName: string, data?: Record<string, any>) => Promise<void>;
-  trackCustom: (eventName: string, data?: Record<string, any>) => Promise<void>;
+  track: (eventName: string, data?: Record<string, unknown>) => Promise<void>;
+  trackCustom: (eventName: string, data?: Record<string, unknown>) => Promise<void>;
   grantConsent: () => Promise<void>;
   revokeConsent: () => Promise<void>;
-  fbq: (...args: any[]) => Promise<void>;
+  fbq: (...args: unknown[]) => Promise<void>;
 };
 
 export const FacebookPixelContext = createContext<FacebookPixelContextInterface | undefined>(undefined);
@@ -25,12 +24,14 @@ export type FacebookPixelProviderProps = PixelOptions & {
 
 export default function FacebookPixelProvider(props: FacebookPixelProviderProps) {
   const { children, lazy = false, ...options } = props;
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<Error | undefined>();
-  const pixelRef = useRef<FacebookPixel | undefined>();
-  const initPromiseRef = useRef<Promise<void> | undefined>();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<Error | undefined>(undefined);
+  const pixelRef = useRef<FacebookPixelInstance | undefined>(undefined);
+  const initPromiseRef = useRef<Promise<void> | undefined>(undefined);
+  const optionsRef = useRef(options);
+  optionsRef.current = options;
 
-  async function init() {
+  const init = useCallback(async () => {
     if (initPromiseRef.current) {
       return initPromiseRef.current;
     }
@@ -41,50 +42,50 @@ export default function FacebookPixelProvider(props: FacebookPixelProviderProps)
           return;
         }
 
-        setIsLoading(true);
+        setLoading(true);
         setError(undefined);
 
-        pixelRef.current = new FacebookPixel(options);
+        pixelRef.current = createFacebookPixel(optionsRef.current);
         await pixelRef.current.init();
       } catch (error) {
-        setError(error as Error);
+        setError(error instanceof Error ? error : new Error(String(error)));
       } finally {
-        setIsLoading(false);
+        setLoading(false);
       }
     })();
 
     return initPromiseRef.current;
-  }
+  }, []);
 
-  async function pageView() {
+  const pageView = useCallback(async () => {
     await init();
     await pixelRef.current?.pageView();
-  }
+  }, [init]);
 
-  async function track(eventName: string, data?: Record<string, any>) {
+  const track = useCallback(async (eventName: string, data?: Record<string, unknown>) => {
     await init();
-    await pixelRef.current?.track(eventName as any, data);
-  }
+    await pixelRef.current?.track(eventName as Parameters<FacebookPixelInstance['track']>[0], data);
+  }, [init]);
 
-  async function trackCustom(eventName: string, data?: Record<string, any>) {
+  const trackCustom = useCallback(async (eventName: string, data?: Record<string, unknown>) => {
     await init();
     await pixelRef.current?.trackCustom(eventName, data);
-  }
+  }, [init]);
 
-  async function grantConsent() {
+  const grantConsent = useCallback(async () => {
     await init();
     await pixelRef.current?.grantConsent();
-  }
+  }, [init]);
 
-  async function revokeConsent() {
+  const revokeConsent = useCallback(async () => {
     await init();
     await pixelRef.current?.revokeConsent();
-  }
+  }, [init]);
 
-  async function fbq(...args: any[]) {
+  const fbq = useCallback(async (...args: unknown[]) => {
     await init();
     await pixelRef.current?.fbq(...args);
-  }
+  }, [init]);
 
   useEffect(() => {
     if (!lazy) {
@@ -92,8 +93,8 @@ export default function FacebookPixelProvider(props: FacebookPixelProviderProps)
     }
   }, [lazy]);
 
-  const value: FacebookPixelContextInterface = {
-    isLoading,
+  const value: FacebookPixelContextInterface = useMemo(() => ({
+    loading,
     error,
     init,
     pixel: pixelRef.current,
@@ -103,7 +104,7 @@ export default function FacebookPixelProvider(props: FacebookPixelProviderProps)
     grantConsent,
     revokeConsent,
     fbq,
-  };
+  }), [loading, error, init, pageView, track, trackCustom, grantConsent, revokeConsent, fbq]);
 
   return (
     <FacebookPixelContext.Provider value={value}>
@@ -111,5 +112,3 @@ export default function FacebookPixelProvider(props: FacebookPixelProviderProps)
     </FacebookPixelContext.Provider>
   );
 }
-
-

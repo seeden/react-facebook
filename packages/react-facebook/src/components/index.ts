@@ -38,3 +38,6 @@ export * from './FacebookContext';
 
 export { default as FacebookPixelProvider } from './FacebookPixelProvider';
 export * from './FacebookPixelProvider';
+
+export { default as FacebookErrorBoundary } from './FacebookErrorBoundary';
+export * from './FacebookErrorBoundary';

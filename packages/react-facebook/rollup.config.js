@@ -13,12 +13,14 @@ module.exports = [
               file: packageJson.main,
               format: 'cjs',
               sourcemap: true,
-              name: 'react-ts-lib'
+              name: 'react-facebook',
+              banner: "'use client';",
           },
           {
               file: packageJson.module,
               format: 'esm',
-              sourcemap: true
+              sourcemap: true,
+              banner: "'use client';",
           }
       ],
       plugins: [

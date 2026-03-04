@@ -83,16 +83,7 @@ function App() {
   return (
     <FacebookProvider 
       appId="YOUR_APP_ID"
-      pixel={{
-        pixelId: "YOUR_PIXEL_ID",
-        debug: true, // Enable debug mode for development
-        autoConfig: true,
-        advancedMatching: {
-          // Add any advanced matching parameters
-          // em: 'user@example.com', // hashed email
-          // ph: '1234567890', // hashed phone
-        }
-      }}
+      pixelId="YOUR_PIXEL_ID"
     >
       <div className="min-h-screen bg-gray-100 py-8">
         <div className="container mx-auto px-4">

@@ -1,0 +1,115 @@
+---
+title: FacebookPixelProvider
+description: Standalone provider for Facebook Pixel tracking without the full Facebook SDK.
+---
+
+`FacebookPixelProvider` loads the Facebook Pixel script, initializes it with your Pixel ID, and exposes a context for the `usePixel` hook. Use this component when you need Pixel tracking but do not need the full Facebook SDK (Login, Like, Share, etc.).
+
+If you are already using `FacebookProvider` with a `pixelId` prop, you do not need `FacebookPixelProvider` -- it is added automatically.
+
+## Import
+
+```tsx
+import { FacebookPixelProvider } from 'react-facebook';
+```
+
+## Props
+
+`FacebookPixelProvider` extends `PixelOptions` with `children` and `lazy`.
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `pixelId` | `string` | **required** | Your Facebook Pixel ID. |
+| `children` | `ReactNode` | **required** | Child elements that will have access to the Pixel context. |
+| `autoConfig` | `boolean` | `true` | Enable automatic configuration of the Pixel. |
+| `debug` | `boolean` | `false` | Log all Pixel calls to the console for debugging. |
+| `advancedMatching` | `Record<string, unknown>` | `{}` | Advanced matching parameters for better attribution (e.g. `{ em: 'user@example.com' }`). |
+| `lazy` | `boolean` | `false` | When `true` the Pixel script is not loaded until `init()` is called. |
+
+## Context Values
+
+Components inside `FacebookPixelProvider` can call `usePixel()` to access:
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `loading` | `boolean` | `true` while the Pixel script is loading. |
+| `error` | `Error \| undefined` | Set if the Pixel script fails to load. |
+| `init` | `() => Promise<void>` | Manually trigger initialization (useful with `lazy`). |
+| `pixel` | `FacebookPixelInstance \| undefined` | The underlying Pixel instance. |
+| `pageView` | `() => Promise<void>` | Track a `PageView` event. |
+| `track` | `(eventName: string, data?: Record<string, unknown>) => Promise<void>` | Track a standard event. |
+| `trackCustom` | `(eventName: string, data?: Record<string, unknown>) => Promise<void>` | Track a custom event. |
+| `grantConsent` | `() => Promise<void>` | Grant tracking consent (GDPR). |
+| `revokeConsent` | `() => Promise<void>` | Revoke tracking consent (GDPR). |
+| `fbq` | `(...args: unknown[]) => Promise<void>` | Direct access to the `fbq` function for advanced use cases. |
+
+## Usage
+
+### Standalone Pixel Tracking
+
+```tsx
+import { FacebookPixelProvider } from 'react-facebook';
+
+function App({ children }) {
+  return (
+    <FacebookPixelProvider pixelId="YOUR_PIXEL_ID">
+      {children}
+    </FacebookPixelProvider>
+  );
+}
+```
+
+### With Debug Mode
+
+```tsx
+<FacebookPixelProvider pixelId="YOUR_PIXEL_ID" debug>
+  {children}
+</FacebookPixelProvider>
+```
+
+### With Advanced Matching
+
+```tsx
+<FacebookPixelProvider
+  pixelId="YOUR_PIXEL_ID"
+  advancedMatching={{ em: 'user@example.com', fn: 'john' }}
+>
+  {children}
+</FacebookPixelProvider>
+```
+
+### Tracking Events
+
+```tsx
+import { usePixel } from 'react-facebook';
+
+function CheckoutButton() {
+  const { track, grantConsent, revokeConsent } = usePixel();
+
+  const handlePurchase = () => {
+    track('Purchase', {
+      value: 29.99,
+      currency: 'USD',
+      content_name: 'Premium Plan',
+    });
+  };
+
+  return (
+    <div>
+      <button onClick={handlePurchase}>Complete Purchase</button>
+      <button onClick={grantConsent}>Accept Tracking</button>
+      <button onClick={revokeConsent}>Decline Tracking</button>
+    </div>
+  );
+}
+```
+
+### Lazy Initialization
+
+When `lazy` is `true` the Pixel script is deferred until a tracking call is made.
+
+```tsx
+<FacebookPixelProvider pixelId="YOUR_PIXEL_ID" lazy>
+  {children}
+</FacebookPixelProvider>
+```

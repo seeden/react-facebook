@@ -1,0 +1,117 @@
+---
+title: usePageView
+description: Hook for automatically tracking Facebook Pixel page views on mount and route changes.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# usePageView
+
+`usePageView` is a convenience hook built on top of `usePixel` that automates `PageView` event tracking. It can fire on component mount, on route changes, or both.
+
+```tsx
+import { usePageView } from 'react-facebook';
+```
+
+## Options
+
+| Option | Type | Default | Description |
+|---|---|---|---|
+| `trackOnMount` | `boolean` | `true` | Fire a `PageView` event when the component mounts |
+| `trackOnRouteChange` | `boolean` | `false` | Fire a `PageView` event when `window.location.href` changes |
+
+## Return Value
+
+| Property | Type | Description |
+|---|---|---|
+| `pageView` | `() => Promise<void>` | Manually fire a `PageView` event |
+| `loading` | `boolean` | `true` while the pixel script is loading |
+
+## Basic Usage
+
+The simplest usage fires a single `PageView` event when the component mounts.
+
+```tsx
+import { usePageView } from 'react-facebook';
+
+function ProductPage() {
+  usePageView();
+
+  return <div>Product details...</div>;
+}
+```
+
+This is equivalent to:
+
+```tsx
+const { pageView } = usePixel();
+
+useEffect(() => {
+  pageView();
+}, []);
+```
+
+## Disable Auto-Tracking on Mount
+
+If you only want to track page views on route changes (not on initial mount), set `trackOnMount` to `false`.
+
+```tsx
+function App() {
+  usePageView({ trackOnMount: false, trackOnRouteChange: true });
+
+  return <Router />;
+}
+```
+
+## Track Route Changes
+
+Enable `trackOnRouteChange` to fire a `PageView` event every time the URL changes. This is useful for single-page applications where full page loads do not occur.
+
+```tsx
+function App() {
+  usePageView({ trackOnRouteChange: true });
+
+  return <Router />;
+}
+```
+
+<Callout type="info">
+  Route change detection works by comparing `window.location.href` between renders. It fires on any URL change, including hash changes and query parameter updates.
+</Callout>
+
+## Manual Page View
+
+The returned `pageView` function lets you fire a `PageView` event manually at any time.
+
+```tsx
+function Wizard() {
+  const { pageView } = usePageView({ trackOnMount: false });
+
+  const handleStepChange = (step: number) => {
+    // Track each wizard step as a page view
+    pageView();
+  };
+
+  return <StepWizard onStepChange={handleStepChange} />;
+}
+```
+
+## Next.js App Router Example
+
+In a Next.js App Router project, place `usePageView` in a client layout component to track page views across all routes.
+
+```tsx
+'use client';
+
+import { usePageView } from 'react-facebook';
+
+export default function TrackingLayout({ children }: { children: React.ReactNode }) {
+  usePageView({ trackOnRouteChange: true });
+
+  return <>{children}</>;
+}
+```
+
+<Callout type="warn">
+  `usePageView` must be used inside a `FacebookPixelProvider` or a `FacebookProvider` with the `pixelId` prop. It depends on `usePixel` internally.
+</Callout>

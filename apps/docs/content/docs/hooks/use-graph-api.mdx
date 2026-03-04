@@ -1,0 +1,95 @@
+---
+title: useGraphAPI
+description: Hook for making Facebook Graph API calls with automatic loading, error, and data state management.
+---
+
+# useGraphAPI
+
+The `useGraphAPI` hook provides a declarative way to make Facebook Graph API calls. It manages loading, error, and data states automatically and supports both auto-fetching on mount and manual triggering.
+
+## Import
+
+```tsx
+import { useGraphAPI } from 'react-facebook';
+```
+
+## Parameters
+
+The hook accepts a single options object:
+
+| Property | Type | Default | Description |
+| --- | --- | --- | --- |
+| `path` | `string` | -- | Graph API path, e.g. `'/me'`, `'/me/friends'`, `'/{post-id}/comments'`. |
+| `method` | `Method` | `Method.GET` | HTTP method for the request. One of `Method.GET`, `Method.POST`, or `Method.DELETE`. |
+| `params` | `Record<string, unknown>` | `undefined` | Query parameters to include in the request. |
+| `autoFetch` | `boolean` | `true` | Whether to fetch automatically when the component mounts. Set to `false` for manual triggering. |
+| `transform` | `(data: unknown) => T` | `undefined` | Transform function applied to the response before it is stored in `data`. |
+
+## Return Value
+
+The hook returns an object with the following properties:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `data` | `T \| undefined` | The response data. `undefined` until the request completes. If a `transform` function is provided, this holds the transformed result. |
+| `loading` | `boolean` | Whether the request is in progress. |
+| `error` | `Error \| undefined` | The error from the most recent request, if any. |
+| `fetch` | `(overrideParams?: Record<string, unknown>) => Promise<T>` | Manually trigger the API call. Optionally pass parameters that override the ones from options. Returns the response. |
+| `reset` | `() => void` | Reset `data` and `error` to their initial state (`undefined`). |
+
+## Usage
+
+### Auto-fetch on mount
+
+By default, `useGraphAPI` fetches data as soon as the component mounts.
+
+```tsx
+function MyFriends() {
+  const { data, loading, error } = useGraphAPI({
+    path: '/me/friends',
+    params: { limit: 10 },
+  });
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  return <ul>{data?.data?.map(f => <li key={f.id}>{f.name}</li>)}</ul>;
+}
+```
+
+### Manual fetch
+
+Set `autoFetch: false` to trigger the API call manually, which is useful for mutations like creating a post.
+
+```tsx
+import { Method } from 'react-facebook';
+
+function PostComment() {
+  const { fetch, loading } = useGraphAPI({
+    path: '/me/feed',
+    method: Method.POST,
+    autoFetch: false,
+  });
+
+  return (
+    <button onClick={() => fetch({ message: 'Hello!' })} disabled={loading}>
+      Post
+    </button>
+  );
+}
+```
+
+### Using transform
+
+The `transform` option lets you reshape the API response before it is stored in `data`.
+
+```tsx
+function FriendCount() {
+  const { data, loading } = useGraphAPI({
+    path: '/me/friends',
+    transform: (response) => response.summary?.total_count ?? 0,
+  });
+
+  if (loading) return <p>Loading...</p>;
+  return <p>You have {data} friends.</p>;
+}
+```

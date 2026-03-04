@@ -1,0 +1,234 @@
+---
+title: Facebook Pixel for React & Next.js
+description: Add Facebook Pixel to your React or Next.js app with TypeScript, SSR support, and React hooks. No "window is not defined" errors. GDPR consent management included.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# Facebook Pixel for React & Next.js
+
+Add Facebook Pixel tracking to any React app. SSR-safe, TypeScript-first, with both an imperative API and React hooks. Works with Next.js App Router out of the box.
+
+## Installation
+
+```bash
+npm install react-facebook
+```
+
+## Option 1: Imperative API (No Provider)
+
+The simplest approach — works anywhere, no React context needed:
+
+```tsx
+import { ReactPixel } from 'react-facebook';
+
+// Initialize once (e.g., in your app entry point)
+ReactPixel.init('YOUR_PIXEL_ID');
+
+// Track events anywhere
+ReactPixel.pageView();
+ReactPixel.track('Purchase', { value: 29.99, currency: 'USD' });
+ReactPixel.trackCustom('ButtonClick', { button: 'hero-cta' });
+```
+
+### Advanced Matching
+
+Pass user data for better attribution:
+
+```tsx
+ReactPixel.init('YOUR_PIXEL_ID', {
+  em: 'user@example.com',
+  fn: 'john',
+  ln: 'doe',
+}, {
+  autoConfig: true,
+  debug: false,
+});
+```
+
+### In a Next.js App
+
+SSR-safe out of the box. No `require()` workarounds, no dynamic imports:
+
+```tsx
+'use client';
+
+import { useEffect } from 'react';
+import { ReactPixel } from 'react-facebook';
+
+export function PixelInit() {
+  useEffect(() => {
+    ReactPixel.init(process.env.NEXT_PUBLIC_PIXEL_ID!);
+    ReactPixel.pageView();
+  }, []);
+
+  return null;
+}
+```
+
+## Option 2: React Hooks (Recommended)
+
+For deeper React integration with loading states, error handling, and automatic page view tracking:
+
+```tsx
+import { FacebookProvider, usePixel, usePageView } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookProvider
+      appId="YOUR_APP_ID"
+      pixelId="YOUR_PIXEL_ID"
+    >
+      <MyPage />
+    </FacebookProvider>
+  );
+}
+
+function MyPage() {
+  const { track, trackCustom, loading, error } = usePixel();
+  usePageView({ trackOnMount: true });
+
+  if (error) return <p>Pixel failed to load</p>;
+
+  return (
+    <button
+      onClick={() => track('Purchase', { value: 29.99, currency: 'USD' })}
+      disabled={loading}
+    >
+      Buy Now
+    </button>
+  );
+}
+```
+
+### Pixel-Only Setup (No Facebook SDK)
+
+If you only need Pixel tracking without the full Facebook SDK, use `FacebookPixelProvider` directly:
+
+```tsx
+import { FacebookPixelProvider, usePixel } from 'react-facebook';
+
+function App() {
+  return (
+    <FacebookPixelProvider pixelId="YOUR_PIXEL_ID" debug>
+      <MyPage />
+    </FacebookPixelProvider>
+  );
+}
+```
+
+### Automatic Page View Tracking
+
+Track page views on mount and/or route changes:
+
+```tsx
+import { usePageView } from 'react-facebook';
+
+function Layout({ children }) {
+  usePageView({ trackOnMount: true, trackOnRouteChange: true });
+  return <>{children}</>;
+}
+```
+
+## Standard Events
+
+All Facebook standard events are supported:
+
+| Event | Example |
+|---|---|
+| `PageView` | `track('PageView')` |
+| `ViewContent` | `track('ViewContent', { content_name: 'Product X' })` |
+| `Search` | `track('Search', { search_string: 'shoes' })` |
+| `AddToCart` | `track('AddToCart', { value: 49.99, currency: 'USD' })` |
+| `AddToWishlist` | `track('AddToWishlist', { content_name: 'Item Y' })` |
+| `InitiateCheckout` | `track('InitiateCheckout', { value: 99.99 })` |
+| `AddPaymentInfo` | `track('AddPaymentInfo')` |
+| `Purchase` | `track('Purchase', { value: 29.99, currency: 'USD' })` |
+| `Lead` | `track('Lead', { content_name: 'Signup form' })` |
+| `CompleteRegistration` | `track('CompleteRegistration', { status: true })` |
+
+Custom events:
+
+```tsx
+trackCustom('MyCustomEvent', { category: 'engagement', label: 'video_play' });
+```
+
+## GDPR Consent Management
+
+Built-in consent management for GDPR compliance:
+
+```tsx
+import { ReactPixel } from 'react-facebook';
+
+// Initialize with consent revoked by default
+ReactPixel.init('YOUR_PIXEL_ID');
+ReactPixel.revokeConsent();
+
+// Grant when user accepts cookies
+function handleAcceptCookies() {
+  ReactPixel.grantConsent();
+  ReactPixel.pageView();
+}
+```
+
+With hooks:
+
+```tsx
+function CookieBanner() {
+  const { grantConsent, revokeConsent } = usePixel();
+
+  return (
+    <div>
+      <p>We use cookies for analytics.</p>
+      <button onClick={grantConsent}>Accept</button>
+      <button onClick={revokeConsent}>Decline</button>
+    </div>
+  );
+}
+```
+
+## Available Pixel APIs
+
+| API | Description |
+|---|---|
+| `ReactPixel` | Imperative API — no provider needed |
+| `<FacebookPixelProvider>` | Pixel-only React context provider |
+| `usePixel()` | Hook returning `{ track, trackCustom, pageView, grantConsent, revokeConsent, loading }` |
+| `usePageView()` | Hook for automatic page view tracking on mount or route change |
+
+## TypeScript
+
+All event names and data parameters are fully typed:
+
+```tsx
+import type { PixelEventName, PixelEventData } from 'react-facebook';
+
+function trackEvent(event: PixelEventName, data?: PixelEventData) {
+  ReactPixel.track(event, data);
+}
+```
+
+---
+
+## Switching from react-facebook-pixel?
+
+<Callout type="info">
+  `react-facebook-pixel` has not been updated since 2020. Switching is a one-line change — the API is identical.
+</Callout>
+
+```bash
+npm uninstall react-facebook-pixel
+npm install react-facebook
+```
+
+```tsx
+// Before
+import ReactPixel from 'react-facebook-pixel';
+
+// After — same API, same methods
+import { ReactPixel } from 'react-facebook';
+```
+
+Every method works the same way: `init`, `pageView`, `track`, `trackCustom`, `trackSingle`, `trackSingleCustom`, `grantConsent`, `revokeConsent`.
+
+The `require()` workaround for SSR is no longer needed — all `window` access is guarded internally.

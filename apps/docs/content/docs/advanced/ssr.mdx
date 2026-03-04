@@ -1,0 +1,137 @@
+---
+title: SSR & Next.js
+description: Server-side rendering setup for react-facebook with Next.js App Router, Pages Router, and other SSR frameworks.
+---
+
+import { Callout } from 'fumadocs-ui/components/callout';
+
+# SSR & Next.js
+
+`react-facebook` is fully SSR-safe. Every component and hook includes a `'use client'` directive, and all `window`/`document` access is guarded. You will never see a `window is not defined` error.
+
+## Why There Are No Window Errors
+
+All browser-specific code in the library is protected:
+
+- The Facebook SDK loader checks `typeof window === 'undefined'` before accessing the DOM.
+- The Pixel script loader does the same check and resolves silently on the server.
+- Every component and hook file starts with `'use client'`, so Next.js (App Router) knows to render them only on the client.
+
+This means you can import and use any component or hook without conditional dynamic imports or `typeof window` checks in your own code.
+
+## Next.js App Router
+
+With the App Router, place `FacebookProvider` in a client component. A common pattern is to create a dedicated `Providers` component.
+
+```tsx
+// app/providers.tsx
+'use client';
+
+import { FacebookProvider } from 'react-facebook';
+
+export default function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID">
+      {children}
+    </FacebookProvider>
+  );
+}
+```
+
+Then use it in your root layout:
+
+```tsx
+// app/layout.tsx
+import Providers from './providers';
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="en">
+      <body>
+        <Providers>{children}</Providers>
+      </body>
+    </html>
+  );
+}
+```
+
+Any page or component inside this layout can now use hooks like `useLogin`, `useShare`, or `usePixel` directly.
+
+<Callout type="info">
+  You do not need to mark every page that uses Facebook hooks as `'use client'`. Only the component that directly calls the hook needs to be a client component. Server components can render client components that use hooks.
+</Callout>
+
+## Next.js Pages Router
+
+With the Pages Router, place `FacebookProvider` in `_app.tsx`.
+
+```tsx
+// pages/_app.tsx
+import type { AppProps } from 'next/app';
+import { FacebookProvider } from 'react-facebook';
+
+export default function App({ Component, pageProps }: AppProps) {
+  return (
+    <FacebookProvider appId="YOUR_APP_ID">
+      <Component {...pageProps} />
+    </FacebookProvider>
+  );
+}
+```
+
+## Lazy Loading for SSR
+
+By default, the Facebook SDK script starts loading as soon as `FacebookProvider` mounts on the client. If you want to defer loading until a user interaction (for example, clicking a login button), use the `lazy` prop.
+
+```tsx
+<FacebookProvider appId="YOUR_APP_ID" lazy>
+  {children}
+</FacebookProvider>
+```
+
+With `lazy`, the SDK is not loaded until the first hook call that needs it (e.g., `useLogin().login()` or `usePixel().track()`). This can improve initial page load performance, especially when Facebook features are not immediately visible.
+
+## Combining with Pixel Tracking
+
+For SSR apps that also need pixel tracking, pass the `pixelId` prop:
+
+```tsx
+'use client';
+
+import { FacebookProvider } from 'react-facebook';
+
+export default function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <FacebookProvider
+      appId="YOUR_APP_ID"
+      pixelId="YOUR_PIXEL_ID"
+    >
+      {children}
+    </FacebookProvider>
+  );
+}
+```
+
+## Handling Ad Blockers in SSR
+
+Ad blockers can prevent the Facebook SDK from loading. In SSR environments, wrap your Facebook-dependent UI with `FacebookErrorBoundary` to render a fallback instead of breaking the page.
+
+```tsx
+import { FacebookProvider, FacebookErrorBoundary } from 'react-facebook';
+
+function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <FacebookErrorBoundary
+      fallback={<div>Facebook features are unavailable.</div>}
+    >
+      <FacebookProvider appId="YOUR_APP_ID">
+        {children}
+      </FacebookProvider>
+    </FacebookErrorBoundary>
+  );
+}
+```
+
+<Callout type="warn">
+  While the library is SSR-safe, the Facebook SDK itself is a client-side script. Facebook widgets (Like, Share, Comments, etc.) render only on the client. During SSR, the component tree renders but the Facebook widget is not painted until the client hydrates and the SDK loads.
+</Callout>

@@ -1,0 +1,166 @@
+---
+title: useProfile
+description: Hook for fetching the logged-in user's Facebook profile with automatic data loading.
+---
+
+# useProfile
+
+The `useProfile` hook fetches the currently logged-in user's Facebook profile data. It automatically refetches when the login status or requested fields change.
+
+## Import
+
+```tsx
+import { useProfile } from 'react-facebook';
+```
+
+## Parameters
+
+| Parameter | Type | Description |
+| --- | --- | --- |
+| `fields` | `string[]` | Array of profile fields to request (e.g. `['name', 'email', 'picture']`). These are passed as a comma-separated string to the Graph API `/me` endpoint. |
+
+## Return Value
+
+The hook returns an object with the following properties:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `profile` | `Record<string, unknown> \| undefined` | The fetched profile data. `undefined` until loaded or when the user is not logged in. |
+| `loading` | `boolean` | Whether the profile request is in progress. |
+| `error` | `Error \| undefined` | The error from the most recent fetch attempt, if any. |
+
+## Usage
+
+```tsx
+function ProfileComponent() {
+  const { profile, loading, error } = useProfile(['name', 'email', 'picture']);
+
+  if (loading) return <p>Loading profile...</p>;
+  if (error) return <p>Error: {error.message}</p>;
+  if (!profile) return <p>Not logged in</p>;
+
+  return <p>Hello, {profile.name}!</p>;
+}
+```
+
+## Display Profile Card
+
+Render a full profile card with the user's name, email address, and profile picture.
+
+```tsx
+import { useProfile } from 'react-facebook';
+
+function ProfileCard() {
+  const { profile, loading, error } = useProfile([
+    'name',
+    'email',
+    'picture.width(120).height(120)',
+  ]);
+
+  if (loading) {
+    return (
+      <div className="w-72 animate-pulse rounded-xl border p-6">
+        <div className="mx-auto h-20 w-20 rounded-full bg-gray-200" />
+        <div className="mt-4 h-4 w-3/4 mx-auto rounded bg-gray-200" />
+        <div className="mt-2 h-3 w-1/2 mx-auto rounded bg-gray-200" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center text-sm text-red-700">
+        Failed to load profile: {error.message}
+      </div>
+    );
+  }
+
+  if (!profile) {
+    return <p className="text-gray-500">Please log in to view your profile.</p>;
+  }
+
+  return (
+    <div className="w-72 rounded-xl border bg-white p-6 text-center shadow-sm">
+      <img
+        src={profile.picture?.data?.url}
+        alt={profile.name}
+        className="mx-auto h-20 w-20 rounded-full border-2 border-blue-100"
+      />
+      <h2 className="mt-4 text-lg font-semibold">{profile.name}</h2>
+      {profile.email && (
+        <p className="mt-1 text-sm text-gray-500">{profile.email}</p>
+      )}
+    </div>
+  );
+}
+```
+
+## With Login Flow
+
+Combine `useLogin` and `useProfile` to build a complete auth-to-profile flow in a single component. The profile automatically loads once the user is connected.
+
+```tsx
+import { useLogin, useProfile } from 'react-facebook';
+
+function AuthenticatedProfile() {
+  const { login, logout, loading: isLoggingIn, status, error: loginError } = useLogin();
+  const { profile, loading: loadingProfile, error: profileError } = useProfile([
+    'name',
+    'email',
+    'picture',
+  ]);
+
+  const handleLogin = async () => {
+    try {
+      await login({ scope: 'email,public_profile' });
+    } catch {
+      // Error is captured in loginError
+    }
+  };
+
+  // Not connected yet -- show login button
+  if (status !== 'connected') {
+    return (
+      <div className="flex flex-col items-center gap-3">
+        <button
+          onClick={handleLogin}
+          disabled={isLoggingIn}
+          className="rounded-lg bg-blue-600 px-6 py-3 text-white hover:bg-blue-700 disabled:opacity-50"
+        >
+          {isLoggingIn ? 'Connecting...' : 'Log in with Facebook'}
+        </button>
+
+        {loginError && (
+          <p className="text-sm text-red-600">{loginError.message}</p>
+        )}
+      </div>
+    );
+  }
+
+  // Connected but profile still loading
+  if (loadingProfile) {
+    return <p className="text-gray-500">Loading your profile...</p>;
+  }
+
+  if (profileError) {
+    return <p className="text-red-600">Profile error: {profileError.message}</p>;
+  }
+
+  // Profile loaded
+  return (
+    <div className="flex items-center gap-4 rounded-lg border bg-white p-4 shadow-sm">
+      {profile?.picture?.data?.url && (
+        <img
+          src={profile.picture.data.url}
+          alt=""
+          className="h-14 w-14 rounded-full"
+        />
+      )}
+      <div>
+        <p className="font-semibold">{profile?.name}</p>
+        <p className="text-sm text-gray-500">{profile?.email ?? 'No email provided'}</p>
+      </div>
+    </div>
+  );
+}
+```

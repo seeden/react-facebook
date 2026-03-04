@@ -1,21 +1,23 @@
 {
   "name": "react-facebook-monorepo",
-  "version": "10.0.1",
-  "description": "Facebook components like a Login button, Like, Share, Comments, Embedded Post/Video, Messenger Chat, and Facebook Pixel tracking",
+  "version": "11.0.0",
+  "description": "The Facebook SDK for React — Login, Pixel tracking, Share, Like, Comments, Graph API, and more. TypeScript-first, SSR-safe, works with Next.js App Router.",
   "private": true,
   "workspaces": [
     "packages/react-facebook",
     "apps/docs"
   ],
   "scripts": {
-    "build": "npm run build --workspace=packages/react-facebook",
-    "build:docs": "npm run build --workspace=apps/docs",
-    "dev:docs": "npm run dev --workspace=apps/docs",
-    "test": "npm run test --workspace=packages/react-facebook",
-    "test:component": "npm run test:component --workspace=packages/react-facebook",
-    "lint": "npm run lint --workspace=packages/react-facebook",
-    "typecheck": "npm run typecheck --workspace=packages/react-facebook",
-    "deploy:docs": "npm run build && npm run deploy --workspace=apps/docs"
+    "build": "pnpm --filter react-facebook run build",
+    "build:docs": "pnpm --filter docs-site run build",
+    "dev:docs": "pnpm --filter docs-site run dev",
+    "test": "pnpm --filter react-facebook run test",
+    "test:unit": "pnpm --filter react-facebook run test:unit",
+    "test:e2e": "pnpm --filter react-facebook run test:e2e",
+    "lint": "pnpm --filter react-facebook run lint",
+    "typecheck": "pnpm --filter react-facebook run typecheck",
+    "deploy:docs": "pnpm run build && pnpm --filter docs-site run deploy",
+    "publish:lib": "pnpm --filter react-facebook publish"
   },
   "author": {
     "name": "Zlatko Fedor"
@@ -26,7 +28,7 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^24.3.0",
-    "typescript": "^5.9.2"
+    "@types/node": "^25.3.3",
+    "typescript": "^5.9.3"
   }
 }

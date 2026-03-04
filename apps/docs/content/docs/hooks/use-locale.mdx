@@ -1,0 +1,53 @@
+---
+title: useLocale
+description: Hook for managing Facebook SDK locale dynamically with support for 100+ languages.
+---
+
+# useLocale
+
+The `useLocale` hook lets you read and change the Facebook SDK locale at runtime. When you switch locales, the SDK is reloaded and all XFBML widgets on the page are re-parsed automatically -- no page refresh required.
+
+## Import
+
+```tsx
+import { useLocale } from 'react-facebook';
+```
+
+## Return Value
+
+The hook returns an object with the following properties:
+
+| Property | Type | Description |
+| --- | --- | --- |
+| `locale` | `string` | The current locale used by the Facebook SDK (e.g. `'en_US'`). |
+| `setLocale` | `(newLocale: string) => Promise<void>` | Change the SDK locale. If the new locale matches the current one, no action is taken. |
+| `isChangingLocale` | `boolean` | Whether a locale change or SDK initialization is in progress. |
+
+### Supported Locales
+
+Facebook supports 100+ locales in the format `language_REGION` (e.g. `en_US`, `fr_FR`, `de_DE`). Any valid Facebook locale string can be passed to `setLocale`. If an invalid locale is provided, the SDK falls back to English.
+
+For the full list, see the [Facebook Locales XML](https://www.facebook.com/translations/FacebookLocales.xml).
+
+Common locales: `en_US`, `en_GB`, `es_ES`, `es_LA`, `fr_FR`, `fr_CA`, `de_DE`, `it_IT`, `pt_BR`, `pt_PT`, `ja_JP`, `ko_KR`, `zh_CN`, `zh_TW`, `ar_AR`, `hi_IN`, `ru_RU`, `tr_TR`, `pl_PL`, `nl_NL`, `sv_SE`, `th_TH`, `vi_VN`, `id_ID`.
+
+## Usage
+
+```tsx
+function MyComponent() {
+  const { locale, setLocale, isChangingLocale } = useLocale();
+
+  return (
+    <div>
+      <p>Current locale: {locale}</p>
+      <button
+        onClick={() => setLocale('es_ES')}
+        disabled={isChangingLocale}
+      >
+        Switch to Spanish
+      </button>
+      {isChangingLocale && <p>Changing locale...</p>}
+    </div>
+  );
+}
+```

@@ -1,4 +1,4 @@
-import React, { forwardRef, memo, type Ref, useMemo } from 'react';
+import { forwardRef, memo, type Ref, useMemo } from 'react';
 import Parser, { type ParserProps } from './Parser';
 import getCurrentHref from '../utils/getCurrentHref';
 

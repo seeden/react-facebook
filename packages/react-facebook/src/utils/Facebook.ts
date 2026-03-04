@@ -2,7 +2,7 @@ import LoginStatus from '../constants/LoginStatus';
 import FBError from '../errors/FBError';
 
 export type AuthResponse = {
-  userID: string; 
+  userID: string;
   accessToken: string;
 };
 
@@ -20,10 +20,42 @@ export type LoginOptions = {
   rerequest?: boolean;
   reauthorize?: boolean;
 };
+
+type FBErrorResponse = {
+  error: {
+    code: number;
+    type: string;
+    message: string;
+  };
+};
+
+type FBSDK = {
+  init: (options: {
+    appId: string;
+    version?: string;
+    cookie?: boolean;
+    status?: boolean;
+    xfbml?: boolean;
+    frictionlessRequests?: boolean;
+  }) => void;
+  api: (path: string, method: string, params: Record<string, unknown>, callback: (response: unknown) => void) => void;
+  ui: (options: Record<string, unknown>, callback: (response: unknown) => void) => void;
+  login: (callback: (response: unknown) => void, options: Record<string, unknown>) => void;
+  logout: (callback: (response: unknown) => void) => void;
+  getLoginStatus: (callback: (response: unknown) => void) => void;
+  Event: {
+    subscribe: (event: string, callback: (...args: unknown[]) => void) => void;
+    unsubscribe: (event: string, callback: (...args: unknown[]) => void) => void;
+  };
+  XFBML: {
+    parse: (element?: HTMLElement) => void;
+  };
+};
+
 declare global {
-  interface Window { 
+  interface Window {
     fbAsyncInit: () => void;
-    FB: any;
+    FB: FBSDK;
   }
 }
 
@@ -32,15 +64,6 @@ export enum Method {
   POST = 'post',
   DELETE = 'delete',
 };
-
-export enum Namespace {
-  UI = 'ui',
-  API = 'api',
-  LOGIN = 'login',
-  LOGOUT = 'logout',
-  GET_LOGIN_STATUS = 'getLoginStatus',
-  GET_AUTH_RESPONSE = 'getAuthResponse',
-}
 
 export type FacebookOptions = {
   domain?: string;
@@ -71,64 +94,115 @@ const defaultOptions: Omit<FacebookOptions, 'appId'> = {
   lazy: false,
 };
 
-export default class Facebook {
+function isFBError(response: unknown): response is FBErrorResponse {
+  return typeof response === 'object' && response !== null && 'error' in response;
+}
+
+export type FacebookInstance = {
+  getAppId: () => string;
+  getFB: () => FBSDK | undefined;
+  init: () => Promise<FacebookInstance>;
+  ui: (options: Record<string, unknown>) => Promise<unknown>;
+  api: <T>(path: string, method?: Method, params?: Record<string, unknown>) => Promise<T>;
+  login: (options: LoginOptions) => Promise<LoginResponse>;
+  logout: () => Promise<void>;
+  getLoginStatus: () => Promise<LoginResponse>;
+  getTokenDetail: (loginResponse?: LoginResponse) => Promise<AuthResponse>;
+  getProfile: (params: { fields: string }) => Promise<unknown>;
+  getPermissions: () => Promise<{ permission: string; status: 'granted' }[]>;
+  hasPermissions: (permissions: string[]) => Promise<boolean>;
+  subscribe: <T>(eventName: string, callback: (value: T) => void) => Promise<() => Promise<void>>;
+  unsubscribe: <T>(eventName: string, callback: (value: T) => void) => Promise<void>;
+  parse: (parentNode?: HTMLElement) => Promise<void>;
+  getLocale: () => string;
+  changeLocale: (newLocale: string) => Promise<void>;
   options: FacebookOptions;
-  loadingPromise: Promise<any> | undefined;
+  loadingPromise: Promise<FacebookInstance> | undefined;
+};
 
-  constructor(options: FacebookOptions) {
-    if (!options.appId) {
-      throw new Error('You need to set appId');
-    }
-
-    this.options = {
-      ...defaultOptions,
-      ...options,
-    };
-
-    if (!this.options.lazy) {
-      this.init();
-    }
+export default function createFacebook(options: FacebookOptions): FacebookInstance {
+  if (!options.appId) {
+    throw new Error('[react-facebook] You need to set appId');
   }
 
-  getAppId() {
-    return this.options.appId;
+  const opts: FacebookOptions = {
+    ...defaultOptions,
+    ...options,
+  };
+
+  let loadingPromise: Promise<FacebookInstance> | undefined;
+
+  function getAppId() {
+    return opts.appId;
   }
 
-  getFB() {
+  function getFB(): FBSDK | undefined {
+    if (typeof window === 'undefined') return undefined;
     return window.FB;
   }
 
-  async init(): Promise<Facebook> {
-    if (this.loadingPromise) {
-      return this.loadingPromise;
+  async function init(): Promise<FacebookInstance> {
+    if (typeof window === 'undefined') {
+      return instance;
     }
 
-    this.loadingPromise = new Promise((resolve) => {
+    if (loadingPromise) {
+      return loadingPromise;
+    }
+
+    loadingPromise = new Promise<FacebookInstance>((resolve, reject) => {
       const {
         domain,
         language,
         debug,
         chatSupport,
         ...restOptions
-      } = this.options;
+      } = opts;
 
-      window.fbAsyncInit = () => {
-        window.FB.init({
-          appId: restOptions.appId,
-          version: restOptions.version,
-          cookie: restOptions.cookie,
-          status: restOptions.status,
-          xfbml: restOptions.xfbml,
-          frictionlessRequests: restOptions.frictionlessRequests,
-        });
-
-        resolve(this);
+      const initParams = {
+        appId: restOptions.appId,
+        version: restOptions.version,
+        cookie: restOptions.cookie,
+        status: restOptions.status,
+        xfbml: restOptions.xfbml,
+        frictionlessRequests: restOptions.frictionlessRequests,
       };
 
-      if (window.document.getElementById('facebook-jssdk')) {
-        return resolve(this);
+      let poll: ReturnType<typeof setInterval> | undefined;
+
+      const timeout = setTimeout(() => {
+        if (poll) clearInterval(poll);
+        loadingPromise = undefined;
+        instance.loadingPromise = undefined;
+        reject(new Error(
+          '[react-facebook] Facebook SDK loading timed out after 10 seconds. ' +
+          'This may be caused by an ad blocker or network issue.'
+        ));
+      }, 10000);
+
+      function onSDKReady() {
+        if (poll) clearInterval(poll);
+        clearTimeout(timeout);
+        window.FB.init(initParams);
+        resolve(instance);
       }
-      
+
+      window.fbAsyncInit = onSDKReady;
+
+      if (window.document.getElementById('facebook-jssdk')) {
+        if (window.FB) {
+          clearTimeout(timeout);
+          return resolve(instance);
+        }
+        // Script exists but FB not yet loaded. Keep timeout active and
+        // poll as a fallback in case fbAsyncInit already fired before
+        // we set our handler (SSR hydration, multiple providers, static script tag).
+        poll = setInterval(() => {
+          if (window.FB) onSDKReady();
+        }, 50);
+        return;
+      }
+
       const js = window.document.createElement('script');
       js.id = 'facebook-jssdk';
       js.async = true;
@@ -136,91 +210,109 @@ export default class Facebook {
       js.crossOrigin = 'anonymous';
       js.src = `https://${domain}/${language}/sdk${chatSupport ? '/xfbml.customerchat' : ''}${debug ? '/debug' : ''}.js`;
 
+      js.onerror = () => {
+        clearTimeout(timeout);
+        loadingPromise = undefined;
+        instance.loadingPromise = undefined;
+        reject(new Error(
+          `[react-facebook] Failed to load Facebook SDK from ${js.src}. ` +
+          'This may be caused by an ad blocker or network issue.'
+        ));
+      };
+
       window.document.body.appendChild(js);
     });
 
-    return this.loadingPromise;
+    instance.loadingPromise = loadingPromise;
+    return loadingPromise;
   }
 
-  async process<Response>(namespace: Namespace, before: any[] = [], after: any[] = []): Promise<Response> {
-    await this.init();
+  async function call<T>(invoke: (fb: FBSDK, callback: (response: unknown) => void) => void): Promise<T> {
+    await init();
 
-    const fb = this.getFB();
+    const fb = getFB();
+    if (!fb) throw new Error('[react-facebook] Facebook SDK not available');
 
     return new Promise((resolve, reject) => {
-      const callback = (response: Response | { error: { code: number, type: string, message: string} }) => {
+      const callback = (response: unknown) => {
         if (!response) {
-          if (namespace === Namespace.UI) return;
           reject(new Error('Response is undefined'));
-        } else if (!!response && typeof response === 'object' && 'error' in response) {
+        } else if (isFBError(response)) {
           const { code, type, message } = response.error;
-
           reject(new FBError(message, code, type));
         } else {
-          resolve(response);
+          resolve(response as T);
         }
       };
 
-      (fb as any)[namespace](...before, callback, ...after);
+      invoke(fb, callback);
     });
   }
 
-  async ui(options: any) {
-    return this.process(Namespace.UI, [options]);
+  async function ui(options: Record<string, unknown>) {
+    await init();
+
+    const fb = getFB();
+    if (!fb) throw new Error('[react-facebook] Facebook SDK not available');
+
+    return new Promise((resolve, reject) => {
+      fb.ui(options, (response: unknown) => {
+        if (!response) {
+          resolve(undefined);
+          return;
+        }
+        if (isFBError(response)) {
+          const { code, type, message } = response.error;
+          reject(new FBError(message, code, type));
+          return;
+        }
+        resolve(response);
+      });
+    });
   }
 
-  async api<T>(path: string, method = Method.GET, params = {}) {
-    return this.process<T>(Namespace.API, [path, method, params]);
+  async function api<T>(path: string, method = Method.GET, params: Record<string, unknown> = {}) {
+    return call<T>((fb, cb) => fb.api(path, method, params, cb));
   }
 
-  async login(options: LoginOptions) {
-    const { scope, authType = [], returnScopes, rerequest, reauthorize } = options;
-    const loginOptions: {
-      return_scopes?: boolean;
-      auth_type?: string;
-      scope?: string;
-    } = {
-      scope,
-    };
+  async function login(loginOpts: LoginOptions) {
+    const { scope, returnScopes, rerequest, reauthorize } = loginOpts;
+    const types = [...(loginOpts.authType ?? [])];
+    const fbLoginOptions: Record<string, unknown> = { scope };
 
     if (returnScopes) {
-      loginOptions.return_scopes = true;
+      fbLoginOptions.return_scopes = true;
     }
 
     if (rerequest) {
-      authType.push('rerequest');
+      types.push('rerequest');
     }
 
     if (reauthorize) {
-      authType.push('reauthenticate');
+      types.push('reauthenticate');
     }
 
-    if (authType.length) {
-      loginOptions.auth_type = authType.join(',');
+    if (types.length) {
+      fbLoginOptions.auth_type = types.join(',');
     }
 
-    return this.process<LoginResponse>(Namespace.LOGIN, [], [loginOptions]);
+    return call<LoginResponse>((fb, cb) => fb.login(cb, fbLoginOptions));
   }
 
-  async logout() {
-    return this.process(Namespace.LOGOUT);
+  async function logout() {
+    return call<void>((fb, cb) => fb.logout(cb));
   }
 
-
-  async getLoginStatus(): Promise<LoginResponse> {
-    return this.process<LoginResponse>(Namespace.GET_LOGIN_STATUS);
+  async function getLoginStatus(): Promise<LoginResponse> {
+    return call<LoginResponse>((fb, cb) => fb.getLoginStatus(cb));
   }
 
-  async getAuthResponse() {
-    return this.process(Namespace.GET_AUTH_RESPONSE);
-  }
-
-  async getTokenDetail(loginResponse?: LoginResponse): Promise<AuthResponse> {
+  async function getTokenDetail(loginResponse?: LoginResponse): Promise<AuthResponse> {
     if (loginResponse?.status === LoginStatus.CONNECTED) {
       return loginResponse.authResponse;
     }
 
-    const response = await this.getLoginStatus();
+    const response = await getLoginStatus();
 
     if (response.status === LoginStatus.CONNECTED) {
       return response.authResponse;
@@ -229,161 +321,108 @@ export default class Facebook {
     throw new Error('Token is undefined');
   }
 
-  async getProfile(params: any) {
-    return this.api('/me', Method.GET, params);
+  async function getProfile(params: { fields: string }) {
+    return api('/me', Method.GET, params as Record<string, unknown>);
   }
 
-  async getTokenDetailWithProfile(params: any, response: any) {
-    const tokenDetail = await this.getTokenDetail(response);
-    const profile = await this.getProfile(params);
-
-    return {
-      profile,
-      tokenDetail,
-    };
+  async function getPermissions() {
+    const response = await api<{ data: { permission: string; status: 'granted' }[] }>('/me/permissions');
+    return response.data;
   }
 
-  async getToken(): Promise<string> {
-    const authResponse = await this.getTokenDetail();
-    return authResponse.accessToken;
-  }
+  async function hasPermissions(permissions: string[]) {
+    const usersPermissions = await getPermissions();
 
-  async getUserId(): Promise<string> {
-    const authResponse = await this.getTokenDetail();
-    return authResponse.userID;
-  }
-
-  async sendInvite(to: string, options: any) {
-    return this.ui({
-      to,
-      method: 'apprequests',
-      ...options,
-    });
-  }
-
-  async postAction(ogNamespace: string, ogAction: string, ogObject: string, ogObjectUrl: string, noFeedStory: boolean = false) {
-    let url = `/me/${ogNamespace}:${ogAction}?${ogObject}=${encodeURIComponent(ogObjectUrl)}`;
-
-    if (noFeedStory === true) {
-      url += '&no_feed_story=true';
-    }
-
-    return this.api(url, Method.POST);
-  }
-
-  async getPermissions() {
-    const response = await this.api<{ data: any }>('/me/permissions');
-    return response.data as {
-      permission: string;
-      status: 'granted';
-    }[];
-  }
-
-  async hasPermissions(permissions: string[]) {
-    const usersPermissions = await this.getPermissions();
-
-    const findedPermissions = permissions.filter((p) => {
-      const currentPermission = usersPermissions.find((row) => {
-        const { permission, status } = row;
-        return status === 'granted' && permission === p;
-      });
-
-      return !!currentPermission;
+    const matchedPermissions = permissions.filter((p) => {
+      return usersPermissions.some((row) => row.status === 'granted' && row.permission === p);
     });
 
-    return findedPermissions.length === permissions.length;
+    return matchedPermissions.length === permissions.length;
   }
 
-  async subscribe<T>(eventName: string, callback: (value: T) => void) {
-    await this.init();
-    this.getFB().Event.subscribe(eventName, callback);
+  async function subscribe<T>(eventName: string, callback: (value: T) => void) {
+    await init();
+    const fb = getFB();
+    if (!fb) throw new Error('[react-facebook] Facebook SDK not available');
+    fb.Event.subscribe(eventName, callback as (...args: unknown[]) => void);
 
-    return () => this.unsubscribe(eventName, callback);
+    return () => unsubscribe(eventName, callback);
   }
 
-  async unsubscribe<T>(eventName: string, callback: (value: T) => void) {
-    await this.init();
-    this.getFB().Event.unsubscribe(eventName, callback);
+  async function unsubscribe<T>(eventName: string, callback: (value: T) => void) {
+    await init();
+    const fb = getFB();
+    if (!fb) throw new Error('[react-facebook] Facebook SDK not available');
+    fb.Event.unsubscribe(eventName, callback as (...args: unknown[]) => void);
   }
 
-  async parse(parentNode: HTMLElement) {
-    await this.init();
+  async function parse(parentNode?: HTMLElement) {
+    await init();
 
-    if (typeof parentNode === 'undefined') {
-      this.getFB().XFBML.parse();
+    const fb = getFB();
+    if (!fb) throw new Error('[react-facebook] Facebook SDK not available');
+
+    if (parentNode) {
+      fb.XFBML.parse(parentNode);
     } else {
-      this.getFB().XFBML.parse(parentNode);
+      fb.XFBML.parse();
     }
   }
 
-  async getRequests() {
-    return this.api('/me/apprequests');
+  function getLocale(): string {
+    return opts.language || 'en_US';
   }
 
-  async removeRequest(requestId: string) {
-    return this.api(requestId, Method.DELETE);
-  }
+  async function changeLocale(newLocale: string): Promise<void> {
+    if (typeof window === 'undefined') return;
 
-  async setAutoGrow() {
-    await this.init();
-    this.getFB().Canvas.setAutoGrow();
-  }
+    opts.language = newLocale;
 
-  async paySimple(product: string, quantity = 1) {
-    return this.ui({
-      method: 'pay',
-      action: 'purchaseitem',
-      product,
-      quantity,
-    });
-  }
-
-  async pay(product: string, options: any) {
-    return this.ui({
-      method: 'pay',
-      action: 'purchaseitem',
-      product,
-      ...options,
-    });
-  }
-
-  getLocale(): string {
-    return this.options.language || 'en_US';
-  }
-
-  async changeLocale(newLocale: string): Promise<void> {
-    // Update the options
-    this.options.language = newLocale;
-    
-    // Remove existing Facebook SDK script
     const existingScript = window.document.getElementById('facebook-jssdk');
     if (existingScript) {
       existingScript.remove();
     }
 
-    // Clear existing FB object
     if (window.FB) {
-      delete (window as any).FB;
+      delete (window as { FB?: FBSDK }).FB;
     }
 
-    // Reset loading promise to force re-initialization
-    this.loadingPromise = undefined;
+    loadingPromise = undefined;
+    instance.loadingPromise = undefined;
 
-    // Re-initialize with new locale
-    await this.init();
+    await init();
 
-    // Re-parse all existing Facebook widgets on the page
-    await this.parseAll();
-  }
-
-  async parseAll(): Promise<void> {
-    await this.init();
-    
-    const fb = this.getFB();
-    if (fb && fb.XFBML && fb.XFBML.parse) {
-      // Parse all Facebook widgets on the page
+    const fb = getFB();
+    if (fb?.XFBML?.parse) {
       fb.XFBML.parse();
     }
   }
-}
 
+  const instance: FacebookInstance = {
+    getAppId,
+    getFB,
+    init,
+    ui,
+    api,
+    login,
+    logout,
+    getLoginStatus,
+    getTokenDetail,
+    getProfile,
+    getPermissions,
+    hasPermissions,
+    subscribe,
+    unsubscribe,
+    parse,
+    getLocale,
+    changeLocale,
+    options: opts,
+    loadingPromise: undefined,
+  };
+
+  if (!opts.lazy && typeof window !== 'undefined') {
+    init();
+  }
+
+  return instance;
+}

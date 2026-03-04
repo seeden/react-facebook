@@ -1,4 +1,4 @@
-import React, { memo, forwardRef, useMemo, type Ref } from 'react';
+import { memo, forwardRef, useMemo, type Ref } from 'react';
 import Parser, { type ParserProps } from './Parser';
 
 export type EmbeddedVideoProps = Partial<ParserProps> & {
