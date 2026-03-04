@@ -3,7 +3,7 @@ node_modules
 .DS_Store
 yarn.lock
 dist
-lib
+/lib
 module
 .next
 out
