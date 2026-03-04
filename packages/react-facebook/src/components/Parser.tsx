@@ -59,8 +59,8 @@ function Parser(props: ParserProps, forwardedRef: Ref<HTMLElement>) {
   }, [data, As, className]);
 
   useEffect(() => {
-    if (element) {
-      parse(element);
+    if (element?.parentNode) {
+      parse(element.parentNode as HTMLElement);
     }
   }, [element, parse, key]);
 
