@@ -9,8 +9,13 @@ import {
 } from 'react';
 import useLogin from '../hooks/useLogin';
 import useProfile from '../hooks/useProfile';
-import type { LoginOptions } from '../hooks/useLogin';
-import type { LoginResponse } from '../utils/Facebook';
+import type {
+  ConfigLoginOptions,
+  LoginOptions,
+  LoginOptionsBase,
+  LoginResponse,
+  ScopeLoginOptions,
+} from '../utils/Facebook';
 
 type LoginRenderProps = {
   onClick: () => void;
@@ -18,7 +23,7 @@ type LoginRenderProps = {
   isDisabled: boolean;
 };
 
-export type LoginProps = Omit<LoginOptions, 'scope'> & {
+type LoginPropsBase = {
   children?: ReactNode | ((props: LoginRenderProps) => ReactElement);
 
   onSuccess?: (response: LoginResponse) => void;
@@ -34,6 +39,14 @@ export type LoginProps = Omit<LoginOptions, 'scope'> & {
   style?: CSSProperties;
 };
 
+type LoginPropsWithConfigId = LoginPropsBase & ConfigLoginOptions;
+type LoginPropsWithScope = LoginPropsBase &
+  Omit<ScopeLoginOptions, 'scope'> & {
+    scope?: string | string[];
+  };
+
+export type LoginProps = LoginPropsWithConfigId | LoginPropsWithScope;
+
 export default function Login(props: LoginProps) {
   const {
     children,
@@ -44,6 +57,7 @@ export default function Login(props: LoginProps) {
     as: Component = 'button',
     disabled = false,
     scope = ['public_profile', 'email'],
+    configId,
     returnScopes,
     authType,
     rerequest,
@@ -67,14 +81,19 @@ export default function Login(props: LoginProps) {
   const handleLogin = async () => {
     if (loading || disabled) return;
 
+    const base: LoginOptionsBase = {
+      returnScopes,
+      authType,
+      rerequest,
+      reauthorize,
+    };
+
+    const loginOptions: LoginOptions = configId
+      ? { ...base, configId }
+      : { ...base, scope: Array.isArray(scope) ? scope.join(',') : scope };
+
     try {
-      const response = await login({
-        scope: Array.isArray(scope) ? scope.join(',') : scope,
-        returnScopes,
-        authType,
-        rerequest,
-        reauthorize,
-      });
+      const response = await login(loginOptions);
 
       onSuccess?.(response);
     } catch (error) {

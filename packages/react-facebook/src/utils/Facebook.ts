@@ -1,10 +1,24 @@
 import LoginStatus from '../constants/LoginStatus';
 import FBError from '../errors/FBError';
 
-export type AuthResponse = {
+export type ScopeAuthResponse = {
   userID: string;
   accessToken: string;
+  expiresIn: number;
+  code?: never;
 };
+
+export type ConfigAuthResponse = {
+  /** Authorization code to exchange server-side for a BISU token. */
+  code: string;
+  /** Always null in the config_id flow — no user-scoped ID is returned. */
+  userID: null;
+  /** NaN if token has no expiration time. Time is defined in the BISU configuration */
+  expiresIn: number;
+  accessToken?: never;
+};
+
+export type AuthResponse = ScopeAuthResponse | ConfigAuthResponse;
 
 export type LoginResponse =
   | {
@@ -15,13 +29,24 @@ export type LoginResponse =
       status: Exclude<LoginStatus, LoginStatus.CONNECTED>;
     };
 
-export type LoginOptions = {
-  scope?: string;
+export type LoginOptionsBase = {
   returnScopes?: boolean;
   authType?: string[];
   rerequest?: boolean;
   reauthorize?: boolean;
 };
+
+export type ConfigLoginOptions = LoginOptionsBase & {
+  configId: string;
+  scope?: never;
+};
+
+export type ScopeLoginOptions = LoginOptionsBase & {
+  scope?: string;
+  configId?: never;
+};
+
+export type LoginOptions = ConfigLoginOptions | ScopeLoginOptions;
 
 type FBErrorResponse = {
   error: {
@@ -276,9 +301,18 @@ export default function createFacebook(options: FacebookOptions): FacebookInstan
   }
 
   async function login(loginOpts: LoginOptions) {
-    const { scope, returnScopes, rerequest, reauthorize } = loginOpts;
+    const { returnScopes, rerequest, reauthorize, scope, configId } = loginOpts;
     const types = [...(loginOpts.authType ?? [])];
-    const fbLoginOptions: Record<string, unknown> = { scope };
+    const fbLoginOptions: Record<string, unknown> = {};
+
+    if (scope) fbLoginOptions.scope = scope;
+
+    // https://developers.facebook.com/documentation/facebook-login/facebook-login-for-business#invoking-with-our-sdks
+    if (configId) {
+      fbLoginOptions.config_id = configId;
+      fbLoginOptions.response_type = 'code';
+      fbLoginOptions.override_default_response_type = true;
+    }
 
     if (returnScopes) {
       fbLoginOptions.return_scopes = true;

@@ -27,24 +27,50 @@ The hook returns an object with the following properties:
 
 ### LoginOptions
 
-The `login` function accepts the following options:
+`LoginOptions` is a **discriminated union** — pass either `configId` or `scope`, not both.
 
-| Property       | Type       | Default     | Description                                                                     |
-| -------------- | ---------- | ----------- | ------------------------------------------------------------------------------- |
-| `scope`        | `string`   | `undefined` | Comma-separated list of permissions to request (e.g. `'email,public_profile'`). |
-| `returnScopes` | `boolean`  | `undefined` | When `true`, the response includes the scopes that were granted.                |
-| `authType`     | `string[]` | `undefined` | Array of auth types to include in the request.                                  |
-| `rerequest`    | `boolean`  | `undefined` | When `true`, asks the user again for previously declined permissions.           |
-| `reauthorize`  | `boolean`  | `undefined` | When `true`, forces re-authentication of the user.                              |
+**Shared options** (apply to both flows):
+
+| Property      | Type       | Default     | Description                                                           |
+| ------------- | ---------- | ----------- | --------------------------------------------------------------------- |
+| `returnScopes` | `boolean` | `undefined` | When `true`, the response includes the scopes that were granted. Applies to the `scope` flow only. |
+| `authType`    | `string[]` | `undefined` | Array of auth types to include in the request.                        |
+| `rerequest`   | `boolean`  | `undefined` | When `true`, asks the user again for previously declined permissions. |
+| `reauthorize` | `boolean`  | `undefined` | When `true`, forces re-authentication of the user.                    |
+
+**Scope flow** — pass `scope` to request permissions directly:
+
+| Property | Type     | Default     | Description                                                                      |
+| -------- | -------- | ----------- | -------------------------------------------------------------------------------- |
+| `scope`  | `string` | `undefined` | Comma-separated list of permissions to request (e.g. `'email,public_profile'`).<br/><br/> <b>Note:</b> Mutually exclusive with `configId`. |
+
+**Business Login flow** — pass `configId` to use a server-defined configuration:
+
+| Property   | Type     | Default     | Description                                                                                                   |
+| ---------- | -------- | ----------- | ------------------------------------------------------------------------------------------------------------- |
+| `configId` | `string` | `undefined` | Facebook Business Login configuration ID. Triggers the BISU code flow (`response_type: 'code'`).<br/><br/> <b>Note:</b> Mutually exclusive with `scope`. |
 
 ### LoginResponse
 
-When the status is `'connected'`, the response includes an `authResponse` object with:
+When `status` is `'connected'`, the response includes an `authResponse` whose shape depends on the login flow used.
 
-| Property      | Type     | Description                     |
-| ------------- | -------- | ------------------------------- |
-| `userID`      | `string` | The Facebook user ID.           |
-| `accessToken` | `string` | The access token for API calls. |
+**Scope flow** (`authResponse` when `scope` was passed):
+
+| Property      | Type     | Description                          |
+| ------------- | -------- | ------------------------------------ |
+| `userID`      | `string` | The Facebook user ID.                |
+| `accessToken` | `string` | The access token for API calls.      |
+| `expiresIn`   | `number` | Seconds until the token expires.     |
+
+**Business Login flow** (`authResponse` when `configId` was passed):
+
+| Property    | Type     | Description                                                                                     |
+| ----------- | -------- | ----------------------------------------------------------------------------------------------- |
+| `code`      | `string` | Short-lived authorization code to exchange server-side for a BISU token.                        |
+| `userID`    | `null`   | Always `null` — no user-scoped ID is returned in the `configId` flow.                          |
+| `expiresIn` | `number` | `NaN` — expiration is defined by the BISU configuration, not the SDK response.                  |
+
+Narrow `authResponse` with `'accessToken' in response.authResponse` before accessing flow-specific fields.
 
 ## Usage
 
@@ -99,7 +125,9 @@ function LoginWithErrorHandling() {
 
     try {
       const response = await login({ scope: 'email,public_profile' });
-      console.log('Logged in as:', response.authResponse?.userID);
+      if (response.status === 'connected' && 'accessToken' in response.authResponse) {
+        console.log('Logged in as:', response.authResponse.userID);
+      }
     } catch (err) {
       const message = err instanceof Error ? err.message : 'An unexpected error occurred';
       setLoginError(message);
@@ -178,7 +206,7 @@ function LoginAndProfile() {
 
 ## Forward Token to Server
 
-After login, send the `accessToken` to your backend API for server-side verification or session creation.
+After a scope-based login, send the `accessToken` to your backend for server-side verification or session creation. Narrow `authResponse` with `'accessToken' in response.authResponse` to confirm this is the scope flow before accessing `accessToken` and `userID`.
 
 ```tsx
 import { useLogin } from 'react-facebook';
@@ -191,8 +219,13 @@ function LoginWithBackend() {
     try {
       const response = await login({ scope: 'email,public_profile' });
 
-      if (response.status !== 'connected' || !response.authResponse) {
+      if (response.status !== 'connected') {
         throw new Error('Login did not complete');
+      }
+
+      // Narrow to scope flow — authResponse contains accessToken, not code
+      if (!('accessToken' in response.authResponse)) {
+        throw new Error('Unexpected response type');
       }
 
       const { accessToken, userID } = response.authResponse;
@@ -258,6 +291,45 @@ function ConditionalLogout() {
       className="rounded-md bg-gray-200 px-4 py-2 text-sm text-gray-700 hover:bg-gray-300 disabled:opacity-50"
     >
       {authLoading ? 'Signing out...' : 'Sign out of Facebook'}
+    </button>
+  );
+}
+```
+
+## Facebook Login for Business (configId)
+
+Pass `configId` instead of `scope` to use the [Facebook Login for Business](https://developers.facebook.com/docs/facebook-login/facebook-login-for-business) flow. The SDK returns a short-lived authorization **code** in `authResponse.code` — there is no `accessToken`. Exchange this code on your server for a BISU token.
+
+**Basic usage:**
+
+```tsx
+import { useLogin } from 'react-facebook';
+
+function BusinessLoginButton() {
+  const { login, loading } = useLogin();
+
+  const handleLogin = async () => {
+    try {
+      const response = await login({ configId: 'YOUR_CONFIG_ID' });
+
+      if (response.status !== 'connected' || !('code' in response.authResponse)) {
+        throw new Error('Login did not complete');
+      }
+
+      // Exchange this code server-side for a BISU token
+      await fetch('/api/auth/facebook/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: response.authResponse.code }),
+      });
+    } catch (err) {
+      console.error('Login failed:', err);
+    }
+  };
+
+  return (
+    <button onClick={handleLogin} disabled={loading}>
+      {loading ? 'Connecting...' : 'Continue with Facebook'}
     </button>
   );
 }

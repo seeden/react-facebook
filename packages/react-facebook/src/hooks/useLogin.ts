@@ -1,15 +1,9 @@
 import { useState, useCallback, useRef } from 'react';
 import useFacebook from './useFacebook';
-import type { LoginResponse } from '../utils/Facebook';
+import type { LoginOptions, LoginResponse } from '../utils/Facebook';
 import LoginStatus from '../constants/LoginStatus';
 
-export type LoginOptions = {
-  scope?: string;
-  returnScopes?: boolean;
-  authType?: string[];
-  rerequest?: boolean;
-  reauthorize?: boolean;
-};
+export type { LoginOptions };
 
 export type UseLoginReturn = {
   login: (loginOptions: LoginOptions, callback?: (response: LoginResponse) => void) => Promise<LoginResponse>;

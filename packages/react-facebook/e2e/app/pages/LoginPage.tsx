@@ -83,6 +83,12 @@ export default function LoginPage() {
           </Login>
         </section>
 
+        <section data-testid="scenario-with-config-id">
+          <Login configId="123456789" onSuccess={() => {}} data-testid="config-id-login">
+            Login with Config ID
+          </Login>
+        </section>
+
         {/* Result display */}
         <div data-testid="login-result">{result}</div>
       </div>
