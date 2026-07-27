@@ -47,6 +47,11 @@ function LoginButton() {
   const handleLogin = async () => {
     const response = await login({ scope: 'email' });
 
+    if (response.status !== 'connected') return;
+
+    // Narrow to scope flow — authResponse contains accessToken, not code
+    if (!('accessToken' in response.authResponse)) return;
+
     // Send the token to your server for validation and exchange
     await fetch('/api/auth/facebook', {
       method: 'POST',

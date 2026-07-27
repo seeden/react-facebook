@@ -29,7 +29,9 @@ function App() {
         scope={['public_profile', 'email']}
         fields={['name', 'email', 'picture']}
         onSuccess={(response) => {
-          console.log('Auth token:', response.authResponse.accessToken);
+          if (response.status === 'connected' && 'accessToken' in response.authResponse) {
+            console.log('Auth token:', response.authResponse.accessToken);
+          }
         }}
         onProfileSuccess={(profile) => {
           console.log('User:', profile.name, profile.email);
@@ -58,6 +60,8 @@ function LoginButton() {
   const handleLogin = async () => {
     try {
       const response = await login({ scope: 'email,public_profile' });
+      // Narrow to the scope flow before accessing accessToken / userID
+      if (response.status !== 'connected' || !('accessToken' in response.authResponse)) return;
       // Send token to your backend
       await fetch('/api/auth/facebook', {
         method: 'POST',
@@ -189,11 +193,21 @@ import { FacebookProvider, FacebookErrorBoundary, Login } from 'react-facebook';
 Every component and hook is fully typed. No separate `@types/` package needed.
 
 ```tsx
-import type { LoginResponse, AuthResponse } from 'react-facebook';
+import type { LoginResponse } from 'react-facebook';
 
 function handleSuccess(response: LoginResponse) {
-  const token: string = response.authResponse.accessToken;
-  const userId: string = response.authResponse.userID;
+  if (response.status !== 'connected') return;
+
+  // Scope flow: authResponse contains accessToken and userID
+  if ('accessToken' in response.authResponse) {
+    const token: string = response.authResponse.accessToken;
+    const userId: string = response.authResponse.userID;
+  }
+
+  // Business Login (configId) flow: authResponse contains code instead
+  if ('code' in response.authResponse) {
+    const code: string = response.authResponse.code;
+  }
 }
 ```
 

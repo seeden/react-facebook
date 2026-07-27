@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import createFacebook from '../utils/Facebook';
+import createFacebook, { ConfigAuthResponse, ScopeAuthResponse } from '../utils/Facebook';
 
 describe('Facebook', () => {
   beforeEach(() => {
@@ -259,6 +259,314 @@ describe('Facebook', () => {
       expect(fb.getLocale()).toBe('fr_FR');
       script = document.getElementById('facebook-jssdk') as HTMLScriptElement;
       expect(script.src).toContain('/fr_FR/');
+    });
+  });
+
+  describe('login', () => {
+    type MockFB = {
+      init: ReturnType<typeof vi.fn>;
+      XFBML: { parse: ReturnType<typeof vi.fn> };
+      login: ReturnType<typeof vi.fn>;
+      logout: ReturnType<typeof vi.fn>;
+      getLoginStatus: ReturnType<typeof vi.fn>;
+      Event: { subscribe: ReturnType<typeof vi.fn>; unsubscribe: ReturnType<typeof vi.fn> };
+      api: ReturnType<typeof vi.fn>;
+      ui: ReturnType<typeof vi.fn>;
+    };
+
+    function makeMockFB(loginMock = vi.fn()): MockFB {
+      return {
+        init: vi.fn(),
+        XFBML: { parse: vi.fn() },
+        login: loginMock,
+        logout: vi.fn(),
+        getLoginStatus: vi.fn(),
+        Event: { subscribe: vi.fn(), unsubscribe: vi.fn() },
+        api: vi.fn(),
+        ui: vi.fn(),
+      };
+    }
+
+    async function initWithMockedSDK(loginMock = vi.fn()) {
+      const fb = createFacebook({ appId: 'test123', lazy: true });
+      (window as { FB?: unknown }).FB = makeMockFB(loginMock);
+      const p = fb.init();
+      window.fbAsyncInit();
+      await p;
+      return fb;
+    }
+
+    /** Returns the options object passed as the second argument to FB.login(callback, options). */
+    function captureLoginOptions(loginMock: ReturnType<typeof vi.fn>): Record<string, unknown> {
+      return loginMock.mock.calls[0][1] as Record<string, unknown>;
+    }
+
+    function resolveLoginWith(loginMock: ReturnType<typeof vi.fn>, response: unknown) {
+      loginMock.mockImplementation((callback: (r: unknown) => void) => callback(response));
+    }
+
+    const getConnectedScopeResponse = (overrides?: Partial<ScopeAuthResponse>) => ({
+      status: 'connected',
+      authResponse: { userID: 'user_1', accessToken: 'tok_abc', expiresIn: 3600, ...overrides },
+    });
+
+    const getConnectedConfigResponse = (overrides?: Partial<ConfigAuthResponse>) => ({
+      status: 'connected',
+      authResponse: { userID: null, code: 'auth_code_xyz', expiresIn: NaN, ...overrides },
+    });
+
+    const notAuthorizedResponse = { status: 'not_authorized' };
+
+    // ── 1. Scope flow ──────────────────────────────────────────────────────
+
+    describe('scope flow', () => {
+      it('passes scope string to FB.login options', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: 'email,public_profile' });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.scope).toBe('email,public_profile');
+      });
+
+      it('does not set config_id, response_type, or override_default_response_type when only scope provided', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: 'email' });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.config_id).toBeUndefined();
+        expect(opts.response_type).toBeUndefined();
+        expect(opts.override_default_response_type).toBeUndefined();
+      });
+
+      it('returns connected response with accessToken', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(
+          loginMock,
+          getConnectedScopeResponse({ accessToken: 'tok_123', userID: 'user_connected_123', expiresIn: 1500 }),
+        );
+
+        const response = await fb.login({ scope: 'email' });
+
+        expect(response.status).toBe('connected');
+        if (response.status === 'connected') {
+          expect(response.authResponse.accessToken).toBe('tok_123');
+          expect(response.authResponse.userID).toBe('user_connected_123');
+        }
+      });
+    });
+
+    // ── 2. Without scope ───────────────────────────────────────────────────
+
+    describe('without scope', () => {
+      it('calls FB.login with empty options when no scope is provided', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({});
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.scope).toBeUndefined();
+        expect(opts.config_id).toBeUndefined();
+      });
+
+      it('treats scope: undefined the same as omitting scope', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: undefined });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.scope).toBeUndefined();
+      });
+    });
+
+    // ── 3. Config ID flow ──────────────────────────────────────────────────
+
+    describe('configId flow', () => {
+      it('sets config_id on FB.login options', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedConfigResponse());
+
+        await fb.login({ configId: 'cfg_abc123' });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.config_id).toBe('cfg_abc123');
+      });
+
+      it('sets response_type to "code"', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedConfigResponse());
+
+        await fb.login({ configId: 'cfg_abc123' });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.response_type).toBe('code');
+      });
+
+      it('sets override_default_response_type to true', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedConfigResponse());
+
+        await fb.login({ configId: 'cfg_abc123' });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.override_default_response_type).toBe(true);
+      });
+
+      it('does not set scope', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedConfigResponse());
+
+        await fb.login({ configId: 'cfg_abc123' });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.scope).toBeUndefined();
+      });
+
+      it('returns connected response with code and no accessToken', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedConfigResponse({ code: 'config_auth_code_123' }));
+
+        const response = await fb.login({ configId: 'cfg_abc123' });
+
+        expect(response.status).toBe('connected');
+        if (response.status === 'connected') {
+          expect(response.authResponse.code).toBe('config_auth_code_123');
+          expect(response.authResponse.accessToken).toBeUndefined();
+          expect(response.authResponse.userID).toBeNull();
+        }
+      });
+    });
+
+    // ── 4. Additional option flags ─────────────────────────────────────────
+
+    describe('additional option flags', () => {
+      it('returnScopes: true adds return_scopes to FB.login options', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: 'email', returnScopes: true });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.return_scopes).toBe(true);
+      });
+
+      it('rerequest: true adds auth_type "rerequest"', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: 'email', rerequest: true });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.auth_type).toBe('rerequest');
+      });
+
+      it('reauthorize: true adds auth_type "reauthenticate"', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: 'email', reauthorize: true });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.auth_type).toBe('reauthenticate');
+      });
+
+      it('rerequest and reauthorize together produce auth_type "rerequest,reauthenticate"', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: 'email', rerequest: true, reauthorize: true });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.auth_type).toBe('rerequest,reauthenticate');
+      });
+
+      it('authType array is included in auth_type', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: 'email', authType: ['custom_type'] });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.auth_type).toBe('custom_type');
+      });
+
+      it('authType array is merged with rerequest boolean option', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: 'email', authType: ['custom_type'], rerequest: true, reauthorize: true });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.auth_type).toBe('custom_type,rerequest,reauthenticate');
+      });
+
+      it('no auth_type key when no rerequest/reauthorize/authType provided', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, getConnectedScopeResponse());
+
+        await fb.login({ scope: 'email' });
+
+        const opts = captureLoginOptions(loginMock);
+        expect(opts.auth_type).toBeUndefined();
+      });
+    });
+
+    // ── 5. Error cases ─────────────────────────────────────────────────────
+
+    describe('error cases', () => {
+      it('throws FBError when FB.login returns an error response', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        loginMock.mockImplementation((cb: (r: unknown) => void) =>
+          cb({ error: { code: 190, type: 'OAuthException', message: 'Invalid token' } }),
+        );
+
+        await expect(fb.login({ scope: 'email' })).rejects.toMatchObject({
+          code: 190,
+          type: 'OAuthException',
+          message: '[react-facebook] Invalid token (code: 190, type: OAuthException)',
+        });
+      });
+
+      it('throws when FB.login callback receives undefined', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        loginMock.mockImplementation((cb: (r: unknown) => void) => cb(undefined));
+
+        await expect(fb.login({ scope: 'email' })).rejects.toThrow('Response is undefined');
+      });
+
+      it('resolves with non-connected status without throwing', async () => {
+        const loginMock = vi.fn();
+        const fb = await initWithMockedSDK(loginMock);
+        resolveLoginWith(loginMock, notAuthorizedResponse);
+
+        const response = await fb.login({ scope: 'email' });
+
+        expect(response.status).toBe('not_authorized');
+      });
     });
   });
 });

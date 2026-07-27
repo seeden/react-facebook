@@ -17,22 +17,25 @@ import { Login } from 'react-facebook';
 
 ## Props
 
-| Prop               | Type                                                       | Default                       | Description                                                                         |
-| ------------------ | ---------------------------------------------------------- | ----------------------------- | ----------------------------------------------------------------------------------- |
-| `children`         | `ReactNode \| ((props: LoginRenderProps) => ReactElement)` | `undefined`                   | Button content, or a render function receiving `{ onClick, loading, isDisabled }`.  |
-| `onSuccess`        | `(response: LoginResponse) => void`                        | `undefined`                   | Called after a successful login with the login response containing `authResponse`.  |
-| `onError`          | `(error: Error) => void`                                   | `undefined`                   | Called when the login fails or the user cancels.                                    |
-| `onProfileSuccess` | `(profile: Record<string, unknown>) => void`               | `undefined`                   | Called with the user profile when `fields` are provided and the profile is fetched. |
-| `scope`            | `string \| string[]`                                       | `['public_profile', 'email']` | Permissions to request. Accepts a comma-separated string or an array.               |
-| `fields`           | `string[]`                                                 | `[]`                          | Profile fields to fetch after login (e.g. `['name', 'email', 'picture']`).          |
-| `as`               | `ElementType \| ComponentType`                             | `'button'`                    | The HTML element or React component to render.                                      |
-| `disabled`         | `boolean`                                                  | `false`                       | Disables the login button.                                                          |
-| `returnScopes`     | `boolean`                                                  | `undefined`                   | When `true`, the response includes the scopes the user actually granted.            |
-| `authType`         | `string[]`                                                 | `undefined`                   | Auth type array (e.g. `['rerequest']`).                                             |
-| `rerequest`        | `boolean`                                                  | `undefined`                   | Adds `'rerequest'` to `authType`, prompting for previously declined permissions.    |
-| `reauthorize`      | `boolean`                                                  | `undefined`                   | Adds `'reauthenticate'` to `authType`, forcing re-authentication.                   |
-| `className`        | `string`                                                   | `undefined`                   | CSS class name applied to the rendered element.                                     |
-| `style`            | `CSSProperties`                                            | `undefined`                   | Inline styles applied to the rendered element.                                      |
+`LoginProps` is a **discriminated union** — you must provide either `configId` or `scope`, not both. Passing both is a TypeScript error.
+
+| Prop               | Type                                                       | Default                       | Description                                                                                                                      |
+| ------------------ | ---------------------------------------------------------- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| `children`         | `ReactNode \| ((props: LoginRenderProps) => ReactElement)` | `undefined`                   | Button content, or a render function receiving `{ onClick, loading, isDisabled }`.                                               |
+| `onSuccess`        | `(response: LoginResponse) => void`                        | `undefined`                   | Called after a successful login with the login response containing `authResponse`.                                               |
+| `onError`          | `(error: Error) => void`                                   | `undefined`                   | Called when the login fails or the user cancels.                                                                                 |
+| `onProfileSuccess` | `(profile: Record<string, unknown>) => void`               | `undefined`                   | Called with the user profile when `fields` are provided and the profile is fetched.                                              |
+| `configId`         | `string`                                                   | `undefined`                   | Facebook Business Login configuration ID. When set, triggers the BISU code flow (`response_type: 'code'`).<br/><br/> <b>Note:</b> Mutually exclusive with `scope`. |
+| `scope`            | `string \| string[]`                                       | `['public_profile', 'email']` | Permissions to request. Accepts a comma-separated string or an array.<br/><br/> <b>Note:</b> Mutually exclusive with `configId`.                        |
+| `fields`           | `string[]`                                                 | `[]`                          | Profile fields to fetch after login (e.g. `['name', 'email', 'picture']`).                                                      |
+| `as`               | `ElementType \| ComponentType`                             | `'button'`                    | The HTML element or React component to render.                                                                                   |
+| `disabled`         | `boolean`                                                  | `false`                       | Disables the login button.                                                                                                       |
+| `returnScopes`     | `boolean`                                                  | `undefined`                   | When `true`, the response includes the scopes the user actually granted. Applies to the `scope` flow only.                       |
+| `authType`         | `string[]`                                                 | `undefined`                   | Auth type array (e.g. `['rerequest']`).                                                                                          |
+| `rerequest`        | `boolean`                                                  | `undefined`                   | Adds `'rerequest'` to `authType`, prompting for previously declined permissions.                                                 |
+| `reauthorize`      | `boolean`                                                  | `undefined`                   | Adds `'reauthenticate'` to `authType`, forcing re-authentication.                                                                |
+| `className`        | `string`                                                   | `undefined`                   | CSS class name applied to the rendered element.                                                                                  |
+| `style`            | `CSSProperties`                                            | `undefined`                   | Inline styles applied to the rendered element.                                                                                   |
 
 Any additional props are spread onto the rendered element.
 
@@ -115,5 +118,61 @@ When you provide `fields`, the component automatically fetches the user profile 
   onError={(error) => console.error('Login failed:', error)}
 >
   Sign in with Facebook
+</Login>
+```
+
+### Facebook Login for Business (configId)
+
+<Callout type="info">
+  Facebook Login for Business uses a configuration ID created in the [Facebook App Dashboard](https://developers.facebook.com/docs/facebook-login/facebook-login-for-business).
+  Instead of a client-side access token the SDK returns a short-lived authorization **code** that must be exchanged
+  server-side for a BISU token. See the [Facebook Login for Business docs](https://developers.facebook.com/docs/facebook-login/facebook-login-for-business)
+  for the full server-side exchange flow.
+</Callout>
+
+Pass `configId` instead of `scope`. The `onSuccess` callback receives `authResponse.code` — there is no `accessToken` in this flow.
+
+**With a default button:**
+
+```tsx
+<Login
+  configId="YOUR_CONFIG_ID"
+  onSuccess={(response) => {
+    if (response.status === 'connected' && 'code' in response.authResponse) {
+      // Exchange this code on your server
+      fetch('/api/auth/facebook/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: response.authResponse.code }),
+      });
+    }
+  }}
+  onError={(error) => console.error('Login failed:', error)}
+>
+  Continue with Facebook
+</Login>
+```
+
+**With the render props pattern:**
+
+```tsx
+<Login
+  configId="YOUR_CONFIG_ID"
+  onSuccess={(response) => {
+    if (response.status === 'connected' && 'code' in response.authResponse) {
+      fetch('/api/auth/facebook/exchange', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: response.authResponse.code }),
+      });
+    }
+  }}
+  onError={(error) => console.error('Login failed:', error)}
+>
+  {({ onClick, loading, isDisabled }) => (
+    <button onClick={onClick} disabled={isDisabled}>
+      {loading ? 'Connecting...' : 'Sign in with Facebook'}
+    </button>
+  )}
 </Login>
 ```
